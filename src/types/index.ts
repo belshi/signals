@@ -1,28 +1,10 @@
 import React from 'react';
 
-// Navigation types
-export interface NavItem {
-  id: string;
-  label: string;
-  path: string;
-  isActive?: boolean;
-}
+// Re-export enhanced types for backward compatibility
+export * from './enhanced';
 
-// Page header types
-export interface PageHeaderButton {
-  label: string;
-  onClick: () => void;
-  variant?: 'primary' | 'secondary';
-  icon?: React.ReactNode;
-}
-
-export interface PageHeaderProps {
-  title: string;
-  button?: PageHeaderButton;
-  buttons?: PageHeaderButton[];
-}
-
-// Signal types
+// Legacy types for backward compatibility (deprecated - use enhanced types)
+/** @deprecated Use EnhancedSignal from enhanced.ts */
 export interface Signal {
   id: string;
   name: string;
@@ -32,7 +14,7 @@ export interface Signal {
   updatedAt: string;
 }
 
-// Brand types
+/** @deprecated Use EnhancedBrandDetails from enhanced.ts */
 export interface BrandDetails {
   name: string;
   description: string;
@@ -40,6 +22,7 @@ export interface BrandDetails {
   industry: string;
 }
 
+/** @deprecated Use EnhancedBrandGoal from enhanced.ts */
 export interface BrandGoal {
   id: string;
   title: string;
@@ -48,6 +31,7 @@ export interface BrandGoal {
   status: 'not-started' | 'in-progress' | 'completed';
 }
 
+/** @deprecated Use EnhancedCompetitor from enhanced.ts */
 export interface Competitor {
   id: string;
   name: string;
@@ -56,7 +40,30 @@ export interface Competitor {
   strength: 'low' | 'medium' | 'high';
 }
 
-// Tab types
+/** @deprecated Use EnhancedNavItem from enhanced.ts */
+export interface NavItem {
+  id: string;
+  label: string;
+  path: string;
+  isActive?: boolean;
+}
+
+/** @deprecated Use EnhancedPageHeaderButton from enhanced.ts */
+export interface PageHeaderButton {
+  label: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+  icon?: React.ReactNode;
+}
+
+/** @deprecated Use EnhancedPageHeaderProps from enhanced.ts */
+export interface PageHeaderProps {
+  title: string;
+  button?: PageHeaderButton;
+  buttons?: PageHeaderButton[];
+}
+
+/** @deprecated Use EnhancedNavItem from enhanced.ts */
 export interface Tab {
   id: string;
   label: string;

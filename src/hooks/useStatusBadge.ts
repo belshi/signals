@@ -1,8 +1,8 @@
 import { useMemo } from 'react';
 import { STATUS_CONFIG } from '../constants';
-import type { Signal } from '../types';
+import type { SignalStatus } from '../types/enhanced';
 
-export const useStatusBadge = (status: Signal['status']) => {
+export const useStatusBadge = (status: SignalStatus) => {
   return useMemo(() => {
     const config = STATUS_CONFIG[status];
     return {

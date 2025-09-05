@@ -12,7 +12,6 @@ const SignalsPage: React.FC = () => {
       await createSignal({
         name: 'New Signal',
         type: 'Analytics',
-        status: 'pending',
       });
     } catch (err) {
       console.error('Failed to create signal:', err);
