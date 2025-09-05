@@ -1,0 +1,336 @@
+# Cursor AI Project Rules for Signals Project
+
+## Project Overview
+This is a signals processing and analysis project focused on rapid prototyping and iteration. The project emphasizes clean architecture, performance, and maintainability.
+
+## Tech Stack
+- **Vite** - Build tool and dev server for fast development
+- **Tailwind CSS** - Utility-first CSS framework for rapid styling
+- **React** - UI library for component-based architecture
+- **TypeScript** - Type safety and better developer experience
+- **ESLint** - Code linting with accessibility and best practice rules
+
+## Code Style & Conventions
+
+### General Principles
+- Keep it simple and focused on the core functionality
+- Separate concerns clearly with proper abstraction layers
+- Use semantic HTML elements for better accessibility
+- Follow mobile-first responsive design principles
+- Write clean, readable, and maintainable code
+- Prioritize performance and user experience
+- Implement proper error handling and logging
+
+### File Organization
+```
+src/
+├── components/     # Reusable UI components
+│   ├── ui/        # Basic UI components (buttons, inputs, etc.)
+│   ├── charts/    # Chart and visualization components
+│   └── signals/   # Signal-specific components
+├── pages/         # Page components and routes
+├── hooks/         # Custom React hooks
+├── services/      # API services and data fetching
+├── utils/         # Utility functions and helpers
+├── types/         # TypeScript type definitions
+├── styles/        # Global styles and Tailwind imports
+├── assets/        # Static assets (images, icons, etc.)
+├── App.tsx        # Main app component
+└── main.tsx       # Entry point
+```
+
+### Component Guidelines
+- Create small, focused, and reusable components
+- Use functional components with TypeScript
+- Keep components under 150 lines when possible
+- Use descriptive component and prop names
+- Export components as default exports
+- Always include proper error handling and loading states
+- Implement comprehensive accessibility features
+- Use proper TypeScript interfaces for props
+
+### Styling Guidelines
+- Use Tailwind utility classes for all styling
+- Avoid custom CSS unless absolutely necessary
+- Use Tailwind's responsive prefixes (sm:, md:, lg:, xl:)
+- Follow Tailwind's design system (colors, spacing, typography)
+- Use semantic color names and consistent theming
+- Ensure proper contrast ratios for accessibility
+- Use CSS Grid and Flexbox for layouts
+
+### TypeScript Guidelines
+- Define proper interfaces for all data structures
+- Use strict TypeScript configuration
+- Avoid `any` type - use proper typing
+- Use generic types where appropriate
+- Define return types for functions
+- Use proper enum types for constants
+
+### Import/Export Patterns
+```typescript
+// Component imports
+import ComponentName from './components/ComponentName'
+
+// Type imports
+import type { SignalData, ChartProps } from './types'
+
+// Utility imports
+import { formatSignalData, validateInput } from './utils/helpers'
+
+// Hook imports
+import { useSignalProcessing } from './hooks/useSignalProcessing'
+
+// Asset imports
+import logo from './assets/logo.svg'
+```
+
+## Development Workflow
+
+### When Adding New Features
+1. Create TypeScript interfaces for data structures
+2. Build components in appropriate directories
+3. Use Tailwind classes for styling
+4. Test responsiveness across different screen sizes
+5. Keep components modular and reusable
+6. Add comprehensive error handling and loading states
+7. Implement accessibility features (ARIA, keyboard navigation)
+8. Add proper TypeScript types
+9. Update documentation and types
+
+### When Modifying Existing Code
+1. Maintain existing code style and patterns
+2. Don't break existing functionality
+3. Update TypeScript types if needed
+4. Test changes thoroughly across devices
+5. Ensure accessibility compliance
+6. Add error handling if missing
+7. Update related components and services
+
+### Code Quality Standards
+- Use meaningful variable and function names
+- Add JSDoc comments for complex functions
+- Keep functions small and focused (max 50 lines)
+- Avoid deep nesting (max 3 levels)
+- Use const/let appropriately (avoid var)
+- Handle errors gracefully with try-catch blocks
+- Use proper logging instead of console.log
+- Follow TypeScript best practices
+
+## Accessibility Requirements
+
+### ARIA Guidelines
+- Use proper ARIA attributes (aria-label, aria-expanded, aria-controls, aria-live)
+- Implement semantic HTML elements
+- Provide alternative text for images and charts
+- Use proper heading hierarchy (h1, h2, h3, etc.)
+- Ensure keyboard navigation for all interactive elements
+- Use aria-describedby for form validation messages
+
+### Keyboard Navigation
+- Support Tab, Enter, Space, Escape, Arrow keys
+- Provide visible focus indicators
+- Implement proper tab order
+- Handle focus management in modals and dropdowns
+- Support Home/End keys for list navigation
+- Ensure all interactive elements are keyboard accessible
+
+### Screen Reader Support
+- Use semantic HTML elements
+- Provide descriptive labels and instructions
+- Use proper roles and properties
+- Test with screen readers
+- Ensure content is announced correctly
+- Use aria-live regions for dynamic content updates
+
+## Error Handling & Loading States
+
+### Error Boundaries
+- Wrap components in ErrorBoundary for graceful error recovery
+- Provide user-friendly error messages
+- Include retry functionality where appropriate
+- Log errors with proper context and stack traces
+- Show development error details in dev mode only
+
+### Loading States
+- Use Loading components for async operations
+- Provide skeleton loaders for content areas
+- Show loading overlays for forms and data processing
+- Handle loading states gracefully with proper UX
+- Provide feedback for user actions and data processing
+
+### Error Logging
+- Use structured error logging with context
+- Include error type classification and severity
+- Log user actions and system state
+- Avoid console.log in production
+- Use proper error reporting services
+- Include error recovery suggestions
+
+## Performance Considerations
+- Use React.memo() for expensive components
+- Implement useCallback and useMemo for optimization
+- Lazy load components and routes when appropriate
+- Optimize images and assets
+- Use Vite's built-in optimizations
+- Minimize bundle size and code splitting
+- Implement virtual scrolling for large datasets
+- Use proper caching strategies
+
+## Testing Approach
+- Test components manually in browser
+- Use browser dev tools for debugging
+- Test on multiple screen sizes and devices
+- Verify accessibility with screen readers
+- Test keyboard navigation thoroughly
+- Check error handling scenarios
+- Test performance with large datasets
+- Validate TypeScript types
+
+## ESLint Configuration
+- Follow ESLint rules for code quality
+- Use accessibility linting rules (eslint-plugin-jsx-a11y)
+- Use TypeScript ESLint rules
+- Fix all warnings and errors
+- Use proper import/export patterns
+- Follow React and TypeScript best practices
+- Maintain consistent code style
+
+## File Naming Conventions
+- Components: PascalCase (e.g., `SignalChart.tsx`)
+- Utilities: camelCase (e.g., `formatSignalData.ts`)
+- Types: PascalCase (e.g., `SignalTypes.ts`)
+- Assets: kebab-case (e.g., `signal-icon.svg`)
+- Pages: PascalCase (e.g., `DashboardPage.tsx`)
+- Hooks: camelCase starting with 'use' (e.g., `useSignalProcessing.ts`)
+
+## Common Patterns
+
+### Component Structure
+```typescript
+import { useState, useEffect, useCallback } from 'react'
+import type { ComponentProps } from './types'
+import { logError } from '../utils/errorHandler'
+
+interface ComponentNameProps {
+  data: SignalData
+  onUpdate: (data: SignalData) => void
+}
+
+const ComponentName: React.FC<ComponentNameProps> = ({ data, onUpdate }) => {
+  const [state, setState] = useState<StateType>(initialValue)
+  
+  const handleAction = useCallback(async (): Promise<void> => {
+    try {
+      // Action logic
+    } catch (error) {
+      logError(error, 'ComponentName action', { data })
+    }
+  }, [dependencies])
+
+  return (
+    <div className="tailwind-classes" role="region" aria-label="Component description">
+      {/* Component content */}
+    </div>
+  )
+}
+
+export default ComponentName
+```
+
+### Error Handling Pattern
+```typescript
+const handleAsyncAction = async (): Promise<void> => {
+  try {
+    setLoading(true)
+    setError(null)
+    const result = await asyncOperation()
+    setData(result)
+  } catch (error) {
+    logError(error, 'ComponentName async action', { 
+      context: 'additional info',
+      userAction: 'specific action'
+    })
+    setError('User-friendly error message')
+  } finally {
+    setLoading(false)
+  }
+}
+```
+
+### Accessibility Pattern
+```typescript
+<button
+  onClick={handleClick}
+  onKeyDown={handleKeyDown}
+  aria-label="Descriptive label for screen readers"
+  aria-expanded={isOpen}
+  aria-controls="controlled-element"
+  className="focus:outline-2 focus:outline-indigo-500 focus:ring-2 focus:ring-indigo-200"
+  type="button"
+>
+  Button Content
+</button>
+```
+
+## AI Assistant Guidelines
+- Always use Tailwind classes for styling
+- Suggest component-based solutions with TypeScript
+- Keep solutions simple, maintainable, and performant
+- Provide responsive design suggestions
+- Focus on prototype speed while maintaining quality
+- Suggest improvements for scalability and performance
+- Always consider mobile-first approach
+- Implement comprehensive error handling
+- Ensure accessibility compliance
+- Use proper logging instead of console.log
+- Follow ESLint rules and TypeScript best practices
+- Test components thoroughly
+- Provide loading states for async operations
+- Implement keyboard navigation
+- Use semantic HTML elements
+- Add proper ARIA attributes
+- Handle edge cases and errors gracefully
+- Use proper TypeScript types and interfaces
+
+## Deployment Notes
+- Build command: `npm run build`
+- Output directory: `dist`
+- Ensure all assets are properly referenced
+- Test production build locally before deploying
+- Verify accessibility in production
+- Check error handling in production environment
+- Monitor performance and bundle size
+- Test on multiple devices and browsers
+- Validate TypeScript compilation
+
+## Security Considerations
+- Sanitize user inputs and data
+- Validate data before processing
+- Use proper error handling to avoid information leakage
+- Implement proper authentication if needed
+- Follow security best practices for web applications
+- Keep dependencies updated
+- Use environment variables for sensitive data
+- Implement proper CORS policies
+
+## Maintenance Guidelines
+- Keep dependencies updated regularly
+- Monitor bundle size and performance
+- Review and update accessibility features
+- Test error handling regularly
+- Update documentation and types as needed
+- Refactor code for better maintainability
+- Remove unused code and dependencies
+- Optimize performance regularly
+- Review and update TypeScript types
+- Monitor and fix ESLint warnings
+
+## Signal Processing Specific Guidelines
+- Use proper data structures for signal data
+- Implement efficient algorithms for signal processing
+- Handle large datasets with proper memory management
+- Use Web Workers for heavy computations when needed
+- Implement proper data validation for signal inputs
+- Use appropriate chart libraries for data visualization
+- Handle real-time data updates efficiently
+- Implement proper data caching strategies
