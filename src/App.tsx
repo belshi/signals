@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import Navbar from './components/Navbar';
 import SignalsPage from './pages/SignalsPage';
 import BrandPage from './pages/BrandPage';
+import { ROUTES } from './constants';
 
 const App: React.FC = () => {
   return (
@@ -10,9 +11,9 @@ const App: React.FC = () => {
         <Navbar />
         <main>
           <Routes>
-            <Route path="/" element={<Navigate to="/signals" replace />} />
-            <Route path="/signals" element={<SignalsPage />} />
-            <Route path="/brand" element={<BrandPage />} />
+            <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.SIGNALS} replace />} />
+            <Route path={ROUTES.SIGNALS} element={<SignalsPage />} />
+            <Route path={ROUTES.BRAND} element={<BrandPage />} />
           </Routes>
         </main>
       </div>

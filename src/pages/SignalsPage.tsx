@@ -1,51 +1,21 @@
-import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
+import { Icons } from '../constants';
+import { useSignals, useStatusBadge } from '../hooks';
 import type { Signal } from '../types';
 
 const SignalsPage: React.FC = () => {
-  const [signals] = useState<Signal[]>([
-    {
-      id: '1',
-      name: 'Market Trend Analysis',
-      type: 'Analytics',
-      status: 'active',
-      createdAt: '2024-01-15',
-      updatedAt: '2024-01-20',
-    },
-    {
-      id: '2',
-      name: 'Social Media Sentiment',
-      type: 'Social',
-      status: 'inactive',
-      createdAt: '2024-01-10',
-      updatedAt: '2024-01-18',
-    },
-    {
-      id: '3',
-      name: 'Competitor Monitoring',
-      type: 'Competitive',
-      status: 'pending',
-      createdAt: '2024-01-12',
-      updatedAt: '2024-01-19',
-    },
-  ]);
+  const { signals, isLoading, error, createSignal } = useSignals();
 
-  const handleNewSignal = (): void => {
-    // TODO: Implement new signal creation
-    console.log('Creating new signal...');
-  };
-
-  const getStatusBadge = (status: Signal['status']): string => {
-    switch (status) {
-      case 'active':
-        return 'bg-green-100 text-green-800';
-      case 'inactive':
-        return 'bg-gray-100 text-gray-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
+  const handleNewSignal = async (): Promise<void> => {
+    try {
+      await createSignal({
+        name: 'New Signal',
+        type: 'Analytics',
+        status: 'pending',
+      });
+    } catch (err) {
+      console.error('Failed to create signal:', err);
     }
   };
 
@@ -57,16 +27,23 @@ const SignalsPage: React.FC = () => {
           {
             label: 'New Signal',
             onClick: handleNewSignal,
-            icon: (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-            ),
+            icon: <Icons.Plus className="w-4 h-4" />,
           },
         ]}
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            Error: {error}
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+            Loading...
+          </div>
+        )}
         <Card noPadding>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
@@ -108,25 +85,25 @@ const SignalsPage: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {signals.map((signal) => (
-                  <tr key={signal.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm font-medium text-gray-900">
-                        {signal.name}
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-500">{signal.type}</div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getStatusBadge(
-                          signal.status
-                        )}`}
-                      >
-                        {signal.status}
-                      </span>
-                    </td>
+                {signals.map((signal) => {
+                  const statusBadge = useStatusBadge(signal.status);
+                  return (
+                    <tr key={signal.id} className="hover:bg-gray-50">
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm font-medium text-gray-900">
+                          {signal.name}
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <div className="text-sm text-gray-500">{signal.type}</div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap">
+                        <span
+                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusBadge.classes}`}
+                        >
+                          {statusBadge.label}
+                        </span>
+                      </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                       {new Date(signal.createdAt).toLocaleDateString()}
                     </td>
@@ -143,7 +120,8 @@ const SignalsPage: React.FC = () => {
                       </button>
                     </td>
                   </tr>
-                ))}
+                  );
+                })}
               </tbody>
             </table>
           </div>

@@ -1,16 +1,11 @@
 import React from 'react';
 import PageHeader from '../components/PageHeader';
 import Card from '../components/Card';
-import type { BrandDetails } from '../types';
+import { Icons } from '../constants';
+import { useBrand } from '../hooks';
 
 const BrandPage: React.FC = () => {
-
-  const brandDetails: BrandDetails = {
-    name: 'TechCorp Solutions',
-    description: 'A leading technology company specializing in innovative software solutions for businesses.',
-    website: 'https://techcorp.com',
-    industry: 'Technology',
-  };
+  const { brandDetails, isLoading, error } = useBrand();
 
 
 
@@ -62,16 +57,24 @@ const BrandPage: React.FC = () => {
       <PageHeader title="My Brand" />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {error && (
+          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
+            Error: {error}
+          </div>
+        )}
+        
+        {isLoading && (
+          <div className="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
+            Loading...
+          </div>
+        )}
+        
         <div className="space-y-6">
           {/* Brand Details Card */}
           <Card
             title="Brand Details"
             description="Basic information about your brand"
-            icon={
-              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-              </svg>
-            }
+            icon={<Icons.Building className="w-5 h-5 text-indigo-600" />}
           >
             {renderDetailsContent()}
           </Card>

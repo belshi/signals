@@ -1,17 +1,9 @@
-import { Link, useLocation } from 'react-router-dom';
-import type { NavItem } from '../types';
+import { Link } from 'react-router-dom';
+import { APP_NAME } from '../constants';
+import { useNavigation } from '../hooks';
 
 const Navbar: React.FC = () => {
-  const location = useLocation();
-
-  const navItems: NavItem[] = [
-    { id: 'signals', label: 'Signals', path: '/signals' },
-    { id: 'brand', label: 'My Brand', path: '/brand' },
-  ];
-
-  const isActive = (path: string): boolean => {
-    return location.pathname === path;
-  };
+  const { isActive, navItems } = useNavigation();
 
   return (
     <nav className="bg-white border-b border-gray-200 shadow-sm">
@@ -20,7 +12,7 @@ const Navbar: React.FC = () => {
           <div className="flex">
             <div className="flex-shrink-0 flex items-center">
               <Link to="/" className="text-xl font-bold text-gray-900">
-                Signals
+                {APP_NAME}
               </Link>
             </div>
             <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
