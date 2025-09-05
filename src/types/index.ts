@@ -1,3 +1,5 @@
+import React from 'react';
+
 // Navigation types
 export interface NavItem {
   id: string;
@@ -7,13 +9,17 @@ export interface NavItem {
 }
 
 // Page header types
+export interface PageHeaderButton {
+  label: string;
+  onClick: () => void;
+  variant?: 'primary' | 'secondary';
+  icon?: React.ReactNode;
+}
+
 export interface PageHeaderProps {
   title: string;
-  button?: {
-    label: string;
-    onClick: () => void;
-    variant?: 'primary' | 'secondary';
-  };
+  button?: PageHeaderButton;
+  buttons?: PageHeaderButton[];
 }
 
 // Signal types

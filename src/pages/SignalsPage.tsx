@@ -51,12 +51,19 @@ const SignalsPage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <PageHeader
-        title="Signals"
-        button={{
-          label: 'New Signal',
-          onClick: handleNewSignal,
-        }}
+      <PageHeader 
+        title="Signals" 
+        buttons={[
+          {
+            label: 'New Signal',
+            onClick: handleNewSignal,
+            icon: (
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+            ),
+          },
+        ]}
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
