@@ -1,11 +1,11 @@
-import PageHeader from '../components/PageHeader';
-import Card from '../components/Card';
+import { PageHeader, Card, DataTable, ErrorMessage, LoadingSpinner, StatusBadge } from '../components';
 import { Icons } from '../constants';
-import { useSignals, useStatusBadge } from '../hooks';
+import { useSignals } from '../hooks';
 import type { Signal } from '../types';
+import type { TableColumn } from '../components';
 
 const SignalsPage: React.FC = () => {
-  const { signals, isLoading, error, createSignal } = useSignals();
+  const { signals, isLoading, error, createSignal, refreshSignals } = useSignals();
 
   const handleNewSignal = async (): Promise<void> => {
     try {
@@ -18,6 +18,61 @@ const SignalsPage: React.FC = () => {
       console.error('Failed to create signal:', err);
     }
   };
+
+  const columns: TableColumn<Signal>[] = [
+    {
+      key: 'name',
+      label: 'Name',
+      render: (signal) => (
+        <div className="text-sm font-medium text-gray-900">
+          {signal.name}
+        </div>
+      ),
+    },
+    {
+      key: 'type',
+      label: 'Type',
+      render: (signal) => (
+        <div className="text-sm text-gray-500">{signal.type}</div>
+      ),
+    },
+    {
+      key: 'status',
+      label: 'Status',
+      render: (signal) => <StatusBadge status={signal.status} />,
+    },
+    {
+      key: 'createdAt',
+      label: 'Created',
+      render: (signal) => (
+        <div className="text-sm text-gray-500">
+          {new Date(signal.createdAt).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      key: 'updatedAt',
+      label: 'Updated',
+      render: (signal) => (
+        <div className="text-sm text-gray-500">
+          {new Date(signal.updatedAt).toLocaleDateString()}
+        </div>
+      ),
+    },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (signal) => (
+        <button
+          className="text-indigo-600 hover:text-indigo-900 transition-colors duration-200"
+          type="button"
+          aria-label={`Edit ${signal.name}`}
+        >
+          Edit
+        </button>
+      ),
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -34,97 +89,28 @@ const SignalsPage: React.FC = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            Error: {error}
-          </div>
+          <ErrorMessage 
+            message={error} 
+            onRetry={refreshSignals}
+            className="mb-4"
+          />
         )}
         
         {isLoading && (
-          <div className="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-            Loading...
-          </div>
+          <LoadingSpinner 
+            message="Loading signals..." 
+            className="mb-4"
+          />
         )}
+        
         <Card noPadding>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Name
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Type
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Status
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Created
-                  </th>
-                  <th
-                    scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  >
-                    Updated
-                  </th>
-                  <th scope="col" className="relative px-6 py-3">
-                    <span className="sr-only">Actions</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {signals.map((signal) => {
-                  const statusBadge = useStatusBadge(signal.status);
-                  return (
-                    <tr key={signal.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {signal.name}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-500">{signal.type}</div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${statusBadge.classes}`}
-                        >
-                          {statusBadge.label}
-                        </span>
-                      </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(signal.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(signal.updatedAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                      <button
-                        className="text-indigo-600 hover:text-indigo-900 transition-colors duration-200"
-                        type="button"
-                        aria-label={`Edit ${signal.name}`}
-                      >
-                        Edit
-                      </button>
-                    </td>
-                  </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            data={signals}
+            columns={columns}
+            keyField="id"
+            emptyMessage="No signals found. Create your first signal to get started."
+            loading={isLoading}
+          />
         </Card>
       </div>
     </div>

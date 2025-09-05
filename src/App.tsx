@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import Navbar from './components/Navbar';
+import { Navbar } from './components';
 import SignalsPage from './pages/SignalsPage';
 import BrandPage from './pages/BrandPage';
 import { ROUTES } from './constants';

@@ -1,33 +1,25 @@
 import React from 'react';
-import PageHeader from '../components/PageHeader';
-import Card from '../components/Card';
+import { PageHeader, Card, DetailRow, ErrorMessage, LoadingSpinner } from '../components';
 import { Icons } from '../constants';
 import { useBrand } from '../hooks';
 
 const BrandPage: React.FC = () => {
-  const { brandDetails, isLoading, error } = useBrand();
+  const { brandDetails, isLoading, error, refreshBrandDetails } = useBrand();
 
-
-
-
-  const renderDetailsContent = (): JSX.Element => (
+  const renderDetailsContent = (): React.JSX.Element => (
     <dl className="space-y-4">
-      <div className="sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt className="text-sm font-medium text-gray-500">Brand Name</dt>
-        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          {brandDetails.name}
-        </dd>
-      </div>
-      <div className="sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt className="text-sm font-medium text-gray-500">Description</dt>
-        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          {brandDetails.description}
-        </dd>
-      </div>
-      <div className="sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt className="text-sm font-medium text-gray-500">Website</dt>
-        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          {brandDetails.website ? (
+      <DetailRow
+        label="Brand Name"
+        value={brandDetails.name}
+      />
+      <DetailRow
+        label="Description"
+        value={brandDetails.description}
+      />
+      <DetailRow
+        label="Website"
+        value={
+          brandDetails.website ? (
             <a
               href={brandDetails.website}
               target="_blank"
@@ -38,15 +30,13 @@ const BrandPage: React.FC = () => {
             </a>
           ) : (
             'Not provided'
-          )}
-        </dd>
-      </div>
-      <div className="sm:grid sm:grid-cols-3 sm:gap-4">
-        <dt className="text-sm font-medium text-gray-500">Industry</dt>
-        <dd className="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-          {brandDetails.industry}
-        </dd>
-      </div>
+          )
+        }
+      />
+      <DetailRow
+        label="Industry"
+        value={brandDetails.industry}
+      />
     </dl>
   );
 
@@ -58,15 +48,18 @@ const BrandPage: React.FC = () => {
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {error && (
-          <div className="mb-4 p-4 bg-red-100 border border-red-400 text-red-700 rounded">
-            Error: {error}
-          </div>
+          <ErrorMessage 
+            message={error} 
+            onRetry={refreshBrandDetails}
+            className="mb-4"
+          />
         )}
         
         {isLoading && (
-          <div className="mb-4 p-4 bg-blue-100 border border-blue-400 text-blue-700 rounded">
-            Loading...
-          </div>
+          <LoadingSpinner 
+            message="Loading brand details..." 
+            className="mb-4"
+          />
         )}
         
         <div className="space-y-6">
