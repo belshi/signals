@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar, ErrorBoundary, NetworkStatus } from './components';
-import { ErrorProvider } from './contexts/ErrorContext';
+import { ErrorProvider, LayoutProvider, SignalsProvider, BrandProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
 import BrandPage from './pages/BrandPage';
 import { ROUTES } from './constants';
@@ -8,49 +8,55 @@ import { ROUTES } from './constants';
 const App: React.FC = () => {
   return (
     <ErrorProvider maxErrors={5}>
-      <Router>
-        <div className="min-h-screen bg-gray-50">
-          <NetworkStatus />
-          <ErrorBoundary
-            onError={(error, errorInfo) => {
-              console.error('App-level error:', error, errorInfo);
-            }}
-          >
-            <Navbar />
-            <main>
-              <Routes>
-                <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.SIGNALS} replace />} />
-                <Route 
-                  path={ROUTES.SIGNALS} 
-                  element={
-                    <ErrorBoundary
-                      resetOnPropsChange={true}
-                      onError={(error, errorInfo) => {
-                        console.error('SignalsPage error:', error, errorInfo);
-                      }}
-                    >
-                      <SignalsPage />
-                    </ErrorBoundary>
-                  } 
-                />
-                <Route 
-                  path={ROUTES.BRAND} 
-                  element={
-                    <ErrorBoundary
-                      resetOnPropsChange={true}
-                      onError={(error, errorInfo) => {
-                        console.error('BrandPage error:', error, errorInfo);
-                      }}
-                    >
-                      <BrandPage />
-                    </ErrorBoundary>
-                  } 
-                />
-              </Routes>
-            </main>
-          </ErrorBoundary>
-        </div>
-      </Router>
+      <LayoutProvider>
+        <Router>
+          <div className="min-h-screen bg-gray-50">
+            <NetworkStatus />
+            <ErrorBoundary
+              onError={(error, errorInfo) => {
+                console.error('App-level error:', error, errorInfo);
+              }}
+            >
+              <Navbar />
+              <main>
+                <Routes>
+                  <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.SIGNALS} replace />} />
+                  <Route 
+                    path={ROUTES.SIGNALS} 
+                    element={
+                      <ErrorBoundary
+                        resetOnPropsChange={true}
+                        onError={(error, errorInfo) => {
+                          console.error('SignalsPage error:', error, errorInfo);
+                        }}
+                      >
+                        <SignalsProvider>
+                          <SignalsPage />
+                        </SignalsProvider>
+                      </ErrorBoundary>
+                    } 
+                  />
+                  <Route 
+                    path={ROUTES.BRAND} 
+                    element={
+                      <ErrorBoundary
+                        resetOnPropsChange={true}
+                        onError={(error, errorInfo) => {
+                          console.error('BrandPage error:', error, errorInfo);
+                        }}
+                      >
+                        <BrandProvider>
+                          <BrandPage />
+                        </BrandProvider>
+                      </ErrorBoundary>
+                    } 
+                  />
+                </Routes>
+              </main>
+            </ErrorBoundary>
+          </div>
+        </Router>
+      </LayoutProvider>
     </ErrorProvider>
   );
 };

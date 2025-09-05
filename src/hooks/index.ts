@@ -6,3 +6,4 @@ export { useBrand } from './useBrand';
 export { useAsyncOperation } from './useAsyncOperation';
 export { useErrorHandler } from './useErrorHandler';
 export { useRetry } from './useRetry';
+export { usePageData } from './usePageData';
