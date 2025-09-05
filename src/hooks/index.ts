@@ -4,3 +4,5 @@ export { useNavigation } from './useNavigation';
 export { useSignals } from './useSignals';
 export { useBrand } from './useBrand';
 export { useAsyncOperation } from './useAsyncOperation';
+export { useErrorHandler } from './useErrorHandler';
+export { useRetry } from './useRetry';
