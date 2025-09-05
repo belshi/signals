@@ -1,5 +1,6 @@
 import React from 'react';
 import PageHeader from '../components/PageHeader';
+import Card from '../components/Card';
 import type { BrandDetails } from '../types';
 
 const BrandPage: React.FC = () => {
@@ -63,16 +64,17 @@ const BrandPage: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
           {/* Brand Details Card */}
-          <div className="bg-white shadow rounded-lg">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h2 className="text-xl font-semibold text-gray-900">Brand Details</h2>
-              <p className="mt-1 text-sm text-gray-500">Basic information about your brand</p>
-            </div>
-            <div className="p-6">
-              {renderDetailsContent()}
-            </div>
-          </div>
-
+          <Card
+            title="Brand Details"
+            description="Basic information about your brand"
+            icon={
+              <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+              </svg>
+            }
+          >
+            {renderDetailsContent()}
+          </Card>
         </div>
       </div>
     </div>

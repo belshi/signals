@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import PageHeader from '../components/PageHeader';
+import Card from '../components/Card';
 import type { Signal } from '../types';
 
 const SignalsPage: React.FC = () => {
@@ -59,16 +60,7 @@ const SignalsPage: React.FC = () => {
       />
       
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white shadow overflow-hidden sm:rounded-md">
-          <div className="px-4 py-5 sm:px-6">
-            <h3 className="text-lg leading-6 font-medium text-gray-900">
-              Signal Overview
-            </h3>
-            <p className="mt-1 max-w-2xl text-sm text-gray-500">
-              Manage and monitor your signals
-            </p>
-          </div>
-          
+        <Card noPadding>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-50">
@@ -148,7 +140,7 @@ const SignalsPage: React.FC = () => {
               </tbody>
             </table>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
