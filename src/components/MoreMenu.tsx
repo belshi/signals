@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Icons } from '../constants';
+import { Icon } from '../components';
 
 export interface MoreMenuOption {
   label: string;
@@ -68,7 +68,7 @@ const MoreMenu: React.FC<MoreMenuProps> = ({ options, className = '' }) => {
         aria-expanded={isOpen}
         aria-haspopup="true"
       >
-        <Icons.MoreVertical className="w-4 h-4" />
+        <Icon name="more-vertical" size="sm" />
       </button>
 
       {isOpen && (

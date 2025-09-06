@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Card, SignalsTable } from '../components';
-import { Icons } from '../constants';
+import { Icon } from '../components';
 import { useSignalsContext } from '../contexts';
 
 const SignalsPage: React.FC = () => {
@@ -17,7 +17,7 @@ const SignalsPage: React.FC = () => {
               // Button restored but without functionality
             },
             variant: 'primary',
-            icon: <Icons.Plus className="w-4 h-4" />,
+            icon: <Icon name="plus" size="sm" />,
           },
         ]}
       />

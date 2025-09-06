@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icons } from '../constants';
+import { Icon } from '../components';
 import MoreMenu, { type MoreMenuOption } from './MoreMenu';
 
 interface Competitor {
@@ -47,13 +47,13 @@ const Competitors: React.FC = () => {
     {
       label: 'Edit',
       onClick: () => handleEditCompetitor(competitor.id),
-      icon: <Icons.Edit className="w-4 h-4" />,
+      icon: <Icon name="edit" size="sm" />,
       variant: 'default'
     },
     {
       label: 'Delete',
       onClick: () => handleDeleteCompetitor(competitor.id),
-      icon: <Icons.Trash className="w-4 h-4" />,
+      icon: <Icon name="trash" size="sm" />,
       variant: 'danger'
     }
   ];

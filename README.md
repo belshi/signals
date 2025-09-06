@@ -26,6 +26,7 @@ A modern, enterprise-grade signals processing and analysis application built wit
 - **Vite** - Fast build tool and development server
 - **Tailwind CSS** - Utility-first CSS framework
 - **React Router DOM** - Client-side routing
+- **Heroicons** - Consistent, accessible iconography
 
 ### Development Tools
 - **ESLint** - Code linting and quality assurance
@@ -37,39 +38,31 @@ A modern, enterprise-grade signals processing and analysis application built wit
 ```
 src/
 ├── components/              # Reusable UI components
-│   ├── Button.tsx                # Fully accessible button component
-│   ├── DataTable.tsx  # Accessible table with sorting
-│   ├── Modal.tsx                 # Modal with focus management
-│   ├── Tabs.tsx                  # Keyboard-navigable tabs
-│   ├── AsyncBoundary.tsx        # Async operation wrapper
-│   ├── AsyncErrorBoundary.tsx   # Error boundary for async ops
 │   ├── BrandDetails.tsx         # Brand information display
+│   ├── BrandGoals.tsx           # Brand goals management
 │   ├── Button.tsx               # Enhanced button component
 │   ├── Card.tsx                 # Card layout component
-│   ├── DataProvider.tsx         # Render props data provider
+│   ├── Competitors.tsx          # Competitor management
 │   ├── DataTable.tsx            # Generic table component
 │   ├── DetailRow.tsx            # Key-value display component
 │   ├── EmptyState.tsx           # Empty state component
 │   ├── ErrorBoundary.tsx        # React error boundary
-│   ├── ErrorFallback.tsx        # Error display component
 │   ├── ErrorMessage.tsx         # Error message component
 │   ├── ErrorToast.tsx           # Toast notifications
+│   ├── Icon.tsx                 # Unified icon component (Heroicons)
 │   ├── LoadingSpinner.tsx       # Loading indicator
+│   ├── MoreMenu.tsx             # Dropdown menu component
 │   ├── Navbar.tsx               # Main navigation
 │   ├── NetworkStatus.tsx        # Network connectivity monitor
 │   ├── Page.tsx                 # Compound page component
 │   ├── PageHeader.tsx           # Page header component
-│   ├── PageLayout.tsx           # Layout wrapper
 │   ├── SignalsTable.tsx         # Signals-specific table
-│   ├── StatusBadge.tsx          # Status indicator component
-│   ├── Tabs.tsx                 # Tab navigation
-│   └── withPageData.tsx         # HOC for page data
+│   └── StatusBadge.tsx          # Status indicator component
 ├── constants/               # Application constants
-│   ├── icons.tsx                # SVG icon components
+│   ├── icons.tsx                # Icon component re-exports
 │   ├── mockData.ts              # Mock data for development
 │   ├── navigation.ts             # Navigation configuration
 │   ├── status.ts                 # Status configurations
-│   ├── theme.ts                  # Design system constants
 │   └── index.ts                  # Central exports
 ├── contexts/                # React contexts
 │   ├── BrandContext.tsx         # Brand data context
@@ -208,11 +201,11 @@ src/
 ### Components
 - **Button**: Full ARIA support with loading states
 - **DataTable**: Sortable table with keyboard navigation
-- **Modal**: Focus trapping and escape handling
-- **Tabs**: Arrow key navigation with proper roles
+- **Icon**: Unified Heroicons component with type safety
 - **StatusBadge**: Color-coded status indicators
 - **LoadingSpinner**: Consistent loading indicators
 - **ErrorMessage**: User-friendly error displays
+- **MoreMenu**: Accessible dropdown menu component
 
 ### Styling
 - **Tailwind CSS**: Utility-first styling approach
@@ -220,6 +213,34 @@ src/
 - **Dark Mode Ready**: CSS custom properties for theming
 - **Accessibility**: High contrast and focus indicators
 - **Consistency**: Design tokens and standardized spacing
+
+### Icon System
+- **Heroicons Integration**: Modern, consistent iconography
+- **Type-Safe Icons**: TypeScript validation for icon names
+- **Unified Component**: Single `Icon` component for all icons
+- **Accessibility**: Built-in ARIA support and screen reader compatibility
+- **Consistent Sizing**: Predefined size options (sm, md, lg, xl)
+- **Performance**: Tree-shakeable icons with optimized bundle size
+
+#### Available Icons
+- `plus` - PlusIcon
+- `building` - BuildingOfficeIcon  
+- `target` - CheckCircleIcon
+- `users` - UsersIcon
+- `more-vertical` - EllipsisVerticalIcon
+- `edit` - PencilIcon
+- `trash` - TrashIcon
+
+#### Usage Example
+```tsx
+import { Icon } from '../components';
+
+// Basic usage
+<Icon name="plus" />
+
+// With sizing and styling
+<Icon name="building" size="lg" className="text-indigo-600" />
+```
 
 ## 🔧 Utility Library
 

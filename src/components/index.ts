@@ -10,6 +10,7 @@ export { default as EmptyState } from './EmptyState';
 export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as ErrorToast } from './ErrorToast';
+export { default as Icon } from './Icon';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as MoreMenu } from './MoreMenu';
 export { default as Navbar } from './Navbar';

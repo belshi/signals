@@ -1,6 +1,6 @@
 import React from 'react';
 import { Page, Card, BrandDetails, BrandGoals, Competitors } from '../components';
-import { Icons } from '../constants';
+import { Icon } from '../components';
 import { useBrandContext } from '../contexts';
 
 const BrandPage: React.FC = () => {
@@ -33,12 +33,12 @@ const BrandPage: React.FC = () => {
           <Card
             title="Brand Details"
             description="Basic information about your brand"
-            icon={<Icons.Building className="w-5 h-5 text-indigo-600" />}
+            icon={<Icon name="building" className="text-indigo-600" size="md" />}
             buttons={[
               {
                 label: 'Edit',
                 onClick: handleEditBrandDetails,
-                icon: <Icons.Edit className="w-4 h-4" />,
+                icon: <Icon name="edit" size="sm" />,
                 variant: 'secondary'
               }
             ]}
@@ -50,13 +50,13 @@ const BrandPage: React.FC = () => {
             <Card
               title="Brand Goals"
               description="Track your brand objectives and milestones"
-              icon={<Icons.Target className="w-5 h-5 text-indigo-600" />}
+              icon={<Icon name="target" className="text-indigo-600" size="md" />}
               noPadding={true}
               buttons={[
                 {
                   label: 'Add Goal',
                   onClick: handleAddGoal,
-                  icon: <Icons.Plus className="w-4 h-4" />,
+                  icon: <Icon name="plus" size="sm" />,
                   variant: 'secondary'
                 }
               ]}
@@ -67,13 +67,13 @@ const BrandPage: React.FC = () => {
             <Card
               title="Competitors"
               description="Monitor your competitive landscape"
-              icon={<Icons.Users className="w-5 h-5 text-indigo-600" />}
+              icon={<Icon name="users" className="text-indigo-600" size="md" />}
               noPadding={true}
               buttons={[
                 {
                   label: 'Add Competitor',
                   onClick: handleAddCompetitor,
-                  icon: <Icons.Plus className="w-4 h-4" />,
+                  icon: <Icon name="plus" size="sm" />,
                   variant: 'secondary'
                 }
               ]}

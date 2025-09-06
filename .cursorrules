@@ -8,6 +8,7 @@ This is a modern, enterprise-grade React application built with TypeScript, feat
 - **Vite** for build tooling
 - **Tailwind CSS** for styling
 - **React Router DOM** for routing
+- **Heroicons** for consistent iconography
 - **Custom utility library** with 200+ functions
 
 ## Architecture Patterns
@@ -51,6 +52,7 @@ This is a modern, enterprise-grade React application built with TypeScript, feat
 - Implement **forwardRef** for component refs
 - Use **React.memo** for performance optimization
 - Implement **useCallback** and **useMemo** for expensive operations
+- Use **Icon component** for all iconography (no inline SVGs)
 
 ### Accessibility (WCAG 2.1 AA Compliance)
 - Implement **semantic HTML** elements
@@ -151,6 +153,44 @@ export default Component;
 - Provide **fallback UI** for error states
 - Implement **retry mechanisms** for failed operations
 - Log errors for debugging
+
+## Icon System
+
+### Icon Component Usage
+- Use **Heroicons** through the unified `Icon` component
+- Import from `../components` or `../constants` for convenience
+- Use **type-safe icon names** with TypeScript validation
+- Apply **consistent sizing** with predefined size options
+
+### Icon Implementation
+```typescript
+import { Icon } from '../components';
+
+// Basic usage
+<Icon name="plus" />
+
+// With sizing
+<Icon name="building" size="lg" />
+
+// With custom styling
+<Icon name="users" className="text-indigo-600" />
+```
+
+### Available Icons
+- `plus` - PlusIcon
+- `building` - BuildingOfficeIcon  
+- `target` - CheckCircleIcon
+- `users` - UsersIcon
+- `more-vertical` - EllipsisVerticalIcon
+- `edit` - PencilIcon
+- `trash` - TrashIcon
+
+### Icon Guidelines
+- **Never use inline SVGs** - always use the Icon component
+- **Use semantic icon names** that describe the action or content
+- **Apply consistent sizing** with the `size` prop
+- **Maintain accessibility** with proper ARIA attributes
+- **Add new icons** by updating the Icon component's iconMap
 
 ## Utility Library Usage
 
