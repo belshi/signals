@@ -50,6 +50,7 @@ src/
 │   ├── ErrorMessage.tsx         # Error message component
 │   ├── ErrorToast.tsx           # Toast notifications
 │   ├── Icon.tsx                 # Unified icon component (Heroicons)
+│   ├── IconButton.tsx           # Icon-only button component
 │   ├── LoadingSpinner.tsx       # Loading indicator
 │   ├── MoreMenu.tsx             # Dropdown menu component
 │   ├── Navbar.tsx               # Main navigation
@@ -202,6 +203,7 @@ src/
 - **Button**: Full ARIA support with loading states
 - **DataTable**: Sortable table with keyboard navigation
 - **Icon**: Unified Heroicons component with type safety
+- **IconButton**: Icon-only buttons with same API as Button
 - **StatusBadge**: Color-coded status indicators
 - **LoadingSpinner**: Consistent loading indicators
 - **ErrorMessage**: User-friendly error displays
@@ -233,13 +235,29 @@ src/
 
 #### Usage Example
 ```tsx
-import { Icon } from '../components';
+import { Icon, IconButton } from '../components';
 
-// Basic usage
+// Basic icon usage
 <Icon name="plus" />
 
 // With sizing and styling
 <Icon name="building" size="lg" className="text-indigo-600" />
+
+// IconButton usage
+<IconButton 
+  icon="plus" 
+  ariaLabel="Add item" 
+  onClick={handleAdd} 
+/>
+
+// With variant and size
+<IconButton 
+  icon="edit" 
+  variant="secondary" 
+  size="lg" 
+  ariaLabel="Edit item" 
+  onClick={handleEdit} 
+/>
 ```
 
 ## 🔧 Utility Library

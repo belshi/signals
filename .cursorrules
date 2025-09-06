@@ -192,6 +192,39 @@ import { Icon } from '../components';
 - **Maintain accessibility** with proper ARIA attributes
 - **Add new icons** by updating the Icon component's iconMap
 
+### IconButton Component
+- Use **IconButton** for icon-only buttons with the same API as Button
+- **Required ariaLabel** for accessibility since there's no visible text
+- **Same variants** as Button: primary, secondary
+- **Same sizes** as Button: sm, md, lg
+- **Loading states** with integrated spinner
+- **Type-safe icons** using the Icon component
+
+#### IconButton Usage
+```typescript
+import { IconButton } from '../components';
+
+// Basic usage
+<IconButton icon="plus" ariaLabel="Add item" onClick={handleAdd} />
+
+// With variant and size
+<IconButton 
+  icon="edit" 
+  variant="secondary" 
+  size="lg" 
+  ariaLabel="Edit item" 
+  onClick={handleEdit} 
+/>
+
+// With loading state
+<IconButton 
+  icon="save" 
+  ariaLabel="Save" 
+  loading={isSaving} 
+  onClick={handleSave} 
+/>
+```
+
 ## Utility Library Usage
 
 ### Available Utilities

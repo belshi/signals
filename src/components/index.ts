@@ -11,6 +11,7 @@ export { default as ErrorBoundary } from './ErrorBoundary';
 export { default as ErrorMessage } from './ErrorMessage';
 export { default as ErrorToast } from './ErrorToast';
 export { default as Icon } from './Icon';
+export { default as IconButton } from './IconButton';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as MoreMenu } from './MoreMenu';
 export { default as Navbar } from './Navbar';
@@ -22,3 +23,4 @@ export { default as StatusBadge } from './StatusBadge';
 
 // Export types
 export type { TableColumn } from './DataTable';
+export type { IconButtonVariant, IconButtonSize, IconButtonProps } from './IconButton';
