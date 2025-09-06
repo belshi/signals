@@ -41,7 +41,6 @@ src/
 │   ├── DataTable.tsx  # Accessible table with sorting
 │   ├── Modal.tsx                 # Modal with focus management
 │   ├── Tabs.tsx                  # Keyboard-navigable tabs
-│   ├── AccessibilitySettings.tsx # User preference settings
 │   ├── AsyncBoundary.tsx        # Async operation wrapper
 │   ├── AsyncErrorBoundary.tsx   # Error boundary for async ops
 │   ├── BrandDetails.tsx         # Brand information display
@@ -73,7 +72,6 @@ src/
 │   ├── theme.ts                  # Design system constants
 │   └── index.ts                  # Central exports
 ├── contexts/                # React contexts
-│   ├── AccessibilityContext.tsx # Accessibility settings
 │   ├── BrandContext.tsx         # Brand data context
 │   ├── ErrorContext.tsx         # Global error handling
 │   ├── LayoutContext.tsx        # Layout state context

@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar, ErrorBoundary, NetworkStatus } from './components';
-import { ErrorProvider, LayoutProvider, SignalsProvider, BrandProvider, AccessibilityProvider } from './contexts';
+import { ErrorProvider, LayoutProvider, SignalsProvider, BrandProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
 import BrandPage from './pages/BrandPage';
 import { ROUTES } from './constants';
@@ -8,8 +8,7 @@ import { ROUTES } from './constants';
 const App: React.FC = () => {
   return (
     <ErrorProvider maxErrors={5}>
-      <AccessibilityProvider>
-        <LayoutProvider>
+      <LayoutProvider>
           <Router>
             <div className="min-h-screen bg-gray-50">
               <NetworkStatus />
@@ -58,7 +57,6 @@ const App: React.FC = () => {
             </div>
           </Router>
         </LayoutProvider>
-      </AccessibilityProvider>
     </ErrorProvider>
   );
 };
