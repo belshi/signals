@@ -1,7 +1,24 @@
 import React, { useState, useCallback } from 'react';
 import EmptyState from './EmptyState';
 import LoadingSpinner from './LoadingSpinner';
-import type { DataTableProps } from './DataTable';
+// Define the base DataTable props interface locally
+interface DataTableProps<T> {
+  data: T[];
+  columns: TableColumn<T>[];
+  keyField: keyof T;
+  className?: string;
+  emptyMessage?: string;
+  loading?: boolean;
+  onRowClick?: (item: T) => void;
+}
+
+export interface TableColumn<T> {
+  key: keyof T | string;
+  label: string;
+  render?: (item: T, value: any) => React.ReactNode;
+  className?: string;
+  sortable?: boolean;
+}
 
 interface AccessibleDataTableProps<T> extends Omit<DataTableProps<T>, 'onRowClick'> {
   onRowClick?: (item: T, index: number) => void;

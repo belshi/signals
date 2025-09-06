@@ -1,15 +1,16 @@
 import React from 'react';
-import { DataTable, StatusBadge } from './index';
+import { AccessibleDataTable, StatusBadge } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
 import type { EnhancedSignal } from '../types/enhanced';
-import type { TableColumn } from './DataTable';
+import type { TableColumn } from './AccessibleDataTable';
 
 interface SignalsTableProps {
   onRowClick?: (signal: EnhancedSignal) => void;
+  onRowSelect?: (signal: EnhancedSignal) => void;
   className?: string;
 }
 
-const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, className = '' }) => {
+const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
   const { signals } = useSignalsContext();
 
   const columns: TableColumn<EnhancedSignal>[] = [
@@ -67,13 +68,25 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, className = '' 
     },
   ];
 
+  const handleRowClick = (signal: EnhancedSignal, _index: number) => {
+    onRowClick?.(signal);
+  };
+
+  const handleRowSelect = (signal: EnhancedSignal, _index: number) => {
+    onRowSelect?.(signal);
+  };
+
   return (
-    <DataTable
+    <AccessibleDataTable
       data={signals}
       columns={columns}
       keyField="id"
       emptyMessage="No signals found. Create your first signal to get started."
-      onRowClick={onRowClick}
+      onRowClick={handleRowClick}
+      onRowSelect={handleRowSelect}
+      selectable={!!onRowSelect}
+      sortable={true}
+      ariaLabel="Signals table"
       className={className}
     />
   );
