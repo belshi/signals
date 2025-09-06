@@ -2,7 +2,7 @@ import React, { useState, useCallback } from 'react';
 import EmptyState from './EmptyState';
 import LoadingSpinner from './LoadingSpinner';
 // Define the base DataTable props interface locally
-interface DataTableProps<T> {
+interface BaseDataTableProps<T> {
   data: T[];
   columns: TableColumn<T>[];
   keyField: keyof T;
@@ -20,7 +20,7 @@ export interface TableColumn<T> {
   sortable?: boolean;
 }
 
-interface AccessibleDataTableProps<T> extends Omit<DataTableProps<T>, 'onRowClick'> {
+interface DataTableProps<T> extends Omit<BaseDataTableProps<T>, 'onRowClick'> {
   onRowClick?: (item: T, index: number) => void;
   onRowSelect?: (item: T, index: number) => void;
   selectable?: boolean;
@@ -30,7 +30,7 @@ interface AccessibleDataTableProps<T> extends Omit<DataTableProps<T>, 'onRowClic
   ariaDescribedBy?: string;
 }
 
-const AccessibleDataTable = <T extends Record<string, any>>({
+const DataTable = <T extends Record<string, any>>({
   data,
   columns,
   keyField,
@@ -44,7 +44,7 @@ const AccessibleDataTable = <T extends Record<string, any>>({
   onSort,
   ariaLabel = 'Data table',
   ariaDescribedBy,
-}: AccessibleDataTableProps<T>) => {
+}: DataTableProps<T>) => {
   const [selectedRow, setSelectedRow] = useState<number | null>(null);
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
@@ -205,4 +205,4 @@ const AccessibleDataTable = <T extends Record<string, any>>({
   );
 };
 
-export default AccessibleDataTable;
+export default DataTable;

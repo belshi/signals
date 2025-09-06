@@ -1,8 +1,8 @@
 import React from 'react';
-import { AccessibleDataTable, StatusBadge } from './index';
+import { DataTable, StatusBadge } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
 import type { EnhancedSignal } from '../types/enhanced';
-import type { TableColumn } from './AccessibleDataTable';
+import type { TableColumn } from './DataTable';
 
 interface SignalsTableProps {
   onRowClick?: (signal: EnhancedSignal) => void;
@@ -77,7 +77,7 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
   };
 
   return (
-    <AccessibleDataTable
+    <DataTable
       data={signals}
       columns={columns}
       keyField="id"

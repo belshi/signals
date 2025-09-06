@@ -38,7 +38,7 @@ A modern, enterprise-grade signals processing and analysis application built wit
 src/
 ├── components/              # Reusable UI components
 │   ├── AccessibleButton.tsx     # Fully accessible button component
-│   ├── AccessibleDataTable.tsx  # Accessible table with sorting
+│   ├── DataTable.tsx  # Accessible table with sorting
 │   ├── AccessibleModal.tsx      # Modal with focus management
 │   ├── AccessibleTabs.tsx       # Keyboard-navigable tabs
 │   ├── AccessibilitySettings.tsx # User preference settings
@@ -209,7 +209,7 @@ src/
 
 ### Components
 - **AccessibleButton**: Full ARIA support with loading states
-- **AccessibleDataTable**: Sortable table with keyboard navigation
+- **DataTable**: Sortable table with keyboard navigation
 - **AccessibleModal**: Focus trapping and escape handling
 - **AccessibleTabs**: Arrow key navigation with proper roles
 - **StatusBadge**: Color-coded status indicators
