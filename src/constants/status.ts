@@ -1,4 +1,4 @@
-import type { SignalStatus, SignalType } from '../types/enhanced';
+import type { SignalStatus } from '../types/enhanced';
 
 export const STATUS_CONFIG: Record<SignalStatus, { label: string; classes: string }> = {
   active: {
@@ -15,25 +15,3 @@ export const STATUS_CONFIG: Record<SignalStatus, { label: string; classes: strin
   },
 } as const;
 
-export const SIGNAL_TYPES: Record<Uppercase<SignalType>, SignalType> = {
-  ANALYTICS: 'Analytics',
-  SOCIAL: 'Social',
-  COMPETITIVE: 'Competitive',
-  MARKET: 'Market',
-  FINANCIAL: 'Financial',
-} as const;
-
-export const SIGNAL_STATUSES: Record<Uppercase<SignalStatus>, SignalStatus> = {
-  ACTIVE: 'active',
-  INACTIVE: 'inactive',
-  PENDING: 'pending',
-} as const;
-
-// Type-safe status validation
-export const isValidSignalStatus = (status: string): status is SignalStatus => {
-  return Object.values(SIGNAL_STATUSES).includes(status as SignalStatus);
-};
-
-export const isValidSignalType = (type: string): type is SignalType => {
-  return Object.values(SIGNAL_TYPES).includes(type as SignalType);
-};
