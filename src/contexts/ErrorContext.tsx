@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useReducer, useCallback, type ReactNode } from 'react';
+import React, { createContext, useReducer, useCallback, type ReactNode } from 'react';
 import ErrorToast from '../components/ErrorToast';
 
 interface ErrorState {
@@ -114,36 +114,3 @@ export const ErrorProvider: React.FC<ErrorProviderProps> = ({
   );
 };
 
-export const useErrorContext = (): ErrorContextType => {
-  const context = useContext(ErrorContext);
-  if (context === undefined) {
-    throw new Error('useErrorContext must be used within an ErrorProvider');
-  }
-  return context;
-};
-
-// Hook for easy error handling
-export const useGlobalError = () => {
-  const { addError } = useErrorContext();
-
-  const handleError = useCallback((error: Error | string) => {
-    addError(error);
-  }, [addError]);
-
-  const handleAsyncError = useCallback(
-    async (asyncFn: () => Promise<any>, fallback?: any): Promise<any> => {
-      try {
-        return await asyncFn();
-      } catch (error) {
-        handleError(error as Error);
-        return fallback;
-      }
-    },
-    [handleError]
-  );
-
-  return {
-    handleError,
-    handleAsyncError,
-  };
-};
