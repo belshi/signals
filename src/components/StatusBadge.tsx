@@ -1,9 +1,9 @@
 import React from 'react';
 import { useStatusBadge } from '../hooks';
-import type { Signal } from '../types';
+import type { SignalStatus } from '../types/enhanced';
 
 interface StatusBadgeProps {
-  status: Signal['status'];
+  status: SignalStatus;
   className?: string;
 }
 

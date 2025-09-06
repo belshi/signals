@@ -1,4 +1,9 @@
-import type { Tab } from '../types';
+interface Tab {
+  id: string;
+  label: string;
+  isActive: boolean;
+  onClick: () => void;
+}
 
 interface TabsProps {
   tabs: Tab[];

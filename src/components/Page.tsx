@@ -1,6 +1,7 @@
 import React, { type ReactNode } from 'react';
 import { useLayout } from '../contexts/LayoutContext';
 import { PageHeader, ErrorMessage, LoadingSpinner } from './index';
+import type { EnhancedPageHeaderButton } from '../types/enhanced';
 
 interface PageProps {
   children: ReactNode;
@@ -9,18 +10,8 @@ interface PageProps {
 
 interface PageHeaderProps {
   title: string;
-  button?: {
-    label: string;
-    onClick: () => void;
-    variant?: 'primary' | 'secondary';
-    icon?: ReactNode;
-  };
-  buttons?: Array<{
-    label: string;
-    onClick: () => void;
-    variant?: 'primary' | 'secondary';
-    icon?: ReactNode;
-  }>;
+  button?: EnhancedPageHeaderButton;
+  buttons?: EnhancedPageHeaderButton[];
 }
 
 interface PageContentProps {

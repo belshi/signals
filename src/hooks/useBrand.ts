@@ -1,13 +1,13 @@
 import { useState, useCallback } from 'react';
 import { MOCK_BRAND_DETAILS } from '../constants';
-import type { BrandDetails } from '../types';
+import type { EnhancedBrandDetails } from '../types/enhanced';
 
 export const useBrand = () => {
-  const [brandDetails, setBrandDetails] = useState<BrandDetails>(MOCK_BRAND_DETAILS);
+  const [brandDetails, setBrandDetails] = useState<EnhancedBrandDetails>(MOCK_BRAND_DETAILS);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateBrandDetails = useCallback(async (updates: Partial<BrandDetails>) => {
+  const updateBrandDetails = useCallback(async (updates: Partial<EnhancedBrandDetails>) => {
     setIsLoading(true);
     setError(null);
     

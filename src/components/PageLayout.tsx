@@ -2,9 +2,9 @@ import React from 'react';
 import PageHeader from './PageHeader';
 import ErrorMessage from './ErrorMessage';
 import LoadingSpinner from './LoadingSpinner';
-import type { PageHeaderProps } from '../types';
+import type { EnhancedPageHeaderProps } from '../types/enhanced';
 
-interface PageLayoutProps extends PageHeaderProps {
+interface PageLayoutProps extends EnhancedPageHeaderProps {
   children: React.ReactNode;
   error?: string | null;
   isLoading?: boolean;

@@ -1,8 +1,8 @@
-import type { PageHeaderProps, PageHeaderButton } from '../types';
+import type { EnhancedPageHeaderProps, EnhancedPageHeaderButton } from '../types/enhanced';
 import Button from './Button';
 
-const PageHeader: React.FC<PageHeaderProps> = ({ title, button, buttons }) => {
-  const renderButton = (btn: PageHeaderButton, index: number) => (
+const PageHeader: React.FC<EnhancedPageHeaderProps> = ({ title, button, buttons }) => {
+  const renderButton = (btn: EnhancedPageHeaderButton, index: number) => (
     <Button
       key={index}
       label={btn.label}

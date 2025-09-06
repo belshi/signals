@@ -1,18 +1,18 @@
 import React from 'react';
 import { DataTable, StatusBadge } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
-import type { Signal } from '../types';
+import type { EnhancedSignal } from '../types/enhanced';
 import type { TableColumn } from './DataTable';
 
 interface SignalsTableProps {
-  onRowClick?: (signal: Signal) => void;
+  onRowClick?: (signal: EnhancedSignal) => void;
   className?: string;
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, className = '' }) => {
   const { signals } = useSignalsContext();
 
-  const columns: TableColumn<Signal>[] = [
+  const columns: TableColumn<EnhancedSignal>[] = [
     {
       key: 'name',
       label: 'Name',

@@ -1,6 +1,6 @@
-import type { NavItem } from '../types';
+import type { EnhancedNavItem } from '../types/enhanced';
 
-export const NAV_ITEMS: NavItem[] = [
+export const NAV_ITEMS: EnhancedNavItem[] = [
   { id: 'signals', label: 'Signals', path: '/signals' },
   { id: 'brand', label: 'My Brand', path: '/brand' },
 ];

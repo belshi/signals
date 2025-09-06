@@ -25,6 +25,7 @@ const SignalsPage: React.FC = () => {
           {
             label: 'New Signal',
             onClick: handleNewSignal,
+            variant: 'primary',
             icon: <Icons.Plus className="w-4 h-4" />,
           },
         ]}
