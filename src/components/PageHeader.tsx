@@ -5,11 +5,15 @@ const PageHeader: React.FC<EnhancedPageHeaderProps> = ({ title, button, buttons 
   const renderButton = (btn: EnhancedPageHeaderButton, index: number) => (
     <Button
       key={index}
-      label={btn.label}
       onClick={btn.onClick}
-      variant={btn.variant}
+      variant={btn.variant === 'danger' ? 'primary' : btn.variant}
       icon={btn.icon}
-    />
+      disabled={btn.disabled}
+      loading={btn.loading}
+      ariaLabel={btn.tooltip}
+    >
+      {btn.label}
+    </Button>
   );
 
   const renderButtons = () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
 import { useFocusManagement, useAccessibility } from '../hooks';
-import AccessibleButton from './AccessibleButton';
+import Button from './Button';
 
 interface AccessibleModalProps {
   isOpen: boolean;
@@ -115,7 +115,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
               >
                 {title}
               </h3>
-              <AccessibleButton
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={onClose}
@@ -136,7 +136,7 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
                     d="M6 18L18 6M6 6l12 12"
                   />
                 </svg>
-              </AccessibleButton>
+              </Button>
             </div>
           </div>
 
@@ -147,13 +147,13 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
 
           {/* Footer */}
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <AccessibleButton
+            <Button
               variant="primary"
               onClick={onClose}
               className="w-full sm:w-auto sm:ml-3"
             >
               Close
-            </AccessibleButton>
+            </Button>
           </div>
         </div>
       </div>

@@ -1,5 +1,5 @@
 // Export all components from a single entry point
-export { default as AccessibleButton } from './AccessibleButton';
+export { default as Button } from './Button';
 export { default as AccessibleDataTable } from './AccessibleDataTable';
 export { default as AccessibleModal } from './AccessibleModal';
 export { default as AccessibleTabs } from './AccessibleTabs';
@@ -7,7 +7,7 @@ export { default as AccessibilitySettings } from './AccessibilitySettings';
 export { default as AsyncBoundary } from './AsyncBoundary';
 export { default as AsyncErrorBoundary } from './AsyncErrorBoundary';
 export { default as BrandDetails } from './BrandDetails';
-export { default as Button } from './Button';
+// Button component (formerly AccessibleButton)
 export { default as Card } from './Card';
 export { default as DataProvider } from './DataProvider';
 export { default as DataTable } from './DataTable';

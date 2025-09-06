@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useAccessibilityContext } from '../contexts/AccessibilityContext';
-import AccessibleButton from './AccessibleButton';
+import Button from './Button';
 
 interface AccessibilitySettingsProps {
   isOpen: boolean;
@@ -63,7 +63,7 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ isOpen, o
               <h3 className="text-lg leading-6 font-medium text-gray-900">
                 Accessibility Settings
               </h3>
-              <AccessibleButton
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={onClose}
@@ -72,7 +72,7 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ isOpen, o
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
-              </AccessibleButton>
+              </Button>
             </div>
 
             <div className="space-y-4">
@@ -164,20 +164,20 @@ const AccessibilitySettings: React.FC<AccessibilitySettingsProps> = ({ isOpen, o
           </div>
 
           <div className="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <AccessibleButton
+            <Button
               variant="primary"
               onClick={handleSave}
               className="w-full sm:w-auto sm:ml-3"
             >
               Save Settings
-            </AccessibleButton>
-            <AccessibleButton
+            </Button>
+            <Button
               variant="outline"
               onClick={handleReset}
               className="mt-3 w-full sm:mt-0 sm:w-auto"
             >
               Reset to Defaults
-            </AccessibleButton>
+            </Button>
           </div>
         </div>
       </div>
