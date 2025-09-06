@@ -39,7 +39,7 @@ const BrandPage: React.FC = () => {
                 label: 'Edit',
                 onClick: handleEditBrandDetails,
                 icon: <Icons.Edit className="w-4 h-4" />,
-                variant: 'primary'
+                variant: 'secondary'
               }
             ]}
           >
@@ -57,7 +57,7 @@ const BrandPage: React.FC = () => {
                   label: 'Add Goal',
                   onClick: handleAddGoal,
                   icon: <Icons.Plus className="w-4 h-4" />,
-                  variant: 'primary'
+                  variant: 'secondary'
                 }
               ]}
             >
@@ -74,7 +74,7 @@ const BrandPage: React.FC = () => {
                   label: 'Add Competitor',
                   onClick: handleAddCompetitor,
                   icon: <Icons.Plus className="w-4 h-4" />,
-                  variant: 'primary'
+                  variant: 'secondary'
                 }
               ]}
             >

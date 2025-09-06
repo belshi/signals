@@ -4,7 +4,7 @@ import Button from './Button';
 export interface CardButton {
   label: string;
   onClick: () => void;
-  variant?: 'primary' | 'secondary' | 'outline';
+  variant?: 'primary' | 'secondary';
   icon?: React.ReactNode;
 }
 
@@ -27,12 +27,10 @@ const Card: React.FC<CardProps> = ({
   className = '',
   noPadding = false,
 }) => {
-  const getButtonVariant = (variant: CardButton['variant'] = 'primary'): 'primary' | 'secondary' | 'outline' => {
+  const getButtonVariant = (variant: CardButton['variant'] = 'primary'): 'primary' | 'secondary' => {
     switch (variant) {
       case 'secondary':
         return 'secondary';
-      case 'outline':
-        return 'outline';
       case 'primary':
       default:
         return 'primary';
