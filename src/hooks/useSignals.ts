@@ -5,11 +5,10 @@ import { useErrorHandler } from './useErrorHandler';
 import type { 
   EnhancedSignal, 
   SignalId, 
-  CreateSignalForm, 
   UpdateSignalForm,
   UseSignalsReturn 
 } from '../types/enhanced';
-import { createSignalId, now } from '../utils/typeUtils';
+import { now } from '../utils/typeUtils';
 
 export const useSignals = (): UseSignalsReturn => {
   const [signals, setSignals] = useState<EnhancedSignal[]>(MOCK_SIGNALS);
@@ -33,48 +32,6 @@ export const useSignals = (): UseSignalsReturn => {
     },
   });
 
-  const createSignal = useCallback(async (signalData: CreateSignalForm): Promise<EnhancedSignal> => {
-    setIsLoading(true);
-    setError(null);
-    
-    const createSignalOperation = async (): Promise<EnhancedSignal> => {
-      // Simulate API call with potential failure
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // Simulate random failures for testing
-          if (Math.random() < 0.3) {
-            reject(new Error('Network error: Failed to create signal'));
-          } else {
-            resolve(undefined);
-          }
-        }, 1000);
-      });
-      
-      const newSignal: EnhancedSignal = {
-        ...signalData,
-        id: createSignalId(Date.now().toString()),
-        status: 'pending',
-        createdAt: now(),
-        updatedAt: now(),
-        tags: signalData.tags || [],
-        metadata: {},
-      };
-      
-      setSignals(prev => [...prev, newSignal]);
-      return newSignal;
-    };
-
-    try {
-      const result = await retry(createSignalOperation);
-      return result;
-    } catch (err) {
-      const error = err as Error;
-      handleError(error);
-      throw error;
-    } finally {
-      setIsLoading(false);
-    }
-  }, [retry, handleError]);
 
   const updateSignal = useCallback(async (id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> => {
     setIsLoading(true);
@@ -188,7 +145,6 @@ export const useSignals = (): UseSignalsReturn => {
     signals,
     isLoading,
     error,
-    createSignal,
     updateSignal,
     deleteSignal,
     refreshSignals,

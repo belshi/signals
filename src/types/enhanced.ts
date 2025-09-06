@@ -122,12 +122,6 @@ export interface EnhancedCompetitor {
 }
 
 // Form types
-export interface CreateSignalForm {
-  name: string;
-  type: SignalType;
-  description?: string;
-  tags?: string[];
-}
 
 export interface UpdateSignalForm {
   name?: string;
@@ -228,7 +222,6 @@ export interface UseSignalsReturn {
   signals: EnhancedSignal[];
   isLoading: boolean;
   error: string | null;
-  createSignal: (data: CreateSignalForm) => Promise<EnhancedSignal>;
   updateSignal: (id: SignalId, data: UpdateSignalForm) => Promise<EnhancedSignal>;
   deleteSignal: (id: SignalId) => Promise<void>;
   refreshSignals: () => Promise<void>;

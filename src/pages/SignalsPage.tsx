@@ -4,18 +4,7 @@ import { Icons } from '../constants';
 import { useSignalsContext } from '../contexts';
 
 const SignalsPage: React.FC = () => {
-  const { createSignal, refreshSignals } = useSignalsContext();
-
-  const handleNewSignal = async (): Promise<void> => {
-    try {
-      await createSignal({
-        name: 'New Signal',
-        type: 'Analytics',
-      });
-    } catch (err) {
-      console.error('Failed to create signal:', err);
-    }
-  };
+  const { refreshSignals } = useSignalsContext();
 
   return (
     <Page>
@@ -24,7 +13,9 @@ const SignalsPage: React.FC = () => {
         buttons={[
           {
             label: 'New Signal',
-            onClick: handleNewSignal,
+            onClick: () => {
+              // Button restored but without functionality
+            },
             variant: 'primary',
             icon: <Icons.Plus className="w-4 h-4" />,
           },
