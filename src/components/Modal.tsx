@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { useFocusManagement, useAccessibility } from '../hooks';
 import Button from './Button';
 
-interface AccessibleModalProps {
+interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   title: string;
@@ -14,7 +14,7 @@ interface AccessibleModalProps {
   ariaDescribedBy?: string;
 }
 
-const AccessibleModal: React.FC<AccessibleModalProps> = ({
+const Modal: React.FC<ModalProps> = ({
   isOpen,
   onClose,
   title,
@@ -161,4 +161,4 @@ const AccessibleModal: React.FC<AccessibleModalProps> = ({
   );
 };
 
-export default AccessibleModal;
+export default Modal;

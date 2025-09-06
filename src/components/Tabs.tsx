@@ -8,7 +8,7 @@ interface Tab {
   ariaLabel?: string;
 }
 
-interface AccessibleTabsProps {
+interface TabsProps {
   tabs: Tab[];
   defaultTab?: string;
   onTabChange?: (tabId: string) => void;
@@ -17,7 +17,7 @@ interface AccessibleTabsProps {
   orientation?: 'horizontal' | 'vertical';
 }
 
-const AccessibleTabs: React.FC<AccessibleTabsProps> = ({
+const Tabs: React.FC<TabsProps> = ({
   tabs,
   defaultTab,
   onTabChange,
@@ -153,4 +153,4 @@ const AccessibleTabs: React.FC<AccessibleTabsProps> = ({
   );
 };
 
-export default AccessibleTabs;
+export default Tabs;

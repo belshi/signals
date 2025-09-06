@@ -37,10 +37,10 @@ A modern, enterprise-grade signals processing and analysis application built wit
 ```
 src/
 ├── components/              # Reusable UI components
-│   ├── AccessibleButton.tsx     # Fully accessible button component
+│   ├── Button.tsx                # Fully accessible button component
 │   ├── DataTable.tsx  # Accessible table with sorting
-│   ├── AccessibleModal.tsx      # Modal with focus management
-│   ├── AccessibleTabs.tsx       # Keyboard-navigable tabs
+│   ├── Modal.tsx                 # Modal with focus management
+│   ├── Tabs.tsx                  # Keyboard-navigable tabs
 │   ├── AccessibilitySettings.tsx # User preference settings
 │   ├── AsyncBoundary.tsx        # Async operation wrapper
 │   ├── AsyncErrorBoundary.tsx   # Error boundary for async ops
@@ -208,10 +208,10 @@ src/
 ## 🎨 Design System
 
 ### Components
-- **AccessibleButton**: Full ARIA support with loading states
+- **Button**: Full ARIA support with loading states
 - **DataTable**: Sortable table with keyboard navigation
-- **AccessibleModal**: Focus trapping and escape handling
-- **AccessibleTabs**: Arrow key navigation with proper roles
+- **Modal**: Focus trapping and escape handling
+- **Tabs**: Arrow key navigation with proper roles
 - **StatusBadge**: Color-coded status indicators
 - **LoadingSpinner**: Consistent loading indicators
 - **ErrorMessage**: User-friendly error displays

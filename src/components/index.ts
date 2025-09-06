@@ -1,8 +1,8 @@
 // Export all components from a single entry point
 export { default as Button } from './Button';
 export { default as DataTable } from './DataTable';
-export { default as AccessibleModal } from './AccessibleModal';
-export { default as AccessibleTabs } from './AccessibleTabs';
+export { default as Modal } from './Modal';
+export { default as Tabs } from './Tabs';
 export { default as AccessibilitySettings } from './AccessibilitySettings';
 export { default as AsyncBoundary } from './AsyncBoundary';
 export { default as AsyncErrorBoundary } from './AsyncErrorBoundary';
