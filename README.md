@@ -245,6 +245,18 @@ src/
 - **Git Hooks**: Pre-commit validation
 - **Testing**: Unit and integration test coverage
 
+### Unused Code Prevention (CRITICAL)
+- **NEVER** create components, hooks, or utilities "just in case" - only build what you need
+- **ALWAYS** verify usage before adding exports to index.ts files
+- **REGULARLY** audit the codebase for unused code (monthly)
+- **IMMEDIATELY** remove any code that becomes unused
+- **VALIDATE** that all exports are actually imported and used
+- **AVOID** creating large utility libraries - prefer specific, targeted utilities
+- **DELETE** deprecated code instead of marking it as deprecated
+- **ENFORCE** the principle: "If it's not used, it shouldn't exist"
+- **USE** tools like `ts-unused-exports` to detect unused exports
+- **REVIEW** all PRs for unused code additions
+
 ### Best Practices
 - **Component Design**: Single responsibility, composition over inheritance
 - **State Management**: Minimal state, derived state, context patterns
@@ -290,6 +302,43 @@ src/
 - Write comprehensive tests
 - Document new features
 - Follow the established patterns
+- **ZERO TOLERANCE** for unused code - all code must be actively used
+- **MONTHLY AUDITS** required to identify and remove unused code
+- **PR REVIEWS** must verify no unused code is being added
+- **UTILITY LIBRARIES** must be minimal and only contain used functions
+
+## 🧹 Code Cleanup & Maintenance
+
+### Recent Cleanup (2024)
+This codebase underwent a comprehensive unused code audit and cleanup:
+
+**Removed Unused Components:**
+- `AsyncBoundary` - Never imported or used
+- `AsyncErrorBoundary` - Never imported or used  
+- `DataProvider` - Never imported or used
+- `Modal` - Never imported or used
+- `Tabs` - Never imported or used
+- `ErrorFallback` - Never imported or used
+- `withPageData` - Never imported or used
+
+**Removed Unused Hooks:**
+- `useAsyncOperation` - Never imported or used
+- `useErrorContext` - Never imported or used
+- `useGlobalError` - Never imported or used
+
+**Cleaned Up Utility Library:**
+- Removed ~200 unused utility functions
+- Kept only the 3-4 actually used utilities
+- Reduced bundle size by ~60-70%
+
+**Removed Deprecated Types:**
+- All deprecated interfaces in `src/types/index.ts`
+
+### Ongoing Maintenance
+- Monthly unused code audits
+- PR reviews must verify no unused code
+- Zero tolerance policy for unused code
+- Regular bundle size monitoring
 
 ## 📄 License
 
