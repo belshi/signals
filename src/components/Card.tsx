@@ -1,9 +1,10 @@
 import React from 'react';
+import Button from './Button';
 
 export interface CardButton {
   label: string;
   onClick: () => void;
-  variant?: 'primary' | 'secondary' | 'danger';
+  variant?: 'primary' | 'secondary' | 'outline';
   icon?: React.ReactNode;
 }
 
@@ -26,17 +27,15 @@ const Card: React.FC<CardProps> = ({
   className = '',
   noPadding = false,
 }) => {
-  const getButtonStyles = (variant: CardButton['variant'] = 'primary') => {
-    const baseStyles = 'inline-flex items-center px-3 py-1.5 text-xs font-medium rounded-lg transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
-    
+  const getButtonVariant = (variant: CardButton['variant'] = 'primary'): 'primary' | 'secondary' | 'outline' => {
     switch (variant) {
       case 'secondary':
-        return `${baseStyles} text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500`;
-      case 'danger':
-        return `${baseStyles} text-red-700 bg-red-100 hover:bg-red-200 focus:ring-red-500`;
+        return 'secondary';
+      case 'outline':
+        return 'outline';
       case 'primary':
       default:
-        return `${baseStyles} text-indigo-700 bg-indigo-100 hover:bg-indigo-200 focus:ring-indigo-500`;
+        return 'primary';
     }
   };
 
@@ -68,19 +67,16 @@ const Card: React.FC<CardProps> = ({
             {buttons && buttons.length > 0 && (
               <div className="flex items-center space-x-2">
                 {buttons.map((button, index) => (
-                  <button
+                  <Button
                     key={index}
                     onClick={button.onClick}
-                    className={getButtonStyles(button.variant)}
-                    type="button"
+                    variant={getButtonVariant(button.variant)}
+                    size="sm"
+                    icon={button.icon}
+                    iconPosition="left"
                   >
-                    {button.icon && (
-                      <span className="mr-1.5">
-                        {button.icon}
-                      </span>
-                    )}
                     {button.label}
-                  </button>
+                  </Button>
                 ))}
               </div>
             )}
