@@ -153,7 +153,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               htmlFor="name"
               required
               error={!!errors.name}
-              description="Enter the official name of the brand"
             >
               Brand Name
             </InputLabel>
@@ -164,7 +163,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               placeholder="Enter brand name"
               error={!!errors.name}
               disabled={isLoading}
-              ariaDescribedBy={errors.name ? 'name-error' : 'name-description'}
+              ariaDescribedBy={errors.name ? 'name-error' : undefined}
             />
             {errors.name && (
               <p id="name-error" className="mt-1 text-sm text-red-600">
@@ -179,7 +178,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               htmlFor="description"
               required
               error={!!errors.description}
-              description="Provide a brief description of the brand and its business"
             >
               Description
             </InputLabel>
@@ -193,7 +191,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               maxRows={6}
               error={!!errors.description}
               disabled={isLoading}
-              ariaDescribedBy={errors.description ? 'description-error' : 'description-description'}
+              ariaDescribedBy={errors.description ? 'description-error' : undefined}
             />
             {errors.description && (
               <p id="description-error" className="mt-1 text-sm text-red-600">
@@ -207,7 +205,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
             <InputLabel
               htmlFor="website"
               error={!!errors.website}
-              description="Enter the brand's official website URL"
             >
               Website
             </InputLabel>
@@ -219,7 +216,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               placeholder="https://example.com"
               error={!!errors.website}
               disabled={isLoading}
-              ariaDescribedBy={errors.website ? 'website-error' : 'website-description'}
+              ariaDescribedBy={errors.website ? 'website-error' : undefined}
             />
             {errors.website && (
               <p id="website-error" className="mt-1 text-sm text-red-600">
@@ -234,7 +231,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               htmlFor="industry"
               required
               error={!!errors.industry}
-              description="Select the primary industry category"
             >
               Industry
             </InputLabel>
@@ -248,7 +244,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               searchable
               clearable
               disabled={isLoading}
-              ariaDescribedBy={errors.industry ? 'industry-error' : 'industry-description'}
+              ariaDescribedBy={errors.industry ? 'industry-error' : undefined}
             />
             {errors.industry && (
               <p id="industry-error" className="mt-1 text-sm text-red-600">
@@ -262,7 +258,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
             <InputLabel
               htmlFor="foundedYear"
               error={!!errors.foundedYear}
-              description="Year the company was established"
             >
               Founded Year
             </InputLabel>
@@ -276,7 +271,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               max={new Date().getFullYear()}
               error={!!errors.foundedYear}
               disabled={isLoading}
-              ariaDescribedBy={errors.foundedYear ? 'foundedYear-error' : 'foundedYear-description'}
+              ariaDescribedBy={errors.foundedYear ? 'foundedYear-error' : undefined}
             />
             {errors.foundedYear && (
               <p id="foundedYear-error" className="mt-1 text-sm text-red-600">
@@ -290,7 +285,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
             <InputLabel
               htmlFor="employeeCount"
               error={!!errors.employeeCount}
-              description="Approximate number of employees"
             >
               Employee Count
             </InputLabel>
@@ -303,7 +297,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               min="1"
               error={!!errors.employeeCount}
               disabled={isLoading}
-              ariaDescribedBy={errors.employeeCount ? 'employeeCount-error' : 'employeeCount-description'}
+              ariaDescribedBy={errors.employeeCount ? 'employeeCount-error' : undefined}
             />
             {errors.employeeCount && (
               <p id="employeeCount-error" className="mt-1 text-sm text-red-600">
