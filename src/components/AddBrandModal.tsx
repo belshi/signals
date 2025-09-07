@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Button } from './index';
+import { Modal, Button, InputLabel, TextInput, TextArea, SingleSelect } from './index';
 import { useBrandsContext } from '../contexts';
 import type { CreateBrandForm } from '../types/enhanced';
 
@@ -9,6 +9,20 @@ interface AddBrandModalProps {
   onSuccess?: () => void;
 }
 
+// Industry options based on mock data
+const INDUSTRY_OPTIONS = [
+  { value: 'Technology', label: 'Technology', description: 'Software, hardware, and digital services' },
+  { value: 'Healthcare', label: 'Healthcare', description: 'Medical devices, pharmaceuticals, and health services' },
+  { value: 'Energy', label: 'Energy', description: 'Renewable energy, oil & gas, and utilities' },
+  { value: 'Finance', label: 'Finance', description: 'Banking, insurance, and financial services' },
+  { value: 'Retail', label: 'Retail', description: 'E-commerce, consumer goods, and retail services' },
+  { value: 'Manufacturing', label: 'Manufacturing', description: 'Industrial production and manufacturing' },
+  { value: 'Education', label: 'Education', description: 'Educational services and edtech' },
+  { value: 'Transportation', label: 'Transportation', description: 'Logistics, shipping, and mobility' },
+  { value: 'Media', label: 'Media & Entertainment', description: 'Content creation, broadcasting, and entertainment' },
+  { value: 'Real Estate', label: 'Real Estate', description: 'Property development and real estate services' },
+];
+
 const AddBrandModal: React.FC<AddBrandModalProps> = ({
   isOpen,
   onClose,
@@ -16,7 +30,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
 }) => {
   const { createBrand } = useBrandsContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [formData, setFormData] = useState<CreateBrandForm>({
     name: '',
@@ -33,22 +47,52 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
       [field]: value,
     }));
     // Clear error when user starts typing
-    if (error) {
-      setError(null);
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
-  }, [error]);
+  }, [errors]);
+
+  const validateForm = useCallback(() => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Brand name is required';
+    }
+
+    if (!formData.description.trim()) {
+      newErrors.description = 'Description is required';
+    }
+
+    if (!formData.industry) {
+      newErrors.industry = 'Please select an industry';
+    }
+
+    if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
+      newErrors.website = 'Please enter a valid URL (starting with http:// or https://)';
+    }
+
+    if (formData.foundedYear && (formData.foundedYear < 1800 || formData.foundedYear > new Date().getFullYear())) {
+      newErrors.foundedYear = `Founded year must be between 1800 and ${new Date().getFullYear()}`;
+    }
+
+    if (formData.employeeCount && formData.employeeCount < 1) {
+      newErrors.employeeCount = 'Employee count must be at least 1';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData]);
 
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.description.trim() || !formData.industry.trim()) {
-      setError('Name, description, and industry are required fields.');
+    if (!validateForm()) {
       return;
     }
 
     try {
       setIsLoading(true);
-      setError(null);
+      setErrors({});
       
       await createBrand(formData);
       
@@ -65,11 +109,11 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create brand');
+      setErrors({ submit: err instanceof Error ? err.message : 'Failed to create brand' });
     } finally {
       setIsLoading(false);
     }
-  }, [formData, createBrand, onSuccess, onClose]);
+  }, [formData, validateForm, createBrand, onSuccess, onClose]);
 
   const handleClose = useCallback(() => {
     if (!isLoading) {
@@ -81,7 +125,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
         foundedYear: undefined,
         employeeCount: undefined,
       });
-      setError(null);
+      setErrors({});
       onClose();
     }
   }, [isLoading, onClose]);
@@ -96,113 +140,176 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
       closeOnEscape={!isLoading}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
+        {errors.submit && (
           <div className="rounded-md bg-red-50 p-4">
-            <div className="text-sm text-red-700">{error}</div>
+            <div className="text-sm text-red-700">{errors.submit}</div>
           </div>
         )}
 
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {/* Name */}
+          {/* Brand Name */}
           <div className="sm:col-span-2">
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700">
-              Brand Name *
-            </label>
-            <input
-              type="text"
+            <InputLabel
+              htmlFor="name"
+              required
+              error={!!errors.name}
+              description="Enter the official name of the brand"
+            >
+              Brand Name
+            </InputLabel>
+            <TextInput
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               placeholder="Enter brand name"
-              required
+              error={!!errors.name}
               disabled={isLoading}
+              ariaDescribedBy={errors.name ? 'name-error' : 'name-description'}
             />
+            {errors.name && (
+              <p id="name-error" className="mt-1 text-sm text-red-600">
+                {errors.name}
+              </p>
+            )}
           </div>
 
           {/* Description */}
           <div className="sm:col-span-2">
-            <label htmlFor="description" className="block text-sm font-medium text-gray-700">
-              Description *
-            </label>
-            <textarea
+            <InputLabel
+              htmlFor="description"
+              required
+              error={!!errors.description}
+              description="Provide a brief description of the brand and its business"
+            >
+              Description
+            </InputLabel>
+            <TextArea
               id="description"
               value={formData.description}
               onChange={(e) => handleInputChange('description', e.target.value)}
-              rows={3}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               placeholder="Enter brand description"
-              required
+              autoResize
+              minRows={3}
+              maxRows={6}
+              error={!!errors.description}
               disabled={isLoading}
+              ariaDescribedBy={errors.description ? 'description-error' : 'description-description'}
             />
+            {errors.description && (
+              <p id="description-error" className="mt-1 text-sm text-red-600">
+                {errors.description}
+              </p>
+            )}
           </div>
 
           {/* Website */}
           <div>
-            <label htmlFor="website" className="block text-sm font-medium text-gray-700">
+            <InputLabel
+              htmlFor="website"
+              error={!!errors.website}
+              description="Enter the brand's official website URL"
+            >
               Website
-            </label>
-            <input
-              type="url"
+            </InputLabel>
+            <TextInput
               id="website"
+              type="url"
               value={formData.website}
               onChange={(e) => handleInputChange('website', e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               placeholder="https://example.com"
+              error={!!errors.website}
               disabled={isLoading}
+              ariaDescribedBy={errors.website ? 'website-error' : 'website-description'}
             />
+            {errors.website && (
+              <p id="website-error" className="mt-1 text-sm text-red-600">
+                {errors.website}
+              </p>
+            )}
           </div>
 
           {/* Industry */}
           <div>
-            <label htmlFor="industry" className="block text-sm font-medium text-gray-700">
-              Industry *
-            </label>
-            <input
-              type="text"
-              id="industry"
-              value={formData.industry}
-              onChange={(e) => handleInputChange('industry', e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="e.g., Technology, Healthcare"
+            <InputLabel
+              htmlFor="industry"
               required
+              error={!!errors.industry}
+              description="Select the primary industry category"
+            >
+              Industry
+            </InputLabel>
+            <SingleSelect
+              id="industry"
+              options={INDUSTRY_OPTIONS}
+              value={formData.industry}
+              onChange={(value) => handleInputChange('industry', value)}
+              placeholder="Select an industry"
+              error={!!errors.industry}
+              searchable
+              clearable
               disabled={isLoading}
+              ariaDescribedBy={errors.industry ? 'industry-error' : 'industry-description'}
             />
+            {errors.industry && (
+              <p id="industry-error" className="mt-1 text-sm text-red-600">
+                {errors.industry}
+              </p>
+            )}
           </div>
 
           {/* Founded Year */}
           <div>
-            <label htmlFor="foundedYear" className="block text-sm font-medium text-gray-700">
+            <InputLabel
+              htmlFor="foundedYear"
+              error={!!errors.foundedYear}
+              description="Year the company was established"
+            >
               Founded Year
-            </label>
-            <input
-              type="number"
+            </InputLabel>
+            <TextInput
               id="foundedYear"
-              value={formData.foundedYear || ''}
+              type="number"
+              value={formData.foundedYear?.toString() || ''}
               onChange={(e) => handleInputChange('foundedYear', e.target.value ? parseInt(e.target.value) : undefined)}
+              placeholder="2020"
               min="1800"
               max={new Date().getFullYear()}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-              placeholder="2020"
+              error={!!errors.foundedYear}
               disabled={isLoading}
+              ariaDescribedBy={errors.foundedYear ? 'foundedYear-error' : 'foundedYear-description'}
             />
+            {errors.foundedYear && (
+              <p id="foundedYear-error" className="mt-1 text-sm text-red-600">
+                {errors.foundedYear}
+              </p>
+            )}
           </div>
 
           {/* Employee Count */}
           <div>
-            <label htmlFor="employeeCount" className="block text-sm font-medium text-gray-700">
+            <InputLabel
+              htmlFor="employeeCount"
+              error={!!errors.employeeCount}
+              description="Approximate number of employees"
+            >
               Employee Count
-            </label>
-            <input
-              type="number"
+            </InputLabel>
+            <TextInput
               id="employeeCount"
-              value={formData.employeeCount || ''}
+              type="number"
+              value={formData.employeeCount?.toString() || ''}
               onChange={(e) => handleInputChange('employeeCount', e.target.value ? parseInt(e.target.value) : undefined)}
-              min="1"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
               placeholder="100"
+              min="1"
+              error={!!errors.employeeCount}
               disabled={isLoading}
+              ariaDescribedBy={errors.employeeCount ? 'employeeCount-error' : 'employeeCount-description'}
             />
+            {errors.employeeCount && (
+              <p id="employeeCount-error" className="mt-1 text-sm text-red-600">
+                {errors.employeeCount}
+              </p>
+            )}
           </div>
         </div>
 
