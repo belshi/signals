@@ -8,6 +8,7 @@ import {
   PencilIcon,
   TrashIcon,
   ArrowTopRightOnSquareIcon,
+  XMarkIcon,
 } from '@heroicons/react/24/outline';
 
 // Define the available icon names as a union type for type safety
@@ -19,7 +20,8 @@ export type IconName =
   | 'more-vertical'
   | 'edit'
   | 'trash'
-  | 'external-link';
+  | 'external-link'
+  | 'x';
 
 // Map icon names to Heroicons components
 const iconMap = {
@@ -31,6 +33,7 @@ const iconMap = {
   'edit': PencilIcon,
   'trash': TrashIcon,
   'external-link': ArrowTopRightOnSquareIcon,
+  'x': XMarkIcon,
 } as const;
 
 export interface IconProps {

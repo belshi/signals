@@ -1,21 +1,30 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, DataTable, EmptyState, Icon, Card, Badge } from '../components';
+import { Page, DataTable, EmptyState, Icon, Card, Badge, AddBrandModal } from '../components';
 import { useBrandsContext } from '../contexts';
 import type { EnhancedBrandDetails, TableColumn } from '../types/enhanced';
 
 const BrandsPage: React.FC = () => {
   const navigate = useNavigate();
   const { brands, isLoading, error, refreshBrands } = useBrandsContext();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleRowClick = useCallback((brand: EnhancedBrandDetails) => {
     navigate(`/brands/${brand.id}`);
   }, [navigate]);
 
   const handleAddBrand = useCallback(() => {
-    console.log('Add new brand');
-    // TODO: Implement add brand functionality
+    setIsAddModalOpen(true);
   }, []);
+
+  const handleModalClose = useCallback(() => {
+    setIsAddModalOpen(false);
+  }, []);
+
+  const handleBrandCreated = useCallback(() => {
+    // Refresh the brands list after successful creation
+    refreshBrands();
+  }, [refreshBrands]);
 
 
 
@@ -136,6 +145,12 @@ const BrandsPage: React.FC = () => {
           </Card>
         )}
       </Page.Content>
+      
+      <AddBrandModal
+        isOpen={isAddModalOpen}
+        onClose={handleModalClose}
+        onSuccess={handleBrandCreated}
+      />
     </Page>
   );
 };

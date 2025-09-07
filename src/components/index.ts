@@ -14,6 +14,7 @@ export {
 export { default as BrandDetails } from './BrandDetails';
 export { default as SignalDetails } from './SignalDetails';
 export { default as AIInsights } from './AIInsights';
+export { default as AddBrandModal } from './AddBrandModal';
 export { default as AIRecommendations } from './AIRecommendations';
 export { default as CSVDataBlock } from './CSVDataBlock';
 export { default as DropdownMenu } from './DropdownMenu';
@@ -29,6 +30,7 @@ export { default as Icon } from './Icon';
 export { default as IconButton } from './IconButton';
 export { default as ListItem } from './ListItem';
 export { default as LoadingSpinner } from './LoadingSpinner';
+export { default as Modal } from './Modal';
 export { default as MoreMenu } from './MoreMenu';
 export { default as Navbar } from './Navbar';
 export { default as NetworkStatus } from './NetworkStatus';
