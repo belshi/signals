@@ -1,4 +1,4 @@
-import type { TableColumn } from '../DataTable';
+import type { TableColumn } from './types';
 
 /**
  * DataTable component styling constants
@@ -25,7 +25,7 @@ export interface TableHeaderProps<T extends Record<string, any>> {
   sortable: boolean;
   sortColumn: keyof T | null;
   sortDirection: 'asc' | 'desc';
-  onSort: (column: keyof T) => void;
+  onSort: (column: keyof T | string) => void;
   selectable: boolean;
 }
 

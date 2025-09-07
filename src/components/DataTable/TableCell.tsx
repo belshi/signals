@@ -1,5 +1,5 @@
 import React from 'react';
-import type { TableColumn } from '../DataTable';
+import type { TableColumn } from './types';
 
 /**
  * DataTable component styling constants

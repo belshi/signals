@@ -2,7 +2,15 @@
 export { default as Badge } from './Badge';
 export { default as Button } from './Button';
 export { default as DataTable } from './DataTable';
-export { TableHeader, TableRow, TableCell, SelectableCell } from './DataTable/index';
+export { 
+  TableHeader, 
+  TableRow, 
+  TableCell, 
+  SelectableCell,
+  useTableSorting,
+  useRowSelection,
+  useTableKeyboard
+} from './DataTable/index';
 export { default as BrandDetails } from './BrandDetails';
 export { default as DropdownMenu } from './DropdownMenu';
 export { default as BrandGoals } from './BrandGoals';
@@ -27,7 +35,65 @@ export { default as StackedList } from './StackedList';
 
 // Export types
 export type { BadgeVariant, BadgeProps } from './Badge';
-export type { TableColumn } from './DataTable';
+export type { 
+  // Core types
+  SortDirection,
+  TextAlign,
+  TableSize,
+  TableDensity,
+  SelectionMode,
+  ColumnWidth,
+  
+  // Column types
+  ColumnAlignment,
+  ColumnSorting,
+  ColumnFiltering,
+  ColumnResizing,
+  TableColumn,
+  
+  // Configuration types
+  TablePagination,
+  TableSelection,
+  TableLoading,
+  TableEmptyState,
+  
+  // Event handler types
+  RowClickHandler,
+  RowDoubleClickHandler,
+  RowContextMenuHandler,
+  SortChangeHandler,
+  FilterChangeHandler,
+  PageChangeHandler,
+  
+  // Component props types
+  BaseDataTableProps,
+  DataTableProps,
+  
+  // Hook return types
+  UseTableSortingReturn,
+  UseRowSelectionReturn,
+  UseTableKeyboardReturn,
+  
+  // Utility types
+  ExtractDataType,
+  ColumnKey,
+  TableData,
+  TableState,
+  EventHandler,
+  Callback,
+  AsyncCallback
+} from './DataTable/index';
+
+// Export type guards
+export {
+  isSortDirection,
+  isTextAlign,
+  isTableSize,
+  isSelectionMode,
+  hasSorting,
+  hasFiltering,
+  hasResizing
+} from './DataTable/index';
 export type { DropdownMenuItem, DropdownMenuProps } from './DropdownMenu';
 export type { IconButtonVariant, IconButtonSize, IconButtonProps } from './IconButton';
 export type { ListItemProps } from './ListItem';

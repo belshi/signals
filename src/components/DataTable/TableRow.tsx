@@ -1,5 +1,5 @@
 import React from 'react';
-import type { TableColumn } from '../DataTable';
+import type { TableColumn } from './types';
 import TableCell, { SelectableCell } from './TableCell';
 
 /**
@@ -34,7 +34,7 @@ export interface TableRowProps<T extends Record<string, any>> {
   onFocus: (index: number) => void;
   onBlur: () => void;
   selectable: boolean;
-  keyField: keyof T;
+  keyField: keyof T | string;
 }
 
 /**

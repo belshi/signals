@@ -2,7 +2,7 @@ import React from 'react';
 import { DataTable, Badge } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
 import type { EnhancedSignal, SignalStatus } from '../types/enhanced';
-import type { TableColumn } from './DataTable';
+import type { TableColumn } from './DataTable/types';
 import type { BadgeVariant } from './Badge';
 
 interface SignalsTableProps {
