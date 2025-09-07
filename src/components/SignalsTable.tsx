@@ -1,9 +1,9 @@
 import React from 'react';
-import { DataTable, Badge } from './index';
+import { DataTable } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
-import type { EnhancedSignal, SignalStatus } from '../types/enhanced';
+import { useBrandsContext } from '../contexts/BrandsContext';
+import type { EnhancedSignal } from '../types/enhanced';
 import type { TableColumn } from './DataTable/types';
-import type { BadgeVariant } from './Badge';
 
 interface SignalsTableProps {
   onRowClick?: (signal: EnhancedSignal) => void;
@@ -13,34 +13,7 @@ interface SignalsTableProps {
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
   const { signals } = useSignalsContext();
-
-  // Helper function to map signal status to badge variant
-  const getStatusVariant = (status: SignalStatus): BadgeVariant => {
-    switch (status) {
-      case 'active':
-        return 'success';
-      case 'inactive':
-        return 'secondary';
-      case 'pending':
-        return 'warning';
-      default:
-        return 'secondary';
-    }
-  };
-
-  // Helper function to get status label
-  const getStatusLabel = (status: SignalStatus): string => {
-    switch (status) {
-      case 'active':
-        return 'Active';
-      case 'inactive':
-        return 'Inactive';
-      case 'pending':
-        return 'Pending';
-      default:
-        return status;
-    }
-  };
+  const { getBrand } = useBrandsContext();
 
   const columns: TableColumn<EnhancedSignal>[] = [
     {
@@ -53,20 +26,16 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
       ),
     },
     {
-      key: 'type',
-      label: 'Type',
-      render: (signal) => (
-        <div className="text-sm text-gray-500">{signal.type}</div>
-      ),
-    },
-    {
-      key: 'status',
-      label: 'Status',
-      render: (signal) => (
-        <Badge variant={getStatusVariant(signal.status)} size="md">
-          {getStatusLabel(signal.status)}
-        </Badge>
-      ),
+      key: 'brand',
+      label: 'Brand',
+      render: (signal) => {
+        const brand = signal.brandId ? getBrand(signal.brandId) : null;
+        return (
+          <div className="text-sm text-gray-500">
+            {brand ? brand.name : 'No brand linked'}
+          </div>
+        );
+      },
     },
     {
       key: 'createdAt',

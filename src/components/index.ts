@@ -12,6 +12,10 @@ export {
   useTableKeyboard
 } from './DataTable/index';
 export { default as BrandDetails } from './BrandDetails';
+export { default as SignalDetails } from './SignalDetails';
+export { default as AIInsights } from './AIInsights';
+export { default as AIRecommendations } from './AIRecommendations';
+export { default as CSVDataBlock } from './CSVDataBlock';
 export { default as DropdownMenu } from './DropdownMenu';
 export { default as BrandGoals } from './BrandGoals';
 export { default as Card } from './Card';

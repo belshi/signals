@@ -1,10 +1,17 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Page, Card, SignalsTable } from '../components';
 import { Icon } from '../components';
-import { useSignalsContext } from '../contexts';
+import { useSignalsContext, BrandsProvider } from '../contexts';
+import type { EnhancedSignal } from '../types/enhanced';
 
 const SignalsPage: React.FC = () => {
   const { refreshSignals } = useSignalsContext();
+  const navigate = useNavigate();
+
+  const handleSignalClick = (signal: EnhancedSignal) => {
+    navigate(`/signals/${signal.id}`);
+  };
 
   return (
     <Page>
@@ -27,7 +34,9 @@ const SignalsPage: React.FC = () => {
         <Page.Loading message="Loading signals..." />
         
         <Card noPadding>
-          <SignalsTable />
+          <BrandsProvider>
+            <SignalsTable onRowClick={handleSignalClick} />
+          </BrandsProvider>
         </Card>
       </Page.Content>
     </Page>

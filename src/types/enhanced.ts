@@ -59,13 +59,21 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 export interface EnhancedSignal {
   id: SignalId;
   name: string;
+  prompt: string;
   type: SignalType;
   status: SignalStatus;
   createdAt: ISODateString;
   updatedAt: ISODateString;
-  description?: string;
   tags?: string[];
   metadata?: Record<string, unknown>;
+  brandId?: BrandId;
+  triggeredAt?: ISODateString;
+  aiInsights?: {
+    socialListening: string;
+    consumerInsights: string;
+  };
+  aiRecommendations?: string[];
+  csvData?: string;
 }
 
 // Enhanced Brand types

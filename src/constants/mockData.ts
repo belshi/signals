@@ -5,12 +5,25 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
   {
     id: createSignalId('1'),
     name: 'Market Trend Analysis',
+    prompt: 'Analyze market trends and consumer behavior patterns for sustainable technology products. Focus on social media sentiment, search volume, and competitor activity.',
     type: 'Analytics',
     status: 'active',
     createdAt: createISODateString('2024-01-15'),
     updatedAt: createISODateString('2024-01-20'),
-    description: 'Comprehensive analysis of market trends and consumer behavior patterns.',
     tags: ['market', 'trends', 'analysis'],
+    brandId: createBrandId('brand-1'),
+    triggeredAt: createISODateString('2024-01-20T10:30:00Z'),
+    aiInsights: {
+      socialListening: 'Increased mentions of "sustainable technology" by 45% across social platforms, with positive sentiment trending upward. Key influencers are discussing green tech solutions and environmental impact.',
+      consumerInsights: 'Consumer behavior shows growing preference for eco-friendly products (78% increase in searches). Price sensitivity remains high, but willingness to pay premium for sustainable options has increased by 23%.'
+    },
+    aiRecommendations: [
+      'Launch a sustainability-focused marketing campaign highlighting your green initiatives',
+      'Consider introducing eco-friendly product variants to capture the growing market segment',
+      'Engage with environmental influencers to amplify your brand message',
+      'Monitor competitor sustainability claims to maintain competitive advantage'
+    ],
+    csvData: 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n1,Market Trend Analysis,Analytics,active,TechCorp Solutions,2024-01-20T10:30:00Z,"Increased mentions of sustainable technology by 45%","Consumer preference for eco-friendly products up 78%","Launch sustainability campaign,Introduce eco-friendly variants,Engage environmental influencers"',
     metadata: {
       source: 'market-data-api',
       confidence: 0.95,
@@ -20,27 +33,53 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
   {
     id: createSignalId('2'),
     name: 'Social Media Sentiment',
+    prompt: 'Monitor social media sentiment for our brand across Twitter, Facebook, and Instagram. Track mentions, sentiment changes, and identify potential PR issues or opportunities.',
     type: 'Social',
     status: 'inactive',
     createdAt: createISODateString('2024-01-10'),
     updatedAt: createISODateString('2024-01-18'),
-    description: 'Real-time sentiment analysis from social media platforms.',
     tags: ['social', 'sentiment', 'monitoring'],
+    brandId: createBrandId('brand-2'),
+    triggeredAt: createISODateString('2024-01-18T14:15:00Z'),
+    aiInsights: {
+      socialListening: 'Negative sentiment spike detected around customer service complaints. 67% of negative mentions relate to response time and support quality. Viral complaint thread gaining traction.',
+      consumerInsights: 'Customer satisfaction scores dropped 12% this week. Main pain points: slow response times (34%), unclear communication (28%), and unresolved issues (38%).'
+    },
+    aiRecommendations: [
+      'Implement 24/7 customer support chatbot to address immediate concerns',
+      'Create a dedicated customer success team for high-priority issues',
+      'Develop a public response strategy for the viral complaint thread',
+      'Review and improve internal communication protocols'
+    ],
+    csvData: 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n2,Social Media Sentiment,Social,inactive,GreenEnergy Corp,2024-01-18T14:15:00Z,"Negative sentiment spike - 67% relate to customer service","Customer satisfaction dropped 12%","Implement 24/7 chatbot,Create customer success team,Develop public response strategy"',
     metadata: {
       platforms: ['twitter', 'facebook', 'instagram'],
-      sentiment: 'positive',
+      sentiment: 'negative',
       volume: 1250,
     },
   },
   {
     id: createSignalId('3'),
     name: 'Competitor Monitoring',
+    prompt: 'Track competitor product launches, pricing changes, marketing campaigns, and market positioning. Alert on significant competitive moves that could impact our market share.',
     type: 'Competitive',
     status: 'pending',
     createdAt: createISODateString('2024-01-12'),
     updatedAt: createISODateString('2024-01-19'),
-    description: 'Automated monitoring of competitor activities and market positioning.',
     tags: ['competitor', 'monitoring', 'intelligence'],
+    brandId: createBrandId('brand-3'),
+    triggeredAt: createISODateString('2024-01-19T09:45:00Z'),
+    aiInsights: {
+      socialListening: 'Competitor launched new AI-powered diagnostic tool with significant media coverage. Social engagement up 200% with positive reception from healthcare professionals.',
+      consumerInsights: 'Market research shows 89% of healthcare providers are interested in AI diagnostic tools. Price point and accuracy are the top decision factors.'
+    },
+    aiRecommendations: [
+      'Accelerate development of your AI diagnostic solution to maintain competitive position',
+      'Conduct competitive analysis of the new tool to identify differentiation opportunities',
+      'Engage with healthcare professionals to understand their specific needs',
+      'Consider strategic partnerships with medical institutions for validation'
+    ],
+    csvData: 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n3,Competitor Monitoring,Competitive,pending,HealthTech Innovations,2024-01-19T09:45:00Z,"Competitor launched AI diagnostic tool with 200% engagement","89% of healthcare providers interested in AI tools","Accelerate AI development,Conduct competitive analysis,Engage healthcare professionals"',
     metadata: {
       competitors: ['competitor-a', 'competitor-b'],
       frequency: 'daily',

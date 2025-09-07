@@ -8,6 +8,7 @@ export const NAV_ITEMS: EnhancedNavItem[] = [
 export const ROUTES = {
   HOME: '/',
   SIGNALS: '/signals',
+  SIGNAL: '/signals/:signalId',
   BRANDS: '/brands',
   BRAND: '/brands/:brandId',
 } as const;

@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { Navbar, ErrorBoundary, NetworkStatus } from './components';
 import { ErrorProvider, LayoutProvider, SignalsProvider, BrandsProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
+import SignalDetailPage from './pages/SignalDetailPage';
 import BrandsPage from './pages/BrandsPage';
 import BrandPage from './pages/BrandPage';
 import { ROUTES } from './constants';
@@ -63,6 +64,23 @@ const App: React.FC = () => {
                         >
                           <SignalsProvider>
                             <SignalsPage />
+                          </SignalsProvider>
+                        </ErrorBoundary>
+                      } 
+                    />
+                    <Route 
+                      path={ROUTES.SIGNAL} 
+                      element={
+                        <ErrorBoundary
+                          resetOnPropsChange={true}
+                          onError={(error, errorInfo) => {
+                            console.error('SignalDetailPage error:', error, errorInfo);
+                          }}
+                        >
+                          <SignalsProvider>
+                            <BrandsProvider>
+                              <SignalDetailPage />
+                            </BrandsProvider>
                           </SignalsProvider>
                         </ErrorBoundary>
                       } 
