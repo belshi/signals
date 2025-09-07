@@ -1,7 +1,8 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar, ErrorBoundary, NetworkStatus } from './components';
-import { ErrorProvider, LayoutProvider, SignalsProvider, BrandProvider } from './contexts';
+import { ErrorProvider, LayoutProvider, SignalsProvider, BrandsProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
+import BrandsPage from './pages/BrandsPage';
 import BrandPage from './pages/BrandPage';
 import { ROUTES } from './constants';
 
@@ -20,19 +21,19 @@ const App: React.FC = () => {
                 <Navbar />
                 <main role="main">
                   <Routes>
-                    <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.SIGNALS} replace />} />
+                    <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.BRANDS} replace />} />
                     <Route 
-                      path={ROUTES.SIGNALS} 
+                      path={ROUTES.BRANDS} 
                       element={
                         <ErrorBoundary
                           resetOnPropsChange={true}
                           onError={(error, errorInfo) => {
-                            console.error('SignalsPage error:', error, errorInfo);
+                            console.error('BrandsPage error:', error, errorInfo);
                           }}
                         >
-                          <SignalsProvider>
-                            <SignalsPage />
-                          </SignalsProvider>
+                          <BrandsProvider>
+                            <BrandsPage />
+                          </BrandsProvider>
                         </ErrorBoundary>
                       } 
                     />
@@ -45,9 +46,24 @@ const App: React.FC = () => {
                             console.error('BrandPage error:', error, errorInfo);
                           }}
                         >
-                          <BrandProvider>
+                          <BrandsProvider>
                             <BrandPage />
-                          </BrandProvider>
+                          </BrandsProvider>
+                        </ErrorBoundary>
+                      } 
+                    />
+                    <Route 
+                      path={ROUTES.SIGNALS} 
+                      element={
+                        <ErrorBoundary
+                          resetOnPropsChange={true}
+                          onError={(error, errorInfo) => {
+                            console.error('SignalsPage error:', error, errorInfo);
+                          }}
+                        >
+                          <SignalsProvider>
+                            <SignalsPage />
+                          </SignalsProvider>
                         </ErrorBoundary>
                       } 
                     />

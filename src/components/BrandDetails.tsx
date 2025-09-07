@@ -1,13 +1,23 @@
 import React from 'react';
 import { DetailRow } from './index';
-import { useBrandContext } from '../contexts/BrandContext';
+import type { EnhancedBrandDetails } from '../types/enhanced';
 
 interface BrandDetailsProps {
   className?: string;
+  brand?: EnhancedBrandDetails;
 }
 
-const BrandDetails: React.FC<BrandDetailsProps> = ({ className = '' }) => {
-  const { brandDetails } = useBrandContext();
+const BrandDetails: React.FC<BrandDetailsProps> = ({ className = '', brand }) => {
+  // Use the passed brand prop - no fallback to context needed
+  const brandDetails = brand;
+
+  if (!brandDetails) {
+    return (
+      <div className={`text-center py-8 ${className}`}>
+        <p className="text-gray-500">No brand details available</p>
+      </div>
+    );
+  }
 
   return (
     <dl className={`space-y-4 ${className}`}>

@@ -96,7 +96,7 @@ const DataTable = <T extends Record<string, any>>({
   }
 
   return (
-    <div className={`overflow-hidden ${className}`}>
+    <div className={`overflow-visible ${className}`}>
       <div
         className="overflow-x-auto"
         role="table"

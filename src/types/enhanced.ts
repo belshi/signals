@@ -236,6 +236,17 @@ export interface UseBrandReturn {
   refreshBrandDetails: () => Promise<void>;
 }
 
+export interface UseBrandsReturn {
+  brands: EnhancedBrandDetails[];
+  isLoading: boolean;
+  error: string | null;
+  getBrand: (id: BrandId) => EnhancedBrandDetails | undefined;
+  createBrand: (data: CreateBrandForm) => Promise<EnhancedBrandDetails>;
+  updateBrand: (id: BrandId, data: Partial<CreateBrandForm>) => Promise<EnhancedBrandDetails>;
+  deleteBrand: (id: BrandId) => Promise<void>;
+  refreshBrands: () => Promise<void>;
+}
+
 // Utility types
 export type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends object ? DeepPartial<T[P]> : T[P];

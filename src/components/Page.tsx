@@ -10,8 +10,13 @@ interface PageProps {
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;
   button?: EnhancedPageHeaderButton;
   buttons?: EnhancedPageHeaderButton[];
+  breadcrumbs?: Array<{
+    label: string;
+    href?: string;
+  }>;
 }
 
 interface PageContentProps {
@@ -44,12 +49,14 @@ const Page: React.FC<PageProps> & {
 };
 
 // Page Header component
-const PageHeaderComponent: React.FC<PageHeaderProps> = ({ title, button, buttons }) => {
+const PageHeaderComponent: React.FC<PageHeaderProps> = ({ title, subtitle, button, buttons, breadcrumbs }) => {
   return (
     <PageHeader 
       title={title}
+      subtitle={subtitle}
       button={button}
       buttons={buttons}
+      breadcrumbs={breadcrumbs}
     />
   );
 };

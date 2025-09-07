@@ -17,6 +17,7 @@ export interface DropdownMenuProps {
   triggerVariant?: 'primary' | 'secondary';
   triggerSize?: 'sm' | 'md' | 'lg';
   triggerAriaLabel?: string;
+  trigger?: React.ReactNode;
   className?: string;
   placement?: 'bottom-start' | 'bottom-end' | 'top-start' | 'top-end';
 }
@@ -27,12 +28,13 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   triggerVariant = 'secondary',
   triggerSize = 'sm',
   triggerAriaLabel = 'More options',
+  trigger,
   className = '',
   placement = 'bottom-end',
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
+  const buttonRef = useRef<HTMLButtonElement | HTMLDivElement>(null);
 
   const buttonKeyboardRef = useKeyboardNavigation({
     onEnter: () => setIsOpen(!isOpen),
@@ -139,17 +141,39 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
 
   return (
     <div className="relative">
-      <button
-        ref={buttonRef || (buttonKeyboardRef as React.Ref<HTMLButtonElement>)}
-        onClick={() => setIsOpen(!isOpen)}
-        className={getTriggerClasses()}
-        aria-label={triggerAriaLabel}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        type="button"
-      >
-        <Icon name={triggerIcon} size={getIconSize()} aria-hidden="true" />
-      </button>
+      {trigger ? (
+        <div
+          ref={buttonRef as React.Ref<HTMLDivElement>}
+          onClick={() => setIsOpen(!isOpen)}
+          role="button"
+          tabIndex={0}
+          aria-label={triggerAriaLabel}
+          aria-expanded={isOpen}
+          aria-haspopup="true"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              setIsOpen(!isOpen);
+            } else if (e.key === 'Escape') {
+              setIsOpen(false);
+            }
+          }}
+        >
+          {trigger}
+        </div>
+      ) : (
+        <button
+          ref={buttonRef as React.Ref<HTMLButtonElement>}
+          onClick={() => setIsOpen(!isOpen)}
+          className={getTriggerClasses()}
+          aria-label={triggerAriaLabel}
+          aria-expanded={isOpen}
+          aria-haspopup="true"
+          type="button"
+        >
+          <Icon name={triggerIcon} size={getIconSize()} aria-hidden="true" />
+        </button>
+      )}
 
       {isOpen && (
         <div

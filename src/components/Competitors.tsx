@@ -1,12 +1,17 @@
 import React from 'react';
 import { StackedList, type StackedListItem, type DropdownMenuItem } from '../components';
+import type { BrandId } from '../types/enhanced';
 
 interface Competitor {
   id: string;
   name: string;
 }
 
-const Competitors: React.FC = () => {
+interface CompetitorsProps {
+  brandId?: BrandId;
+}
+
+const Competitors: React.FC<CompetitorsProps> = ({ brandId }) => {
   // Mock data for competitors
   const competitors: Competitor[] = [
     {
