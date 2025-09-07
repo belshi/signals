@@ -1,8 +1,9 @@
 import React from 'react';
-import { DataTable, StatusBadge } from './index';
+import { DataTable, Badge } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
-import type { EnhancedSignal } from '../types/enhanced';
+import type { EnhancedSignal, SignalStatus } from '../types/enhanced';
 import type { TableColumn } from './DataTable';
+import type { BadgeVariant } from './Badge';
 
 interface SignalsTableProps {
   onRowClick?: (signal: EnhancedSignal) => void;
@@ -12,6 +13,34 @@ interface SignalsTableProps {
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
   const { signals } = useSignalsContext();
+
+  // Helper function to map signal status to badge variant
+  const getStatusVariant = (status: SignalStatus): BadgeVariant => {
+    switch (status) {
+      case 'active':
+        return 'success';
+      case 'inactive':
+        return 'secondary';
+      case 'pending':
+        return 'warning';
+      default:
+        return 'secondary';
+    }
+  };
+
+  // Helper function to get status label
+  const getStatusLabel = (status: SignalStatus): string => {
+    switch (status) {
+      case 'active':
+        return 'Active';
+      case 'inactive':
+        return 'Inactive';
+      case 'pending':
+        return 'Pending';
+      default:
+        return status;
+    }
+  };
 
   const columns: TableColumn<EnhancedSignal>[] = [
     {
@@ -33,7 +62,11 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
     {
       key: 'status',
       label: 'Status',
-      render: (signal) => <StatusBadge status={signal.status} />,
+      render: (signal) => (
+        <Badge variant={getStatusVariant(signal.status)} size="md">
+          {getStatusLabel(signal.status)}
+        </Badge>
+      ),
     },
     {
       key: 'createdAt',

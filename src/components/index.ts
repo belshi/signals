@@ -1,4 +1,5 @@
 // Export all components from a single entry point
+export { default as Badge } from './Badge';
 export { default as Button } from './Button';
 export { default as DataTable } from './DataTable';
 export { default as BrandDetails } from './BrandDetails';
@@ -22,9 +23,9 @@ export { default as Page } from './Page';
 export { default as PageHeader } from './PageHeader';
 export { default as SignalsTable } from './SignalsTable';
 export { default as StackedList } from './StackedList';
-export { default as StatusBadge } from './StatusBadge';
 
 // Export types
+export type { BadgeVariant, BadgeProps } from './Badge';
 export type { TableColumn } from './DataTable';
 export type { DropdownMenuItem, DropdownMenuProps } from './DropdownMenu';
 export type { IconButtonVariant, IconButtonSize, IconButtonProps } from './IconButton';

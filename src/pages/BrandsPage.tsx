@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, DataTable, EmptyState, Icon, IconButton, DropdownMenu, Card } from '../components';
+import { Page, DataTable, EmptyState, Icon, IconButton, DropdownMenu, Card, Badge } from '../components';
 import { useBrandsContext } from '../contexts';
 import type { EnhancedBrandDetails, TableColumn } from '../types/enhanced';
 import type { DropdownMenuItem } from '../components/DropdownMenu';
@@ -102,9 +102,9 @@ const BrandsPage: React.FC = () => {
       label: 'Industry',
       className: 'w-1/6 min-w-[120px]',
       render: (brand, value) => (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+        <Badge variant="primary" size="md">
           {brand.industry}
-        </span>
+        </Badge>
       ),
     },
     {
