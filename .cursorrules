@@ -3,6 +3,12 @@
 ## Project Overview
 This is a modern, enterprise-grade React application built with TypeScript, featuring comprehensive accessibility, performance optimization, and maintainable architecture patterns. The application has been extensively refactored to demonstrate best practices in modern React development.
 
+## Repository Information
+- **GitHub Repository**: https://github.com/belshi/signals
+- **Clone URL**: git@github.com:belshi/signals.git
+- **Main Branch**: main
+- **License**: MIT
+
 ## Tech Stack
 - **React 18** with TypeScript
 - **Vite** for build tooling
@@ -321,7 +327,13 @@ const debouncedSearch = debounce(searchFunction, 300);
 - Sanitize **sensitive data** in logs
 - Use **secure storage** for sensitive information
 
-## Git Workflow
+## Git Workflow & GitHub Integration
+
+### Repository Setup
+- **Remote Origin**: git@github.com:belshi/signals.git
+- **Upstream Tracking**: Set up with `git push -u origin main`
+- **Branch Protection**: Main branch requires pull request reviews
+- **Issues**: Use GitHub Issues for bug reports and feature requests
 
 ### Commit Messages
 - Use **conventional commits** format
@@ -334,6 +346,23 @@ const debouncedSearch = debounce(searchFunction, 300);
 - **fix/**: Bug fixes (e.g., `fix/memory-leak`)
 - **refactor/**: Code refactoring (e.g., `refactor/component-structure`)
 - **docs/**: Documentation updates (e.g., `docs/api-documentation`)
+
+### GitHub Workflow
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally: `git clone git@github.com:YOUR_USERNAME/signals.git`
+3. **Add upstream remote**: `git remote add upstream git@github.com:belshi/signals.git`
+4. **Create feature branch**: `git checkout -b feature/your-feature-name`
+5. **Make changes** with proper testing and accessibility compliance
+6. **Commit changes**: `git commit -m "feat: add your feature description"`
+7. **Push to fork**: `git push origin feature/your-feature-name`
+8. **Submit pull request** on GitHub
+
+### Pull Request Guidelines
+- **Title**: Use conventional commit format
+- **Description**: Include what changed, why, and how to test
+- **Checklist**: Ensure all quality gates are met
+- **Review**: At least one approval required before merge
+- **CI/CD**: All automated tests must pass
 
 ## Code Review Guidelines
 
@@ -362,6 +391,7 @@ const debouncedSearch = debounce(searchFunction, 300);
 - **npm** (v8 or higher) or **yarn**
 - **VS Code** with recommended extensions
 - **Git** for version control
+- **GitHub CLI** (optional but recommended): `brew install gh`
 
 ### Recommended Extensions
 - **TypeScript and JavaScript Language Features**

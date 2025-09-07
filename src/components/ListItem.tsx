@@ -1,12 +1,13 @@
 import React, { useMemo } from 'react';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import DropdownMenu, { type DropdownMenuItem } from './DropdownMenu';
+import { type IconName } from './Icon';
 
 export interface ListItemProps {
   id: string;
   text: string;
   actionItems?: DropdownMenuItem[];
-  actionTriggerIcon?: string;
+  actionTriggerIcon?: IconName;
   actionTriggerVariant?: 'primary' | 'secondary';
   actionTriggerSize?: 'sm' | 'md' | 'lg';
   actionTriggerAriaLabel?: string;
@@ -20,7 +21,7 @@ export interface ListItemProps {
 }
 
 const ListItem: React.FC<ListItemProps> = ({
-  id,
+  id: _id, // Prefix with underscore to indicate intentionally unused
   text,
   actionItems,
   actionTriggerIcon = 'more-vertical',
@@ -41,8 +42,7 @@ const ListItem: React.FC<ListItemProps> = ({
         onClick();
       }
     },
-    onSpace: (e) => {
-      e.preventDefault();
+    onSpace: () => {
       if (onClick) {
         onClick();
       }

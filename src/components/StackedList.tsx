@@ -2,12 +2,13 @@ import React, { useMemo } from 'react';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import ListItem from './ListItem';
 import { type DropdownMenuItem } from './DropdownMenu';
+import { type IconName } from './Icon';
 
 export interface StackedListItem {
   id: string;
   text: string;
   actionItems?: DropdownMenuItem[];
-  actionTriggerIcon?: string;
+  actionTriggerIcon?: IconName;
   actionTriggerVariant?: 'primary' | 'secondary';
   actionTriggerSize?: 'sm' | 'md' | 'lg';
   actionTriggerAriaLabel?: string;
@@ -40,17 +41,15 @@ const StackedList: React.FC<StackedListProps> = ({
   'aria-labelledby': ariaLabelledby,
 }) => {
   const listRef = useKeyboardNavigation({
-    onArrowDown: (e) => {
-      e.preventDefault();
-      const currentElement = e.target as HTMLElement;
+    onArrowDown: () => {
+      const currentElement = document.activeElement as HTMLElement;
       const nextElement = currentElement.nextElementSibling as HTMLElement;
       if (nextElement) {
         nextElement.focus();
       }
     },
-    onArrowUp: (e) => {
-      e.preventDefault();
-      const currentElement = e.target as HTMLElement;
+    onArrowUp: () => {
+      const currentElement = document.activeElement as HTMLElement;
       const previousElement = currentElement.previousElementSibling as HTMLElement;
       if (previousElement) {
         previousElement.focus();
@@ -70,7 +69,7 @@ const StackedList: React.FC<StackedListProps> = ({
     }
   };
 
-  const defaultRenderItem = (item: StackedListItem, index: number) => (
+  const defaultRenderItem = (item: StackedListItem, _index: number) => (
     <ListItem
       key={item.id}
       id={item.id}
@@ -85,9 +84,7 @@ const StackedList: React.FC<StackedListProps> = ({
     />
   );
 
-  const defaultRenderAction = (item: StackedListItem, index: number) => {
-    return null; // Actions are now handled directly in ListItem
-  };
+  // Actions are now handled directly in ListItem component
 
   if (items.length === 0 && emptyState) {
     return (

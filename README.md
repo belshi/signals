@@ -2,6 +2,13 @@
 
 A modern, enterprise-grade signals processing and analysis application built with React, TypeScript, and Tailwind CSS. This application has been comprehensively refactored to demonstrate best practices in modern React development, accessibility, performance, and maintainability.
 
+## 📍 Repository Information
+
+- **GitHub Repository**: [https://github.com/belshi/signals](https://github.com/belshi/signals)
+- **Clone URL**: `git@github.com:belshi/signals.git`
+- **Main Branch**: `main`
+- **License**: MIT
+
 ## 🚀 Features
 
 ### Core Functionality
@@ -121,7 +128,7 @@ src/
 
 1. **Clone the repository**
    ```bash
-   git clone <repository-url>
+   git clone git@github.com:belshi/signals.git
    cd signals
    ```
 
@@ -329,11 +336,37 @@ import { Icon, IconButton } from '../components';
 ## 🤝 Contributing
 
 ### Development Workflow
-1. Fork the repository
-2. Create a feature branch
-3. Make changes with proper testing
-4. Ensure accessibility compliance
-5. Submit a pull request
+1. **Fork the repository** on GitHub
+2. **Clone your fork** locally:
+   ```bash
+   git clone git@github.com:YOUR_USERNAME/signals.git
+   cd signals
+   ```
+3. **Add upstream remote**:
+   ```bash
+   git remote add upstream git@github.com:belshi/signals.git
+   ```
+4. **Create a feature branch**:
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+5. **Make changes** with proper testing and accessibility compliance
+6. **Commit your changes**:
+   ```bash
+   git add .
+   git commit -m "feat: add your feature description"
+   ```
+7. **Push to your fork**:
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+8. **Submit a pull request** on GitHub
+
+### GitHub Repository Management
+- **Issues**: Use GitHub Issues for bug reports and feature requests
+- **Pull Requests**: All changes must go through pull request review
+- **Branch Protection**: Main branch is protected, requires PR reviews
+- **CI/CD**: Automated testing and deployment on push/PR
 
 ### Code Standards
 - Follow TypeScript best practices
