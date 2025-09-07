@@ -1,4 +1,5 @@
 import React, { forwardRef, useMemo, useState, useCallback, useEffect, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import { Icon } from './index';
 
@@ -46,6 +47,7 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
     const [searchTerm, setSearchTerm] = useState('');
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
+    const [dropdownRect, setDropdownRect] = useState<DOMRect | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -121,14 +123,8 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
       return `${baseClasses} ${sizeClasses[size]} ${colorClasses} ${widthClasses} ${className}`.trim();
     }, [size, error, fullWidth, className]);
 
-    const dropdownClasses = useMemo(() => {
-      const positionClasses = dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1';
-      const baseClasses = `absolute z-[9999] ${positionClasses} bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto`;
-      const widthClasses = fullWidth ? 'w-full' : 'min-w-full';
-      return `${baseClasses} ${widthClasses}`;
-    }, [fullWidth, dropdownPosition]);
 
-    // Check if dropdown should open upward to avoid clipping
+    // Check if dropdown should open upward to avoid clipping and store position
     useEffect(() => {
       if (isOpen && containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
@@ -136,12 +132,17 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
         const spaceBelow = viewportHeight - rect.bottom;
         const spaceAbove = rect.top;
         
+        // Store the rect for portal positioning
+        setDropdownRect(rect);
+        
         // If there's not enough space below but more space above, open upward
         if (spaceBelow < 200 && spaceAbove > spaceBelow) {
           setDropdownPosition('top');
         } else {
           setDropdownPosition('bottom');
         }
+      } else {
+        setDropdownRect(null);
       }
     }, [isOpen]);
 
@@ -230,8 +231,19 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
           </div>
         </div>
 
-        {isOpen && (
-          <div className={dropdownClasses}>
+        {isOpen && dropdownRect && createPortal(
+          <div 
+            className="bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto"
+            style={{
+              position: 'fixed',
+              left: dropdownRect.left,
+              width: dropdownRect.width,
+              top: dropdownPosition === 'top' 
+                ? dropdownRect.top - 200 // Approximate dropdown height
+                : dropdownRect.bottom,
+              zIndex: 9999,
+            }}
+          >
             {searchable && (
               <div className="p-2 border-b border-gray-200">
                 <input
@@ -275,7 +287,8 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
                 ))
               )}
             </div>
-          </div>
+          </div>,
+          document.body
         )}
       </div>
     );
