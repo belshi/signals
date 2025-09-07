@@ -121,10 +121,30 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
     }, [size, error, fullWidth, className]);
 
     const dropdownClasses = useMemo(() => {
-      const baseClasses = 'absolute z-50 mt-1 bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto';
+      const positionClasses = dropdownPosition === 'top' ? 'bottom-full mb-1' : 'top-full mt-1';
+      const baseClasses = `absolute z-[9999] ${positionClasses} bg-white border border-gray-300 rounded-md shadow-lg max-h-60 overflow-auto`;
       const widthClasses = fullWidth ? 'w-full' : 'min-w-full';
       return `${baseClasses} ${widthClasses}`;
-    }, [fullWidth]);
+    }, [fullWidth, dropdownPosition]);
+
+    // Check if dropdown should open upward to avoid clipping
+    const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
+    
+    useEffect(() => {
+      if (isOpen && containerRef.current) {
+        const rect = containerRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const spaceBelow = viewportHeight - rect.bottom;
+        const spaceAbove = rect.top;
+        
+        // If there's not enough space below but more space above, open upward
+        if (spaceBelow < 200 && spaceAbove > spaceBelow) {
+          setDropdownPosition('top');
+        } else {
+          setDropdownPosition('bottom');
+        }
+      }
+    }, [isOpen]);
 
     const handleSelect = useCallback((optionValue: string) => {
       onChange?.(optionValue);

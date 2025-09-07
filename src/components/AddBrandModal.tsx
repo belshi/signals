@@ -11,16 +11,16 @@ interface AddBrandModalProps {
 
 // Industry options based on mock data
 const INDUSTRY_OPTIONS = [
-  { value: 'Technology', label: 'Technology', description: 'Software, hardware, and digital services' },
-  { value: 'Healthcare', label: 'Healthcare', description: 'Medical devices, pharmaceuticals, and health services' },
-  { value: 'Energy', label: 'Energy', description: 'Renewable energy, oil & gas, and utilities' },
-  { value: 'Finance', label: 'Finance', description: 'Banking, insurance, and financial services' },
-  { value: 'Retail', label: 'Retail', description: 'E-commerce, consumer goods, and retail services' },
-  { value: 'Manufacturing', label: 'Manufacturing', description: 'Industrial production and manufacturing' },
-  { value: 'Education', label: 'Education', description: 'Educational services and edtech' },
-  { value: 'Transportation', label: 'Transportation', description: 'Logistics, shipping, and mobility' },
-  { value: 'Media', label: 'Media & Entertainment', description: 'Content creation, broadcasting, and entertainment' },
-  { value: 'Real Estate', label: 'Real Estate', description: 'Property development and real estate services' },
+  { value: 'Technology', label: 'Technology' },
+  { value: 'Healthcare', label: 'Healthcare' },
+  { value: 'Energy', label: 'Energy' },
+  { value: 'Finance', label: 'Finance' },
+  { value: 'Retail', label: 'Retail' },
+  { value: 'Manufacturing', label: 'Manufacturing' },
+  { value: 'Education', label: 'Education' },
+  { value: 'Transportation', label: 'Transportation' },
+  { value: 'Media', label: 'Media & Entertainment' },
+  { value: 'Real Estate', label: 'Real Estate' },
 ];
 
 const AddBrandModal: React.FC<AddBrandModalProps> = ({
