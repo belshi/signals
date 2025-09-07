@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Button } from './index';
+import { Modal, Button, InputLabel, TextInput, TextArea, RadioGroup, SingleSelect } from './index';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
 import type { CreateSignalForm, CopilotType, BrandId } from '../types/enhanced';
@@ -9,6 +9,15 @@ interface AddSignalModalProps {
   onClose: () => void;
   onSuccess?: () => void;
 }
+
+// Copilot type options
+const COPILOT_TYPE_OPTIONS = [
+  { value: 'Market Research', label: 'Market Research' },
+  { value: 'Social Media', label: 'Social Media' },
+  { value: 'Competitive Analysis', label: 'Competitive Analysis' },
+  { value: 'Brand Monitoring', label: 'Brand Monitoring' },
+  { value: 'Consumer Insights', label: 'Consumer Insights' },
+];
 
 // Use cases for different copilot types
 const USE_CASES: Record<CopilotType, Array<{ name: string; prompt: string }>> = {
@@ -47,7 +56,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
   const { createSignal } = useSignalsContext();
   const { brands } = useBrandsContext();
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [formData, setFormData] = useState<CreateSignalForm>({
     name: '',
@@ -65,10 +74,10 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       [field]: value,
     }));
     // Clear error when user starts typing
-    if (error) {
-      setError(null);
+    if (errors[field]) {
+      setErrors(prev => ({ ...prev, [field]: '' }));
     }
-  }, [error]);
+  }, [errors]);
 
   const handleUseCaseSelect = useCallback((useCaseName: string) => {
     setSelectedUseCase(useCaseName);
@@ -103,17 +112,39 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
     }
   }, [formData.copilotType]);
 
+  const validateForm = useCallback(() => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.name.trim()) {
+      newErrors.name = 'Signal name is required';
+    }
+
+    if (!formData.brandId) {
+      newErrors.brandId = 'Please select a brand';
+    }
+
+    if (!formData.prompt.trim()) {
+      newErrors.prompt = 'Prompt is required';
+    }
+
+    if (promptMode === 'predefined' && !selectedUseCase) {
+      newErrors.useCase = 'Please select a use case';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  }, [formData, promptMode, selectedUseCase]);
+
   const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!formData.name.trim() || !formData.prompt.trim() || !formData.brandId) {
-      setError('Name, prompt, and brand are required fields.');
+    if (!validateForm()) {
       return;
     }
 
     try {
       setIsLoading(true);
-      setError(null);
+      setErrors({});
       
       await createSignal(formData);
       
@@ -131,11 +162,11 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       onSuccess?.();
       onClose();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to create signal');
+      setErrors({ submit: err instanceof Error ? err.message : 'Failed to create signal' });
     } finally {
       setIsLoading(false);
     }
-  }, [formData, createSignal, onSuccess, onClose]);
+  }, [formData, validateForm, createSignal, onSuccess, onClose]);
 
   const handleClose = useCallback(() => {
     if (!isLoading) {
@@ -148,7 +179,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       });
       setSelectedUseCase('');
       setPromptMode('predefined');
-      setError(null);
+      setErrors({});
       onClose();
     }
   }, [isLoading, onClose]);
@@ -165,143 +196,155 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       closeOnEscape={!isLoading}
     >
       <form onSubmit={handleSubmit} className="space-y-6">
-        {error && (
+        {errors.submit && (
           <div className="rounded-md bg-red-50 p-4">
-            <div className="text-sm text-red-700">{error}</div>
+            <div className="text-sm text-red-700">{errors.submit}</div>
           </div>
         )}
 
         <div className="space-y-6">
           {/* Signal Name */}
           <div>
-            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
-              Signal Name *
-            </label>
-            <input
-              type="text"
+            <InputLabel
+              htmlFor="name"
+              required
+              error={!!errors.name}
+            >
+              Signal Name
+            </InputLabel>
+            <TextInput
               id="name"
               value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Enter signal name"
-              required
+              error={!!errors.name}
               disabled={isLoading}
+              ariaDescribedBy={errors.name ? 'name-error' : undefined}
             />
+            {errors.name && (
+              <p id="name-error" className="mt-1 text-sm text-red-600">
+                {errors.name}
+              </p>
+            )}
           </div>
 
           {/* Brand Selection */}
           <div>
-            <label htmlFor="brandId" className="block text-sm font-medium text-gray-700 mb-1">
-              Brand *
-            </label>
-            <select
-              id="brandId"
-              value={formData.brandId}
-              onChange={(e) => handleInputChange('brandId', e.target.value as BrandId)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            <InputLabel
+              htmlFor="brandId"
               required
-              disabled={isLoading}
+              error={!!errors.brandId}
             >
-              <option value="">Select a brand</option>
-              {brands.map((brand) => (
-                <option key={brand.id} value={brand.id}>
-                  {brand.name}
-                </option>
-              ))}
-            </select>
+              Brand
+            </InputLabel>
+            <SingleSelect
+              id="brandId"
+              options={brands.map(brand => ({ value: brand.id, label: brand.name }))}
+              value={formData.brandId}
+              onChange={(value) => handleInputChange('brandId', value as BrandId)}
+              placeholder="Select a brand"
+              error={!!errors.brandId}
+              disabled={isLoading}
+              ariaDescribedBy={errors.brandId ? 'brandId-error' : undefined}
+            />
+            {errors.brandId && (
+              <p id="brandId-error" className="mt-1 text-sm text-red-600">
+                {errors.brandId}
+              </p>
+            )}
           </div>
 
           {/* Copilot Type */}
           <div>
-            <label htmlFor="copilotType" className="block text-sm font-medium text-gray-700 mb-1">
-              Copilot Type *
-            </label>
-            <select
-              id="copilotType"
-              value={formData.copilotType}
-              onChange={(e) => handleInputChange('copilotType', e.target.value as CopilotType)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+            <InputLabel
+              htmlFor="copilotType"
               required
-              disabled={isLoading}
             >
-              {Object.keys(USE_CASES).map((type) => (
-                <option key={type} value={type}>
-                  {type}
-                </option>
-              ))}
-            </select>
+              Copilot Type
+            </InputLabel>
+            <SingleSelect
+              id="copilotType"
+              options={COPILOT_TYPE_OPTIONS}
+              value={formData.copilotType}
+              onChange={(value) => handleInputChange('copilotType', value as CopilotType)}
+              placeholder="Select copilot type"
+              disabled={isLoading}
+            />
           </div>
 
           {/* Prompt Mode Toggle */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-3">
-              Prompt Type *
-            </label>
-            <div className="flex space-x-4">
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="promptMode"
-                  value="predefined"
-                  checked={promptMode === 'predefined'}
-                  onChange={(e) => handlePromptModeChange(e.target.value as 'predefined' | 'custom')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                  disabled={isLoading}
-                />
-                <span className="ml-2 text-sm text-gray-700">Predefined Use Cases</span>
-              </label>
-              <label className="flex items-center">
-                <input
-                  type="radio"
-                  name="promptMode"
-                  value="custom"
-                  checked={promptMode === 'custom'}
-                  onChange={(e) => handlePromptModeChange(e.target.value as 'predefined' | 'custom')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
-                  disabled={isLoading}
-                />
-                <span className="ml-2 text-sm text-gray-700">Custom Prompt</span>
-              </label>
-            </div>
+            <InputLabel
+              required
+              ariaLabelledBy="promptMode-label"
+            >
+              Prompt Type
+            </InputLabel>
+            <RadioGroup
+              name="promptMode"
+              options={[
+                { value: 'predefined', label: 'Predefined Use Cases' },
+                { value: 'custom', label: 'Custom Prompt' },
+              ]}
+              value={promptMode}
+              onChange={(value) => handlePromptModeChange(value as 'predefined' | 'custom')}
+              disabled={isLoading}
+              ariaLabelledBy="promptMode-label"
+            />
           </div>
 
           {/* Conditional Content Based on Prompt Mode */}
           {promptMode === 'predefined' ? (
             <div>
-              <label htmlFor="useCase" className="block text-sm font-medium text-gray-700 mb-1">
-                Use Case *
-              </label>
-              <select
-                id="useCase"
-                value={selectedUseCase}
-                onChange={(e) => handleUseCaseSelect(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
+              <InputLabel
+                htmlFor="useCase"
                 required
-                disabled={isLoading}
+                error={!!errors.useCase}
               >
-                <option value="">Select a use case</option>
-                {currentUseCases.map((useCase, index) => (
-                  <option key={index} value={useCase.name}>
-                    {useCase.name}
-                  </option>
-                ))}
-              </select>
+                Use Case
+              </InputLabel>
+              <SingleSelect
+                id="useCase"
+                options={currentUseCases.map((useCase, index) => ({ value: useCase.name, label: useCase.name }))}
+                value={selectedUseCase}
+                onChange={handleUseCaseSelect}
+                placeholder="Select a use case"
+                error={!!errors.useCase}
+                disabled={isLoading}
+                ariaDescribedBy={errors.useCase ? 'useCase-error' : undefined}
+              />
+              {errors.useCase && (
+                <p id="useCase-error" className="mt-1 text-sm text-red-600">
+                  {errors.useCase}
+                </p>
+              )}
             </div>
           ) : (
             <div>
-              <label htmlFor="prompt" className="block text-sm font-medium text-gray-700 mb-1">
-                Custom Prompt *
-              </label>
-              <textarea
+              <InputLabel
+                htmlFor="prompt"
+                required
+                error={!!errors.prompt}
+              >
+                Custom Prompt
+              </InputLabel>
+              <TextArea
                 id="prompt"
                 value={formData.prompt}
                 onChange={(e) => handleInputChange('prompt', e.target.value)}
-                rows={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
                 placeholder="Enter your custom prompt"
-                required
+                autoResize
+                minRows={6}
+                maxRows={12}
+                error={!!errors.prompt}
                 disabled={isLoading}
+                ariaDescribedBy={errors.prompt ? 'prompt-error' : undefined}
               />
+              {errors.prompt && (
+                <p id="prompt-error" className="mt-1 text-sm text-red-600">
+                  {errors.prompt}
+                </p>
+              )}
             </div>
           )}
         </div>
