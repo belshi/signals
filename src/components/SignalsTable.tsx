@@ -86,19 +86,6 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
         </div>
       ),
     },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (signal) => (
-        <button
-          className="text-indigo-600 hover:text-indigo-900 transition-colors duration-200"
-          type="button"
-          aria-label={`Edit ${signal.name}`}
-        >
-          Edit
-        </button>
-      ),
-    },
   ];
 
   const handleRowClick = (signal: EnhancedSignal, _index: number) => {

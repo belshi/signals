@@ -1,13 +1,12 @@
 import React, { useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, DataTable, EmptyState, Icon, IconButton, DropdownMenu, Card, Badge } from '../components';
+import { Page, DataTable, EmptyState, Icon, Card, Badge } from '../components';
 import { useBrandsContext } from '../contexts';
 import type { EnhancedBrandDetails, TableColumn } from '../types/enhanced';
-import type { DropdownMenuItem } from '../components/DropdownMenu';
 
 const BrandsPage: React.FC = () => {
   const navigate = useNavigate();
-  const { brands, isLoading, error, refreshBrands, deleteBrand } = useBrandsContext();
+  const { brands, isLoading, error, refreshBrands } = useBrandsContext();
 
   const handleRowClick = useCallback((brand: EnhancedBrandDetails) => {
     navigate(`/brands/${brand.id}`);
@@ -18,50 +17,7 @@ const BrandsPage: React.FC = () => {
     // TODO: Implement add brand functionality
   }, []);
 
-  const handleOpenBrand = useCallback((brand: EnhancedBrandDetails) => {
-    navigate(`/brands/${brand.id}`);
-  }, [navigate]);
 
-  const handleEditBrand = useCallback((brand: EnhancedBrandDetails) => {
-    console.log('Edit brand:', brand.id);
-    // TODO: Implement edit functionality
-  }, []);
-
-  const handleDeleteBrand = useCallback(async (brand: EnhancedBrandDetails) => {
-    if (window.confirm(`Are you sure you want to delete "${brand.name}"? This action cannot be undone.`)) {
-      try {
-        await deleteBrand(brand.id);
-        console.log('Brand deleted:', brand.id);
-      } catch (error) {
-        console.error('Failed to delete brand:', error);
-        // TODO: Show error toast
-      }
-    }
-  }, [deleteBrand]);
-
-  const getActionItems = useCallback((brand: EnhancedBrandDetails): DropdownMenuItem[] => [
-    {
-      id: 'open',
-      label: 'Open',
-      icon: 'external-link',
-      variant: 'default',
-      onClick: () => handleOpenBrand(brand)
-    },
-    {
-      id: 'edit',
-      label: 'Edit',
-      icon: 'edit',
-      variant: 'default',
-      onClick: () => handleEditBrand(brand)
-    },
-    {
-      id: 'delete',
-      label: 'Delete',
-      icon: 'trash',
-      variant: 'danger',
-      onClick: () => handleDeleteBrand(brand)
-    }
-  ], [handleOpenBrand, handleEditBrand, handleDeleteBrand]);
 
   const columns: TableColumn<EnhancedBrandDetails>[] = [
     {
@@ -116,33 +72,6 @@ const BrandsPage: React.FC = () => {
           {brand.employeeCount ? brand.employeeCount.toLocaleString() : 'N/A'}
         </div>
       ),
-    },
-    {
-      key: 'actions',
-      label: 'Actions',
-      className: 'w-20',
-      render: (brand, value) => {
-        return (
-          <div className="flex justify-end">
-            <DropdownMenu
-              items={getActionItems(brand)}
-              trigger={
-                <IconButton
-                  icon="more-vertical"
-                  variant="secondary"
-                  size="sm"
-                  ariaLabel={`More options for ${brand.name}`}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    console.log('More button clicked for:', brand.name);
-                  }}
-                />
-              }
-              className="relative z-50"
-            />
-          </div>
-        );
-      },
     },
   ];
 
