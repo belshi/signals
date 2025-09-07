@@ -45,6 +45,7 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
     const [isOpen, setIsOpen] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [focusedIndex, setFocusedIndex] = useState(-1);
+    const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
     const containerRef = useRef<HTMLDivElement>(null);
     const searchInputRef = useRef<HTMLInputElement>(null);
     const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
@@ -128,8 +129,6 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
     }, [fullWidth, dropdownPosition]);
 
     // Check if dropdown should open upward to avoid clipping
-    const [dropdownPosition, setDropdownPosition] = useState<'bottom' | 'top'>('bottom');
-    
     useEffect(() => {
       if (isOpen && containerRef.current) {
         const rect = containerRef.current.getBoundingClientRect();
