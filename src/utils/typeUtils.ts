@@ -6,7 +6,10 @@ import type {
 
 // Branded type constructors - ONLY USED FUNCTIONS
 export const createSignalId = (id: string): SignalId => id as SignalId;
-export const createBrandId = (id: string): BrandId => id as BrandId;
+export const createBrandId = (id: string | number): BrandId => {
+  const numId = typeof id === 'string' ? parseInt(id) : id;
+  return numId as BrandId;
+};
 
 // Date utilities with type safety - ONLY USED FUNCTIONS
 export const createISODateString = (date: Date | string): ISODateString => {

@@ -1,12 +1,38 @@
-import { useState, useCallback } from 'react';
-import { MOCK_BRANDS } from '../constants';
+import { useState, useCallback, useEffect } from 'react';
+import { brandService } from '../services/database';
 import type { EnhancedBrandDetails, BrandId, CreateBrandForm, UseBrandsReturn } from '../types/enhanced';
-import { createBrandId, createISODateString } from '../utils/typeUtils';
+import { useErrorHandler } from './useErrorHandler';
 
 export const useBrands = (): UseBrandsReturn => {
-  const [brands, setBrands] = useState<EnhancedBrandDetails[]>(MOCK_BRANDS);
+  const [brands, setBrands] = useState<EnhancedBrandDetails[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const { handleError } = useErrorHandler({
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
+
+  // Load brands on mount
+  useEffect(() => {
+    loadBrands();
+  }, []);
+
+  const loadBrands = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const brandsData = await brandService.getAllBrands();
+      setBrands(brandsData);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [handleError]);
 
   const getBrand = useCallback((id: BrandId): EnhancedBrandDetails | undefined => {
     return brands.find(brand => brand.id === id);
@@ -17,94 +43,56 @@ export const useBrands = (): UseBrandsReturn => {
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newBrand: EnhancedBrandDetails = {
-        id: createBrandId(`brand-${Date.now()}`),
-        name: data.name,
-        description: data.description,
-        website: data.website,
-        industry: data.industry,
-        foundedYear: data.foundedYear,
-        employeeCount: data.employeeCount,
-        createdAt: createISODateString(new Date().toISOString()),
-        updatedAt: createISODateString(new Date().toISOString()),
-      };
-      
+      const newBrand = await brandService.createBrand(data);
       setBrands(prev => [...prev, newBrand]);
       return newBrand;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to create brand';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const error = err as Error;
+      handleError(error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [handleError]);
 
   const updateBrand = useCallback(async (id: BrandId, data: Partial<CreateBrandForm>): Promise<EnhancedBrandDetails> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const updatedBrand = brands.find(brand => brand.id === id);
-      if (!updatedBrand) {
-        throw new Error('Brand not found');
-      }
-      
-      const updated = {
-        ...updatedBrand,
-        ...data,
-        updatedAt: createISODateString(new Date().toISOString()),
-      };
-      
-      setBrands(prev => prev.map(brand => brand.id === id ? updated : brand));
-      return updated;
+      const updatedBrand = await brandService.updateBrand(id, data);
+      setBrands(prev => prev.map(brand => 
+        brand.id === id ? updatedBrand : brand
+      ));
+      return updatedBrand;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to update brand';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const error = err as Error;
+      handleError(error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
-  }, [brands]);
+  }, [handleError]);
 
   const deleteBrand = useCallback(async (id: BrandId): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
+      await brandService.deleteBrand(id);
       setBrands(prev => prev.filter(brand => brand.id !== id));
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Failed to delete brand';
-      setError(errorMessage);
-      throw new Error(errorMessage);
+      const error = err as Error;
+      handleError(error);
+      throw error;
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [handleError]);
 
   const refreshBrands = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setBrands(MOCK_BRANDS);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh brands');
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    await loadBrands();
+  }, [loadBrands]);
 
   return {
     brands,

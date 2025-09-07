@@ -1,43 +1,78 @@
-import { useState, useCallback } from 'react';
-import { MOCK_BRAND_DETAILS } from '../constants';
-import type { EnhancedBrandDetails } from '../types/enhanced';
+import { useState, useCallback, useEffect } from 'react';
+import { brandService } from '../services/database';
+import type { EnhancedBrandDetails, BrandId } from '../types/enhanced';
+import { useErrorHandler } from './useErrorHandler';
 
-export const useBrand = () => {
-  const [brandDetails, setBrandDetails] = useState<EnhancedBrandDetails>(MOCK_BRAND_DETAILS);
+interface UseBrandOptions {
+  brandId?: BrandId;
+}
+
+export const useBrand = (options: UseBrandOptions = {}) => {
+  const { brandId } = options;
+  const [brandDetails, setBrandDetails] = useState<EnhancedBrandDetails | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const updateBrandDetails = useCallback(async (updates: Partial<EnhancedBrandDetails>) => {
+  const { handleError } = useErrorHandler({
+    onError: (error) => {
+      setError(error.message);
+    },
+  });
+
+  // Load brand details when brandId changes
+  useEffect(() => {
+    if (brandId) {
+      loadBrandDetails(brandId);
+    }
+  }, [brandId]);
+
+  const loadBrandDetails = useCallback(async (id: BrandId) => {
     setIsLoading(true);
     setError(null);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      setBrandDetails(prev => ({ ...prev, ...updates }));
+      const brand = await brandService.getBrandById(id);
+      setBrandDetails(brand);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to update brand details');
-      throw err;
+      const error = err as Error;
+      handleError(error);
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [handleError]);
+
+  const updateBrandDetails = useCallback(async (updates: Partial<EnhancedBrandDetails>) => {
+    if (!brandDetails) {
+      throw new Error('No brand details available to update');
+    }
+
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const updatedBrand = await brandService.updateBrand(brandDetails.id, {
+        name: updates.name,
+        description: updates.description,
+        website: updates.website,
+        industry: updates.industry,
+        foundedYear: updates.foundedYear,
+        employeeCount: updates.employeeCount,
+      });
+      setBrandDetails(updatedBrand);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [brandDetails, handleError]);
 
   const refreshBrandDetails = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-      setBrandDetails(MOCK_BRAND_DETAILS);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh brand details');
-    } finally {
-      setIsLoading(false);
+    if (brandDetails) {
+      await loadBrandDetails(brandDetails.id);
     }
-  }, []);
+  }, [brandDetails, loadBrandDetails]);
 
   return {
     brandDetails,

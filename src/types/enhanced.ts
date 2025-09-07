@@ -2,7 +2,7 @@ import React from 'react';
 
 // Branded types for better type safety
 export type SignalId = string & { readonly __brand: 'SignalId' };
-export type BrandId = string & { readonly __brand: 'BrandId' };
+export type BrandId = number & { readonly __brand: 'BrandId' };
 export type UserId = string & { readonly __brand: 'UserId' };
 
 // Utility type to create branded types

@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react';
-import { MOCK_SIGNALS } from '../constants';
+import { useState, useCallback, useEffect } from 'react';
+import { signalService } from '../services/database';
 import { useRetry } from './useRetry';
 import { useErrorHandler } from './useErrorHandler';
 import type { 
@@ -8,10 +8,9 @@ import type {
   UpdateSignalForm,
   UseSignalsReturn 
 } from '../types/enhanced';
-import { now } from '../utils/typeUtils';
 
 export const useSignals = (): UseSignalsReturn => {
-  const [signals, setSignals] = useState<EnhancedSignal[]>(MOCK_SIGNALS);
+  const [signals, setSignals] = useState<EnhancedSignal[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
@@ -32,44 +31,40 @@ export const useSignals = (): UseSignalsReturn => {
     },
   });
 
+  // Load signals on mount
+  useEffect(() => {
+    loadSignals();
+  }, []);
+
+  const loadSignals = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      const signalsData = await signalService.getAllSignals();
+      setSignals(signalsData);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [handleError]);
 
   const updateSignal = useCallback(async (id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> => {
     setIsLoading(true);
     setError(null);
     
     const updateSignalOperation = async (): Promise<EnhancedSignal> => {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() < 0.2) {
-            reject(new Error('Server error: Failed to update signal'));
-          } else {
-            resolve(undefined);
-          }
-        }, 500);
-      });
-      
-      const updatedSignal = signals.find(s => s.id === id);
-      if (!updatedSignal) {
-        throw new Error('Signal not found');
-      }
-      
-      const newSignal: EnhancedSignal = {
-        ...updatedSignal,
-        ...updates,
-        updatedAt: now(),
-      };
-      
+      const updatedSignal = await signalService.updateSignal(id, updates);
       setSignals(prev => prev.map(signal => 
-        signal.id === id ? newSignal : signal
+        signal.id === id ? updatedSignal : signal
       ));
-      
-      return newSignal;
+      return updatedSignal;
     };
 
     try {
-      const result = await retry(updateSignalOperation);
-      return result;
+      return await retry(updateSignalOperation);
     } catch (err) {
       const error = err as Error;
       handleError(error);
@@ -77,24 +72,14 @@ export const useSignals = (): UseSignalsReturn => {
     } finally {
       setIsLoading(false);
     }
-  }, [signals, retry, handleError]);
+  }, [retry, handleError]);
 
   const deleteSignal = useCallback(async (id: SignalId): Promise<void> => {
     setIsLoading(true);
     setError(null);
     
     const deleteSignalOperation = async (): Promise<void> => {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() < 0.15) {
-            reject(new Error('Permission denied: Cannot delete signal'));
-          } else {
-            resolve(undefined);
-          }
-        }, 500);
-      });
-      
+      await signalService.deleteSignal(id);
       setSignals(prev => prev.filter(signal => signal.id !== id));
     };
 
@@ -110,32 +95,8 @@ export const useSignals = (): UseSignalsReturn => {
   }, [retry, handleError]);
 
   const refreshSignals = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
-    setError(null);
-    
-    const refreshOperation = async (): Promise<void> => {
-      // Simulate API call
-      await new Promise((resolve, reject) => {
-        setTimeout(() => {
-          if (Math.random() < 0.1) {
-            reject(new Error('Network timeout: Failed to refresh signals'));
-          } else {
-            resolve(undefined);
-          }
-        }, 1000);
-      });
-      setSignals(MOCK_SIGNALS);
-    };
-
-    try {
-      await retry(refreshOperation);
-    } catch (err) {
-      const error = err as Error;
-      handleError(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [retry, handleError]);
+    await loadSignals();
+  }, [loadSignals]);
 
   const getSignal = useCallback((id: SignalId): EnhancedSignal | undefined => {
     return signals.find(signal => signal.id === id);

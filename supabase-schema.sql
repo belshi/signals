@@ -1,0 +1,93 @@
+-- Supabase Database Schema for Signals Application
+-- Run this SQL in your Supabase SQL editor to create the required tables
+
+-- Enable UUID extension
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
+-- Create brands table
+CREATE TABLE IF NOT EXISTS brands (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    website VARCHAR(500),
+    industry VARCHAR(100),
+    logo VARCHAR(500),
+    founded_year INTEGER,
+    employee_count INTEGER,
+    revenue BIGINT,
+    social_media JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create signals table
+CREATE TABLE IF NOT EXISTS signals (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    name VARCHAR(255) NOT NULL,
+    prompt TEXT NOT NULL,
+    type VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'pending' CHECK (status IN ('active', 'inactive', 'pending')),
+    tags TEXT[] DEFAULT '{}',
+    brand_id UUID NOT NULL REFERENCES brands(id) ON DELETE CASCADE,
+    triggered_at TIMESTAMP WITH TIME ZONE,
+    ai_insights JSONB,
+    ai_recommendations TEXT[],
+    csv_data TEXT,
+    metadata JSONB,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+);
+
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_brands_created_at ON brands(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_brands_industry ON brands(industry);
+CREATE INDEX IF NOT EXISTS idx_signals_created_at ON signals(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_signals_brand_id ON signals(brand_id);
+CREATE INDEX IF NOT EXISTS idx_signals_status ON signals(status);
+CREATE INDEX IF NOT EXISTS idx_signals_type ON signals(type);
+
+-- Create updated_at trigger function
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = NOW();
+    RETURN NEW;
+END;
+$$ language 'plpgsql';
+
+-- Create triggers to automatically update updated_at
+CREATE TRIGGER update_brands_updated_at 
+    BEFORE UPDATE ON brands 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_signals_updated_at 
+    BEFORE UPDATE ON signals 
+    FOR EACH ROW 
+    EXECUTE FUNCTION update_updated_at_column();
+
+-- Enable Row Level Security (RLS)
+ALTER TABLE brands ENABLE ROW LEVEL SECURITY;
+ALTER TABLE signals ENABLE ROW LEVEL SECURITY;
+
+-- Create policies for public access (adjust based on your security needs)
+-- For now, allowing all operations for authenticated users
+-- You may want to restrict this based on your requirements
+
+-- Brands policies
+CREATE POLICY "Allow all operations on brands for authenticated users" ON brands
+    FOR ALL USING (auth.role() = 'authenticated');
+
+-- Signals policies  
+CREATE POLICY "Allow all operations on signals for authenticated users" ON signals
+    FOR ALL USING (auth.role() = 'authenticated');
+
+-- Insert some sample data (optional - remove if you don't want sample data)
+INSERT INTO brands (id, name, description, website, industry, founded_year, employee_count, revenue, social_media) VALUES
+    ('550e8400-e29b-41d4-a716-446655440001', 'TechCorp Solutions', 'A leading technology company specializing in innovative software solutions for businesses.', 'https://techcorp.com', 'Technology', 2015, 250, 50000000, '{"twitter": "@techcorp", "linkedin": "techcorp-solutions", "facebook": "techcorp.solutions"}'),
+    ('550e8400-e29b-41d4-a716-446655440002', 'GreenEnergy Corp', 'Sustainable energy solutions provider focused on renewable technologies and environmental impact.', 'https://greenenergy.com', 'Energy', 2018, 180, 35000000, '{"twitter": "@greenenergy", "linkedin": "greenenergy-corp", "facebook": "greenenergy.corp"}'),
+    ('550e8400-e29b-41d4-a716-446655440003', 'HealthTech Innovations', 'Revolutionary healthcare technology company developing AI-powered medical solutions.', 'https://healthtech.com', 'Healthcare', 2020, 120, 25000000, '{"twitter": "@healthtech", "linkedin": "healthtech-innovations", "facebook": "healthtech.innovations"}');
+
+INSERT INTO signals (id, name, prompt, type, status, tags, brand_id, triggered_at, ai_insights, ai_recommendations, csv_data, metadata) VALUES
+    ('650e8400-e29b-41d4-a716-446655440001', 'Market Trend Analysis', 'Analyze market trends and consumer behavior patterns for sustainable technology products. Focus on social media sentiment, search volume, and competitor activity.', 'Analytics', 'active', '{"market", "trends", "analysis"}', '550e8400-e29b-41d4-a716-446655440001', '2024-01-20T10:30:00Z', '{"socialListening": "Increased mentions of sustainable technology by 45%", "consumerInsights": "Consumer preference for eco-friendly products up 78%"}', '{"Launch sustainability campaign", "Introduce eco-friendly variants", "Engage environmental influencers"}', 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n1,Market Trend Analysis,Analytics,active,TechCorp Solutions,2024-01-20T10:30:00Z,"Increased mentions of sustainable technology by 45%","Consumer preference for eco-friendly products up 78%","Launch sustainability campaign,Introduce eco-friendly variants,Engage environmental influencers"', '{"source": "market-data-api", "confidence": 0.95}'),
+    ('650e8400-e29b-41d4-a716-446655440002', 'Social Media Sentiment', 'Monitor social media sentiment for our brand across Twitter, Facebook, and Instagram. Track mentions, sentiment changes, and identify potential PR issues or opportunities.', 'Social', 'inactive', '{"social", "sentiment", "monitoring"}', '550e8400-e29b-41d4-a716-446655440002', '2024-01-18T14:15:00Z', '{"socialListening": "Negative sentiment spike - 67% relate to customer service", "consumerInsights": "Customer satisfaction dropped 12%"}', '{"Implement 24/7 chatbot", "Create customer success team", "Develop public response strategy"}', 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n2,Social Media Sentiment,Social,inactive,GreenEnergy Corp,2024-01-18T14:15:00Z,"Negative sentiment spike - 67% relate to customer service","Customer satisfaction dropped 12%","Implement 24/7 chatbot,Create customer success team,Develop public response strategy"', '{"platforms": ["twitter", "facebook", "instagram"], "sentiment": "negative", "volume": 1250}');
