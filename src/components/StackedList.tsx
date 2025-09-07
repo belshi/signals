@@ -1,16 +1,16 @@
 import React, { useMemo } from 'react';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 import ListItem from './ListItem';
-import { type IconName } from './Icon';
+import { type DropdownMenuItem } from './DropdownMenu';
 
 export interface StackedListItem {
   id: string;
   text: string;
-  actionIcon?: IconName;
-  actionVariant?: 'primary' | 'secondary';
-  actionSize?: 'sm' | 'md' | 'lg';
-  actionAriaLabel?: string;
-  onActionClick?: () => void;
+  actionItems?: DropdownMenuItem[];
+  actionTriggerIcon?: string;
+  actionTriggerVariant?: 'primary' | 'secondary';
+  actionTriggerSize?: 'sm' | 'md' | 'lg';
+  actionTriggerAriaLabel?: string;
   metadata?: Record<string, any>;
 }
 
@@ -75,11 +75,11 @@ const StackedList: React.FC<StackedListProps> = ({
       key={item.id}
       id={item.id}
       text={item.text}
-      actionIcon={item.actionIcon}
-      actionVariant={item.actionVariant}
-      actionSize={item.actionSize}
-      actionAriaLabel={item.actionAriaLabel}
-      onActionClick={item.onActionClick}
+      actionItems={item.actionItems}
+      actionTriggerIcon={item.actionTriggerIcon}
+      actionTriggerVariant={item.actionTriggerVariant}
+      actionTriggerSize={item.actionTriggerSize}
+      actionTriggerAriaLabel={item.actionTriggerAriaLabel}
       className={itemClassName}
       onClick={onItemClick ? () => handleItemClick(item) : undefined}
     />

@@ -2,6 +2,7 @@
 export { default as Button } from './Button';
 export { default as DataTable } from './DataTable';
 export { default as BrandDetails } from './BrandDetails';
+export { default as DropdownMenu } from './DropdownMenu';
 export { default as BrandGoals } from './BrandGoals';
 export { default as Card } from './Card';
 export { default as Competitors } from './Competitors';
@@ -25,6 +26,7 @@ export { default as StatusBadge } from './StatusBadge';
 
 // Export types
 export type { TableColumn } from './DataTable';
+export type { DropdownMenuItem, DropdownMenuProps } from './DropdownMenu';
 export type { IconButtonVariant, IconButtonSize, IconButtonProps } from './IconButton';
 export type { ListItemProps } from './ListItem';
 export type { StackedListItem, StackedListProps } from './StackedList';

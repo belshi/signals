@@ -1,5 +1,5 @@
 import React from 'react';
-import { StackedList, type StackedListItem } from '../components';
+import { StackedList, type StackedListItem, type DropdownMenuItem } from '../components';
 
 interface BrandGoal {
   id: string;
@@ -42,18 +42,31 @@ const BrandGoals: React.FC = () => {
     // TODO: Implement delete functionality
   };
 
+  const getActionItems = (goal: BrandGoal): DropdownMenuItem[] => [
+    {
+      id: 'edit',
+      label: 'Edit',
+      icon: 'edit',
+      variant: 'default',
+      onClick: () => handleEditGoal(goal.id)
+    },
+    {
+      id: 'delete',
+      label: 'Delete',
+      icon: 'trash',
+      variant: 'danger',
+      onClick: () => handleDeleteGoal(goal.id)
+    }
+  ];
+
   const stackedListItems: StackedListItem[] = goals.map((goal) => ({
     id: goal.id,
     text: goal.title,
-    actionIcon: 'more-vertical',
-    actionVariant: 'secondary',
-    actionSize: 'sm',
-    actionAriaLabel: `More options for ${goal.title}`,
-    onActionClick: () => {
-      // For now, we'll just log the goal ID
-      // In a real app, this could open a dropdown or modal
-      console.log('More options for goal:', goal.id);
-    }
+    actionItems: getActionItems(goal),
+    actionTriggerIcon: 'more-vertical',
+    actionTriggerVariant: 'secondary',
+    actionTriggerSize: 'sm',
+    actionTriggerAriaLabel: `More options for ${goal.title}`
   }));
 
   return (

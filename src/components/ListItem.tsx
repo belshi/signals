@@ -1,15 +1,15 @@
 import React, { useMemo } from 'react';
 import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
-import IconButton, { type IconButtonProps } from './IconButton';
+import DropdownMenu, { type DropdownMenuItem } from './DropdownMenu';
 
 export interface ListItemProps {
   id: string;
   text: string;
-  actionIcon?: IconButtonProps['icon'];
-  actionVariant?: IconButtonProps['variant'];
-  actionSize?: IconButtonProps['size'];
-  actionAriaLabel?: string;
-  onActionClick?: () => void;
+  actionItems?: DropdownMenuItem[];
+  actionTriggerIcon?: string;
+  actionTriggerVariant?: 'primary' | 'secondary';
+  actionTriggerSize?: 'sm' | 'md' | 'lg';
+  actionTriggerAriaLabel?: string;
   className?: string;
   onClick?: () => void;
   onKeyDown?: (event: React.KeyboardEvent) => void;
@@ -22,11 +22,11 @@ export interface ListItemProps {
 const ListItem: React.FC<ListItemProps> = ({
   id,
   text,
-  actionIcon,
-  actionVariant = 'secondary',
-  actionSize = 'sm',
-  actionAriaLabel,
-  onActionClick,
+  actionItems,
+  actionTriggerIcon = 'more-vertical',
+  actionTriggerVariant = 'secondary',
+  actionTriggerSize = 'sm',
+  actionTriggerAriaLabel,
   className = '',
   onClick,
   onKeyDown,
@@ -88,14 +88,14 @@ const ListItem: React.FC<ListItemProps> = ({
         <p className="text-sm text-gray-900 flex-1 min-w-0">
           {text}
         </p>
-        {actionIcon && (
+        {actionItems && actionItems.length > 0 && (
           <div className="ml-4 flex-shrink-0">
-            <IconButton
-              icon={actionIcon}
-              variant={actionVariant}
-              size={actionSize}
-              ariaLabel={actionAriaLabel || `Action for ${text}`}
-              onClick={onActionClick}
+            <DropdownMenu
+              items={actionItems}
+              triggerIcon={actionTriggerIcon}
+              triggerVariant={actionTriggerVariant}
+              triggerSize={actionTriggerSize}
+              triggerAriaLabel={actionTriggerAriaLabel || `More options for ${text}`}
             />
           </div>
         )}

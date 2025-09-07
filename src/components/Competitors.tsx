@@ -1,5 +1,5 @@
 import React from 'react';
-import { StackedList, type StackedListItem } from '../components';
+import { StackedList, type StackedListItem, type DropdownMenuItem } from '../components';
 
 interface Competitor {
   id: string;
@@ -42,18 +42,31 @@ const Competitors: React.FC = () => {
     // TODO: Implement delete functionality
   };
 
+  const getActionItems = (competitor: Competitor): DropdownMenuItem[] => [
+    {
+      id: 'edit',
+      label: 'Edit',
+      icon: 'edit',
+      variant: 'default',
+      onClick: () => handleEditCompetitor(competitor.id)
+    },
+    {
+      id: 'delete',
+      label: 'Delete',
+      icon: 'trash',
+      variant: 'danger',
+      onClick: () => handleDeleteCompetitor(competitor.id)
+    }
+  ];
+
   const stackedListItems: StackedListItem[] = competitors.map((competitor) => ({
     id: competitor.id,
     text: competitor.name,
-    actionIcon: 'more-vertical',
-    actionVariant: 'secondary',
-    actionSize: 'sm',
-    actionAriaLabel: `More options for ${competitor.name}`,
-    onActionClick: () => {
-      // For now, we'll just log the competitor ID
-      // In a real app, this could open a dropdown or modal
-      console.log('More options for competitor:', competitor.id);
-    }
+    actionItems: getActionItems(competitor),
+    actionTriggerIcon: 'more-vertical',
+    actionTriggerVariant: 'secondary',
+    actionTriggerSize: 'sm',
+    actionTriggerAriaLabel: `More options for ${competitor.name}`
   }));
 
   return (
