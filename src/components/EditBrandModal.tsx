@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Modal, Button, InputLabel, TextInput, TextArea, SingleSelect } from './index';
+import { Modal, Button, InputLabel, TextInput, TextArea } from './index';
 import { useBrandsContext } from '../contexts';
 import type { EnhancedBrandDetails, CreateBrandForm } from '../types/enhanced';
 
@@ -241,18 +241,27 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
             >
               Industry
             </InputLabel>
-            <SingleSelect
+            <select
               id="industry"
-              options={INDUSTRY_OPTIONS}
               value={formData.industry}
-              onChange={(value) => handleInputChange('industry', value)}
-              placeholder="Select an industry"
-              error={!!errors.industry}
-              searchable
-              clearable
+              onChange={(e) => handleInputChange('industry', e.target.value)}
+              className={`w-full px-3 py-2 border rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 ${
+                errors.industry
+                  ? 'border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500'
+                  : 'border-gray-300 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500'
+              }`}
+              required
               disabled={isLoading}
-              ariaDescribedBy={errors.industry ? 'industry-error' : undefined}
-            />
+              aria-invalid={!!errors.industry}
+              aria-describedby={errors.industry ? 'industry-error' : undefined}
+            >
+              <option value="">Select an industry</option>
+              {INDUSTRY_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
             {errors.industry && (
               <p id="industry-error" className="mt-1 text-sm text-red-600">
                 {errors.industry}
