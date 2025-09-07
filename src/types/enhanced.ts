@@ -16,6 +16,7 @@ export type CompetitorStrength = 'low' | 'medium' | 'high';
 export type ButtonVariant = 'primary' | 'secondary' | 'danger';
 export type LoadingSize = 'sm' | 'md' | 'lg';
 export type ErrorVariant = 'error' | 'warning' | 'info';
+export type CopilotType = 'Market Research' | 'Social Media' | 'Competitive Analysis' | 'Brand Monitoring' | 'Consumer Insights';
 
 // Date types for better date handling
 export type ISODateString = string & { readonly __brand: 'ISODateString' };
@@ -130,6 +131,15 @@ export interface EnhancedCompetitor {
 }
 
 // Form types
+
+export interface CreateSignalForm {
+  name: string;
+  prompt: string;
+  brandId: BrandId;
+  copilotType: CopilotType;
+  type?: SignalType;
+  tags?: string[];
+}
 
 export interface UpdateSignalForm {
   name?: string;

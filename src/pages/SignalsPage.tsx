@@ -1,6 +1,6 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Page, Card, SignalsTable } from '../components';
+import { Page, Card, SignalsTable, AddSignalModal } from '../components';
 import { Icon } from '../components';
 import { useSignalsContext, BrandsProvider } from '../contexts';
 import type { EnhancedSignal } from '../types/enhanced';
@@ -8,10 +8,24 @@ import type { EnhancedSignal } from '../types/enhanced';
 const SignalsPage: React.FC = () => {
   const { refreshSignals } = useSignalsContext();
   const navigate = useNavigate();
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleSignalClick = (signal: EnhancedSignal) => {
     navigate(`/signals/${signal.id}`);
   };
+
+  const handleAddSignal = useCallback(() => {
+    setIsAddModalOpen(true);
+  }, []);
+
+  const handleModalClose = useCallback(() => {
+    setIsAddModalOpen(false);
+  }, []);
+
+  const handleSignalCreated = useCallback(() => {
+    // Refresh the signals list after successful creation
+    refreshSignals();
+  }, [refreshSignals]);
 
   return (
     <Page>
@@ -20,9 +34,7 @@ const SignalsPage: React.FC = () => {
         buttons={[
           {
             label: 'New Signal',
-            onClick: () => {
-              // Button restored but without functionality
-            },
+            onClick: handleAddSignal,
             variant: 'primary',
             icon: <Icon name="plus" size="sm" />,
           },
@@ -39,6 +51,14 @@ const SignalsPage: React.FC = () => {
           </BrandsProvider>
         </Card>
       </Page.Content>
+      
+      <BrandsProvider>
+        <AddSignalModal
+          isOpen={isAddModalOpen}
+          onClose={handleModalClose}
+          onSuccess={handleSignalCreated}
+        />
+      </BrandsProvider>
     </Page>
   );
 };
