@@ -15,6 +15,7 @@ export { default as BrandDetails } from './BrandDetails';
 export { default as SignalDetails } from './SignalDetails';
 export { default as AIInsights } from './AIInsights';
 export { default as AddBrandModal } from './AddBrandModal';
+export { default as EditBrandModal } from './EditBrandModal';
 export { default as AIRecommendations } from './AIRecommendations';
 export { default as CSVDataBlock } from './CSVDataBlock';
 export { default as DropdownMenu } from './DropdownMenu';

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Page, Card, BrandDetails, BrandGoals, Competitors } from '../components';
+import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal } from '../components';
 import { Icon } from '../components';
 import { useBrandsContext } from '../contexts';
 import type { EnhancedBrandDetails, BrandId } from '../types/enhanced';
@@ -12,6 +12,7 @@ const BrandPage: React.FC = () => {
   const [brand, setBrand] = useState<EnhancedBrandDetails | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const loadBrand = async () => {
@@ -72,9 +73,17 @@ const BrandPage: React.FC = () => {
   }, []);
 
   const handleEditBrandDetails = useCallback(() => {
-    console.log('Edit brand details');
-    // TODO: Implement edit functionality
+    setIsEditModalOpen(true);
   }, []);
+
+  const handleEditModalClose = useCallback(() => {
+    setIsEditModalOpen(false);
+  }, []);
+
+  const handleBrandUpdated = useCallback(() => {
+    // Refresh the brand details after successful update
+    refreshBrandDetails();
+  }, [refreshBrandDetails]);
 
   const handleDeleteBrand = useCallback(async () => {
     if (!brand) return;
@@ -223,6 +232,13 @@ const BrandPage: React.FC = () => {
           </div>
         </div>
       </Page.Content>
+      
+      <EditBrandModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSuccess={handleBrandUpdated}
+        brand={brand}
+      />
     </Page>
   );
 };
