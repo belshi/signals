@@ -2,6 +2,7 @@
 export { default as Badge } from './Badge';
 export { default as Button } from './Button';
 export { default as DataTable } from './DataTable';
+export { TableHeader, TableRow, TableCell, SelectableCell } from './DataTable/index';
 export { default as BrandDetails } from './BrandDetails';
 export { default as DropdownMenu } from './DropdownMenu';
 export { default as BrandGoals } from './BrandGoals';

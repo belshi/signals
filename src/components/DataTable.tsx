@@ -1,6 +1,23 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo, memo } from 'react';
+import clsx from 'clsx';
 import EmptyState from './EmptyState';
 import LoadingSpinner from './LoadingSpinner';
+import { TableHeader, TableRow } from './DataTable/index';
+
+/**
+ * DataTable component styling constants
+ * Centralized Tailwind CSS classes for better maintainability
+ */
+const DATA_TABLE_CLASSES = {
+  // Container and wrapper classes
+  container: 'overflow-visible',
+  wrapper: 'overflow-x-auto',
+  
+  // Table structure classes
+  table: 'min-w-full divide-y divide-gray-200',
+  body: 'bg-white divide-y divide-gray-200',
+} as const;
+
 // Define the base DataTable props interface locally
 interface BaseDataTableProps<T> {
   data: T[];
@@ -15,7 +32,7 @@ interface BaseDataTableProps<T> {
 export interface TableColumn<T> {
   key: keyof T | string;
   label: string;
-  render?: (item: T, value: any) => React.ReactNode;
+  render?: (item: T, value: any, index?: number) => React.ReactNode;
   className?: string;
   sortable?: boolean;
 }
@@ -30,7 +47,7 @@ interface DataTableProps<T> extends Omit<BaseDataTableProps<T>, 'onRowClick'> {
   ariaDescribedBy?: string;
 }
 
-const DataTable = <T extends Record<string, any>>({
+const DataTable = memo(<T extends Record<string, any>>({
   data,
   columns,
   keyField,
@@ -49,6 +66,44 @@ const DataTable = <T extends Record<string, any>>({
   const [focusedRow, setFocusedRow] = useState<number | null>(null);
   const [sortColumn, setSortColumn] = useState<keyof T | null>(null);
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+
+  // Memoize sorted data to prevent unnecessary re-sorting
+  const sortedData = useMemo(() => {
+    if (!sortColumn) return data;
+    
+    return [...data].sort((a, b) => {
+      const aVal = a[sortColumn];
+      const bVal = b[sortColumn];
+      
+      // Handle null/undefined values
+      if (aVal == null && bVal == null) return 0;
+      if (aVal == null) return sortDirection === 'asc' ? -1 : 1;
+      if (bVal == null) return sortDirection === 'asc' ? 1 : -1;
+      
+      // Handle different data types
+      if (typeof aVal === 'string' && typeof bVal === 'string') {
+        return sortDirection === 'asc' 
+          ? aVal.localeCompare(bVal)
+          : bVal.localeCompare(aVal);
+      }
+      
+      if (typeof aVal === 'number' && typeof bVal === 'number') {
+        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal;
+      }
+      
+      // Fallback to string comparison
+      const aStr = String(aVal);
+      const bStr = String(bVal);
+      return sortDirection === 'asc' 
+        ? aStr.localeCompare(bStr)
+        : bStr.localeCompare(aStr);
+    });
+  }, [data, sortColumn, sortDirection]);
+
+  // Memoize processed data with indices for better performance
+  const processedData = useMemo(() => {
+    return sortedData.map((item, index) => ({ item, index }));
+  }, [sortedData]);
 
   const handleRowClick = useCallback((item: T, index: number) => {
     setSelectedRow(index);
@@ -78,131 +133,73 @@ const DataTable = <T extends Record<string, any>>({
         break;
       case 'ArrowDown':
         event.preventDefault();
-        setFocusedRow(Math.min(index + 1, data.length - 1));
+        setFocusedRow(Math.min(index + 1, sortedData.length - 1));
         break;
       case 'ArrowUp':
         event.preventDefault();
         setFocusedRow(Math.max(index - 1, 0));
         break;
     }
-  }, [data.length, handleRowClick]);
+  }, [sortedData.length, handleRowClick]);
 
   if (loading) {
     return <LoadingSpinner message="Loading data..." />;
   }
 
-  if (data.length === 0) {
+  if (sortedData.length === 0) {
     return <EmptyState title={emptyMessage} />;
   }
 
   return (
-    <div className={`overflow-visible ${className}`}>
+    <div className={clsx(DATA_TABLE_CLASSES.container, className)}>
       <div
-        className="overflow-x-auto"
+        className={DATA_TABLE_CLASSES.wrapper}
         role="table"
         aria-label={ariaLabel}
         aria-describedby={ariaDescribedBy}
-        aria-rowcount={data.length}
+        aria-rowcount={sortedData.length}
         aria-colcount={columns.length}
       >
-        <table className="min-w-full divide-y divide-gray-200">
-          <thead className="bg-gray-50">
-            <tr role="row">
-              {selectable && (
-                <th
-                  scope="col"
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
-                  role="columnheader"
-                  aria-sort="none"
-                >
-                  <span className="sr-only">Select</span>
-                </th>
-              )}
-              {columns.map((column) => (
-                <th
-                  key={column.key as string}
-                  scope="col"
-                  className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${
-                    sortable && column.sortable !== false ? 'cursor-pointer hover:bg-gray-100' : ''
-                  }`}
-                  role="columnheader"
-                  aria-sort={
-                    sortColumn === column.key
-                      ? sortDirection === 'asc' ? 'ascending' : 'descending'
-                      : 'none'
-                  }
-                  tabIndex={sortable && column.sortable !== false ? 0 : undefined}
-                  onClick={sortable && column.sortable !== false ? () => handleSort(column.key) : undefined}
-                  onKeyDown={
-                    sortable && column.sortable !== false
-                      ? (e) => {
-                          if (e.key === 'Enter' || e.key === ' ') {
-                            e.preventDefault();
-                            handleSort(column.key);
-                          }
-                        }
-                      : undefined
-                  }
-                >
-                  <div className="flex items-center space-x-1">
-                    <span>{column.label}</span>
-                    {sortable && column.sortable !== false && (
-                      <span className="sr-only">
-                        {sortColumn === column.key
-                          ? `Sorted ${sortDirection === 'asc' ? 'ascending' : 'descending'}`
-                          : 'Click to sort'}
-                      </span>
-                    )}
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {data.map((item, index) => (
-              <tr
-                key={item[keyField] as string}
-                role="row"
-                className={`${
-                  selectedRow === index ? 'bg-indigo-50' : ''
-                } ${
-                  focusedRow === index ? 'ring-2 ring-indigo-500' : ''
-                } hover:bg-gray-50 cursor-pointer transition-colors duration-150`}
-                aria-rowindex={index + 1}
-                aria-selected={selectedRow === index}
-                tabIndex={0}
-                onClick={() => handleRowClick(item, index)}
-                onKeyDown={(e) => handleKeyDown(e, item, index)}
-                onFocus={() => setFocusedRow(index)}
-                onBlur={() => setFocusedRow(null)}
-              >
-                {selectable && (
-                  <td className="px-6 py-4 whitespace-nowrap" role="gridcell">
-                    <input
-                      type="checkbox"
-                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      checked={selectedRow === index}
-                      onChange={() => handleRowSelect(item, index)}
-                      aria-label={`Select row ${index + 1}`}
-                    />
-                  </td>
-                )}
-                {columns.map((column) => (
-                  <td
-                    key={column.key as string}
-                    className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
-                    role="gridcell"
-                  >
-                    {column.render ? column.render(item, item[column.key]) : (item[column.key] as React.ReactNode)}
-                  </td>
-                ))}
-              </tr>
-            ))}
+        <table className={DATA_TABLE_CLASSES.table}>
+          <TableHeader
+            columns={columns}
+            sortable={sortable}
+            sortColumn={sortColumn}
+            sortDirection={sortDirection}
+            onSort={handleSort}
+            selectable={selectable}
+          />
+          <tbody className={DATA_TABLE_CLASSES.body}>
+            {processedData.map(({ item, index }) => {
+              const isSelected = selectedRow === index;
+              const isFocused = focusedRow === index;
+              
+              return (
+                <TableRow
+                  key={item[keyField] as string}
+                  item={item}
+                  index={index}
+                  columns={columns}
+                  isSelected={isSelected}
+                  isFocused={isFocused}
+                  onRowClick={handleRowClick}
+                  onRowSelect={handleRowSelect}
+                  onKeyDown={handleKeyDown}
+                  onFocus={setFocusedRow}
+                  onBlur={() => setFocusedRow(null)}
+                  selectable={selectable}
+                  keyField={keyField}
+                />
+              );
+            })}
           </tbody>
         </table>
       </div>
     </div>
   );
-};
+}) as <T extends Record<string, any>>(props: DataTableProps<T>) => JSX.Element;
+
+// Add display name for better debugging
+(DataTable as any).displayName = 'DataTable';
 
 export default DataTable;
