@@ -412,6 +412,28 @@ This codebase underwent a comprehensive unused code audit and cleanup:
 - Zero tolerance policy for unused code
 - Regular bundle size monitoring
 
+## 📋 TODO - Future Improvements
+
+### High Priority
+- [ ] **Modal Component Optimization**: Reduce size of `AddBrandModal` and `AddSignalModal` components
+  - Extract form constants and data to separate files
+  - Create reusable `FormField` component for consistent form handling
+  - Implement `useForm` hook for form state management
+  - Simplify component structure and reduce inline code
+  - Apply standardized component structure to modal components
+
+### Medium Priority
+- [ ] **Complete Component Standardization**: Apply standardized structure to remaining components
+  - `Navbar`, `Page`, `PageHeader` - Layout components
+  - `SignalsTable`, `BrandDetails` - Data display components
+  - `AddBrandModal`, `AddSignalModal` - Form modal components (after optimization)
+  - `AIInsights`, `AIRecommendations` - Feature-specific components
+
+### Low Priority
+- [ ] **Performance Monitoring**: Implement performance monitoring and metrics
+- [ ] **Testing Coverage**: Add comprehensive test coverage for all components
+- [ ] **Documentation**: Create component usage documentation and examples
+
 ## 📄 License
 
 This project is licensed under the MIT License - see the LICENSE file for details.
