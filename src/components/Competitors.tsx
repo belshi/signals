@@ -1,6 +1,5 @@
 import React from 'react';
-import { Icon } from '../components';
-import MoreMenu, { type MoreMenuOption } from './MoreMenu';
+import { StackedList, type StackedListItem } from '../components';
 
 interface Competitor {
   id: string;
@@ -43,38 +42,26 @@ const Competitors: React.FC = () => {
     // TODO: Implement delete functionality
   };
 
-  const getMenuOptions = (competitor: Competitor): MoreMenuOption[] => [
-    {
-      label: 'Edit',
-      onClick: () => handleEditCompetitor(competitor.id),
-      icon: <Icon name="edit" size="sm" />,
-      variant: 'default'
-    },
-    {
-      label: 'Delete',
-      onClick: () => handleDeleteCompetitor(competitor.id),
-      icon: <Icon name="trash" size="sm" />,
-      variant: 'danger'
+  const stackedListItems: StackedListItem[] = competitors.map((competitor) => ({
+    id: competitor.id,
+    text: competitor.name,
+    actionIcon: 'more-vertical',
+    actionVariant: 'secondary',
+    actionSize: 'sm',
+    actionAriaLabel: `More options for ${competitor.name}`,
+    onActionClick: () => {
+      // For now, we'll just log the competitor ID
+      // In a real app, this could open a dropdown or modal
+      console.log('More options for competitor:', competitor.id);
     }
-  ];
+  }));
 
   return (
-    <div>
-      <ul className="divide-y divide-gray-200">
-        {competitors.map((competitor) => (
-          <li key={competitor.id} className="px-6 py-4 hover:bg-gray-50 transition-colors duration-200">
-            <div className="flex items-center justify-between">
-              <p className="text-sm font-medium text-gray-900 flex-1 min-w-0">
-                {competitor.name}
-              </p>
-              <div className="ml-4 flex-shrink-0">
-                <MoreMenu options={getMenuOptions(competitor)} />
-              </div>
-            </div>
-          </li>
-        ))}
-      </ul>
-    </div>
+    <StackedList 
+      items={stackedListItems}
+      bordered={false}
+      aria-label="Competitors list"
+    />
   );
 };
 
