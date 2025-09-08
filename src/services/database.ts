@@ -150,13 +150,34 @@ export const signalService = {
     return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
   },
 
+  // Create signal
+  async createSignal(data: CreateSignalForm): Promise<EnhancedSignal> {
+    console.log('Using mock data for signal creation:', data);
+    const newSignal: EnhancedSignal = {
+      id: `signal-${Date.now()}` as SignalId,
+      name: data.name,
+      prompt: data.prompt,
+      type: data.type || 'Analytics',
+      status: 'active',
+      createdAt: new Date().toISOString() as ISODateString,
+      updatedAt: new Date().toISOString() as ISODateString,
+      tags: data.tags || [],
+      brandId: data.brandId,
+      metadata: {
+        copilotType: data.copilotType,
+      },
+    };
+    MOCK_SIGNALS.push(newSignal);
+    return newSignal;
+  },
+
   // Update signal
-  async updateSignal(id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> {
+  async updateSignal(_id: SignalId, _updates: UpdateSignalForm): Promise<EnhancedSignal> {
     throw new Error('Signal updates not supported - no signals table in database schema');
   },
 
   // Delete signal
-  async deleteSignal(id: SignalId): Promise<void> {
+  async deleteSignal(_id: SignalId): Promise<void> {
     throw new Error('Signal deletion not supported - no signals table in database schema');
   },
 };

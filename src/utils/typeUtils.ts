@@ -7,9 +7,9 @@ import type {
 // Branded type constructors - ONLY USED FUNCTIONS
 export const createSignalId = (id: string): SignalId => id as SignalId;
 export const createBrandId = (id: string | number): BrandId => {
-  // Handle both string and numbers, convert to number for BIGINT
-  const numId = typeof id === 'string' ? parseInt(id, 10) : id;
-  return numId as BrandId;
+  // Handle both string and numbers, convert to string for UUID
+  const strId = typeof id === 'number' ? id.toString() : id;
+  return strId as BrandId;
 };
 
 // Date utilities with type safety - ONLY USED FUNCTIONS

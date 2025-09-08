@@ -305,7 +305,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
               </InputLabel>
               <SingleSelect
                 id="useCase"
-                options={currentUseCases.map((useCase, index) => ({ value: useCase.name, label: useCase.name }))}
+                options={currentUseCases.map((useCase) => ({ value: useCase.name, label: useCase.name }))}
                 value={selectedUseCase}
                 onChange={handleUseCaseSelect}
                 placeholder="Select a use case"
