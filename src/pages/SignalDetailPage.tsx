@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Page, Card, SignalDetails, AIInsights, AIRecommendations, CSVDataBlock } from '../components';
+import { Page, Card, SignalDetails, AIInsights, AIRecommendations, CSVDataBlock, EditSignalModal } from '../components';
 import { Icon } from '../components';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
@@ -17,6 +17,7 @@ const SignalDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
     const loadSignal = async () => {
@@ -96,6 +97,18 @@ const SignalDetailPage: React.FC = () => {
     }
   }, [signal, deleteSignal, navigate]);
 
+  const handleOpenEdit = useCallback(() => {
+    setIsEditModalOpen(true);
+  }, []);
+
+  const handleCloseEdit = useCallback(() => {
+    setIsEditModalOpen(false);
+  }, []);
+
+  const handleEditSuccess = useCallback(async () => {
+    await refreshSignalDetails();
+  }, [refreshSignalDetails]);
+
   if (error) {
     return (
       <Page>
@@ -165,6 +178,12 @@ const SignalDetailPage: React.FC = () => {
         ]}
         buttons={[
           {
+            label: 'Edit name',
+            onClick: handleOpenEdit,
+            icon: <Icon name="edit" size="sm" />,
+            variant: 'secondary',
+          },
+          {
             label: 'Refresh',
             onClick: refreshSignalDetails,
             icon: <Icon name="building" size="sm" />,
@@ -199,6 +218,13 @@ const SignalDetailPage: React.FC = () => {
           <CSVDataBlock signal={signal} />
         </div>
       </Page.Content>
+
+      <EditSignalModal
+        isOpen={isEditModalOpen}
+        onClose={handleCloseEdit}
+        onSuccess={handleEditSuccess}
+        signal={signal}
+      />
     </Page>
   );
 };
