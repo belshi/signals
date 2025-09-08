@@ -3,6 +3,7 @@ import React from 'react';
 interface ErrorMessageProps {
   message: string;
   onRetry?: () => void;
+  onDismiss?: () => void;
   className?: string;
   variant?: 'error' | 'warning' | 'info';
 }
@@ -10,6 +11,7 @@ interface ErrorMessageProps {
 const ErrorMessage: React.FC<ErrorMessageProps> = ({ 
   message, 
   onRetry, 
+  onDismiss,
   className = '',
   variant = 'error'
 }) => {
@@ -41,15 +43,27 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
           </svg>
           <span className="font-medium">{message}</span>
         </div>
-        {onRetry && (
-          <button
-            onClick={onRetry}
-            className="ml-4 text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current"
-            type="button"
-          >
-            Retry
-          </button>
-        )}
+        <div className="flex space-x-2">
+          {onRetry && (
+            <button
+              onClick={onRetry}
+              className="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current"
+              type="button"
+            >
+              Retry
+            </button>
+          )}
+          {onDismiss && (
+            <button
+              onClick={onDismiss}
+              className="text-sm font-medium underline hover:no-underline focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-current"
+              type="button"
+              aria-label="Dismiss error message"
+            >
+              Dismiss
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

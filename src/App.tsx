@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar, ErrorBoundary, NetworkStatus } from './components';
-import { ErrorProvider, LayoutProvider, SignalsProvider, BrandsProvider } from './contexts';
+import { ErrorProvider, LayoutProvider, SignalsProvider, BrandsProvider, BrandGoalsProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
 import SignalDetailPage from './pages/SignalDetailPage';
 import BrandsPage from './pages/BrandsPage';
@@ -48,7 +48,9 @@ const App: React.FC = () => {
                           }}
                         >
                           <BrandsProvider>
-                            <BrandPage />
+                            <BrandGoalsProvider>
+                              <BrandPage />
+                            </BrandGoalsProvider>
                           </BrandsProvider>
                         </ErrorBoundary>
                       } 

@@ -6,7 +6,10 @@ import type {
   BrandId, 
   SignalId,
   CreateBrandForm,
-  UpdateSignalForm 
+  UpdateSignalForm,
+  BrandGoal,
+  CreateBrandGoalForm,
+  UpdateBrandGoalForm
 } from '../types/enhanced';
 import { createBrandId, createSignalId, createISODateString } from '../utils/typeUtils';
 
@@ -178,7 +181,7 @@ export const signalService = {
     if (!isSupabaseConfigured) {
       console.log('Using mock data for signals by brand ID:', brandId);
       const brandIdStr = brandId.toString();
-      return MOCK_SIGNALS.filter(signal => signal.brandId.toString() === brandIdStr);
+      return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
     }
 
     const { data, error } = await typedSupabase
@@ -203,7 +206,6 @@ export const signalService = {
   async updateSignal(id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> {
     const updateData = {
       ...(updates.name && { name: updates.name }),
-      ...(updates.prompt && { prompt: updates.prompt }),
       ...(updates.type && { type: updates.type }),
       ...(updates.status && { status: updates.status }),
       ...(updates.tags && { tags: updates.tags }),
@@ -245,6 +247,97 @@ export const signalService = {
   },
 };
 
+// Brand Goals service functions
+export const brandGoalsService = {
+  // Get all goals for a brand
+  async getGoalsByBrandId(brandId: BrandId): Promise<BrandGoal[]> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for brand goals by brand ID:', brandId);
+      // Return empty array for mock data since we don't have mock goals yet
+      return [];
+    }
+
+    const { data, error } = await typedSupabase
+      .from('brand_goals')
+      .select('*')
+      .eq('brand_id', brandId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      // If the brand_goals table doesn't exist, return empty array
+      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.brand_goals" does not exist')) {
+        console.warn('Brand goals table not found, returning empty array.');
+        return [];
+      }
+      throw new Error(`Failed to fetch brand goals: ${error.message}`);
+    }
+
+    return data || [];
+  },
+
+  // Create new goal
+  async createGoal(goalData: CreateBrandGoalForm): Promise<BrandGoal> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot create brand goal: Supabase not configured');
+    }
+
+    const { data, error } = await typedSupabase
+      .from('brand_goals')
+      .insert({
+        goal: goalData.goal,
+        brand_id: goalData.brand_id,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create brand goal: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  // Update goal
+  async updateGoal(id: number, updates: UpdateBrandGoalForm): Promise<BrandGoal> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot update brand goal: Supabase not configured');
+    }
+
+    const updateData = {
+      ...(updates.goal && { goal: updates.goal }),
+    };
+
+    const { data, error } = await typedSupabase
+      .from('brand_goals')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update brand goal: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  // Delete goal
+  async deleteGoal(id: number): Promise<void> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot delete brand goal: Supabase not configured');
+    }
+
+    const { error } = await typedSupabase
+      .from('brand_goals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(`Failed to delete brand goal: ${error.message}`);
+    }
+  },
+};
+
 // Transform functions to convert database rows to our application types
 function transformBrandFromDB(dbBrand: any): EnhancedBrandDetails {
   return {
@@ -275,7 +368,7 @@ function transformSignalFromDB(dbSignal: any): EnhancedSignal {
     status: dbSignal.status,
     tags: dbSignal.tags || [],
     brandId: createBrandId(dbSignal.brand_id),
-    triggeredAt: dbSignal.triggered_at ? createISODateString(dbSignal.triggered_at) : null,
+    triggeredAt: dbSignal.triggered_at ? createISODateString(dbSignal.triggered_at) : undefined,
     aiInsights: dbSignal.ai_insights || {
       socialListening: '',
       consumerInsights: '',

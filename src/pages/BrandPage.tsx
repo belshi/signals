@@ -1,6 +1,6 @@
-import React, { useCallback, useState, useMemo } from 'react';
+import React, { useCallback, useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal } from '../components';
+import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal, type BrandGoalsRef } from '../components';
 import { Icon } from '../components';
 import { useBrandsContext } from '../contexts';
 import { brandService } from '../services/database';
@@ -11,6 +11,7 @@ const BrandPage: React.FC = () => {
   const navigate = useNavigate();
   const { isLoading, error, refreshBrands, getBrand } = useBrandsContext();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const brandGoalsRef = useRef<BrandGoalsRef>(null);
 
   // Convert string brandId to BrandId type and find the brand from the loaded list
   const brandIdTyped = brandId ? createBrandId(parseInt(brandId)) : undefined;
@@ -27,9 +28,9 @@ const BrandPage: React.FC = () => {
   }, [brandId, isLoading, error, brand, navigate]);
 
 
+
   const handleAddGoal = useCallback(() => {
-    console.log('Add new goal');
-    // TODO: Implement add functionality
+    brandGoalsRef.current?.openAddModal();
   }, []);
 
   const handleAddCompetitor = useCallback(() => {
@@ -182,7 +183,7 @@ const BrandPage: React.FC = () => {
                 }
               ]}
             >
-              <BrandGoals brandId={brand.id} />
+              <BrandGoals ref={brandGoalsRef} brandId={brand.id} />
             </Card>
             
             <Card

@@ -3,6 +3,7 @@ export { useNavigation } from './useNavigation';
 export { useSignals } from './useSignals';
 export { useBrand } from './useBrand';
 export { useBrands } from './useBrands';
+export { useBrandGoals } from './useBrandGoals';
 export { useErrorHandler } from './useErrorHandler';
 export { useRetry } from './useRetry';
 export { useAccessibility } from './useAccessibility';

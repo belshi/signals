@@ -1,50 +1,214 @@
-import React from 'react';
-import { StackedList, type StackedListItem, type DropdownMenuItem } from '../components';
-import type { BrandId } from '../types/enhanced';
-
-interface BrandGoal {
-  id: string;
-  title: string;
-}
+import React, { useState } from 'react';
+import { StackedList, Button, Modal, TextArea, LoadingSpinner, ErrorMessage, type StackedListItem, type DropdownMenuItem } from '../components';
+import { useBrandGoals } from '../hooks';
+import type { BrandId, BrandGoal } from '../types/enhanced';
 
 interface BrandGoalsProps {
   brandId?: BrandId;
 }
 
-const BrandGoals: React.FC<BrandGoalsProps> = ({ brandId }) => {
-  // Mock data for brand goals
-  const goals: BrandGoal[] = [
-    {
-      id: '1',
-      title: 'Increase brand awareness by 25% through social media and content marketing'
-    },
-    {
-      id: '2',
-      title: 'Launch new eco-friendly product line to expand market reach'
-    },
-    {
-      id: '3',
-      title: 'Improve customer satisfaction score to NPS of 8.5 or higher'
-    },
-    {
-      id: '4',
-      title: 'Expand to 3 new markets in Europe and Asia'
-    },
-    {
-      id: '5',
-      title: 'Reduce customer acquisition cost by optimizing marketing spend'
+export interface BrandGoalsRef {
+  openAddModal: () => void;
+}
+
+interface AddGoalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (goal: string) => Promise<void>;
+  isLoading: boolean;
+}
+
+interface EditGoalModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onSubmit: (goal: string) => Promise<void>;
+  isLoading: boolean;
+  currentGoal: string;
+}
+
+const AddGoalModal: React.FC<AddGoalModalProps> = ({ isOpen, onClose, onSubmit, isLoading }) => {
+  const [goal, setGoal] = useState('');
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (goal.trim()) {
+      await onSubmit(goal.trim());
+      setGoal('');
+      onClose();
     }
-  ];
-
-
-  const handleEditGoal = (goalId: string) => {
-    console.log('Edit goal:', goalId);
-    // TODO: Implement edit functionality
   };
 
-  const handleDeleteGoal = (goalId: string) => {
-    console.log('Delete goal:', goalId);
-    // TODO: Implement delete functionality
+  const handleClose = () => {
+    setGoal('');
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Add New Goal"
+      size="md"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="goal" className="block text-sm font-medium text-gray-700 mb-2">
+            Goal Description
+          </label>
+          <TextArea
+            id="goal"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            placeholder="Enter your brand goal..."
+            rows={4}
+            required
+            disabled={isLoading}
+          />
+        </div>
+        <div className="flex justify-end space-x-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            loading={isLoading}
+            disabled={!goal.trim()}
+          >
+            Add Goal
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+const EditGoalModal: React.FC<EditGoalModalProps> = ({ isOpen, onClose, onSubmit, isLoading, currentGoal }) => {
+  const [goal, setGoal] = useState(currentGoal);
+
+  React.useEffect(() => {
+    setGoal(currentGoal);
+  }, [currentGoal]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (goal.trim() && goal.trim() !== currentGoal) {
+      await onSubmit(goal.trim());
+      onClose();
+    }
+  };
+
+  const handleClose = () => {
+    setGoal(currentGoal);
+    onClose();
+  };
+
+  return (
+    <Modal
+      isOpen={isOpen}
+      onClose={handleClose}
+      title="Edit Goal"
+      size="md"
+    >
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="edit-goal" className="block text-sm font-medium text-gray-700 mb-2">
+            Goal Description
+          </label>
+          <TextArea
+            id="edit-goal"
+            value={goal}
+            onChange={(e) => setGoal(e.target.value)}
+            placeholder="Enter your brand goal..."
+            rows={4}
+            required
+            disabled={isLoading}
+          />
+        </div>
+        <div className="flex justify-end space-x-3">
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={handleClose}
+            disabled={isLoading}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            loading={isLoading}
+            disabled={!goal.trim() || goal.trim() === currentGoal}
+          >
+            Update Goal
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  );
+};
+
+const BrandGoals = React.forwardRef<BrandGoalsRef, BrandGoalsProps>(({ brandId }, ref) => {
+  const { goals, isLoading, error, createGoal, updateGoal, deleteGoal, clearError } = useBrandGoals({ brandId });
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<BrandGoal | null>(null);
+  const [actionLoading, setActionLoading] = useState(false);
+
+  // Expose methods to parent component via ref
+  React.useImperativeHandle(ref, () => ({
+    openAddModal: () => setIsAddModalOpen(true),
+  }));
+
+  const handleAddGoal = async (goalText: string) => {
+    if (!brandId) return;
+    
+    setActionLoading(true);
+    try {
+      await createGoal({ goal: goalText, brand_id: brandId });
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleEditGoal = (goal: BrandGoal) => {
+    setEditingGoal(goal);
+    setIsEditModalOpen(true);
+  };
+
+  const handleUpdateGoal = async (goalText: string) => {
+    if (!editingGoal) return;
+    
+    setActionLoading(true);
+    try {
+      await updateGoal(editingGoal.id, { goal: goalText });
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteGoal = async (goalId: number) => {
+    if (!confirm('Are you sure you want to delete this goal?')) {
+      return;
+    }
+    
+    setActionLoading(true);
+    try {
+      await deleteGoal(goalId);
+    } catch (err) {
+      // Error is handled by the context
+    } finally {
+      setActionLoading(false);
+    }
   };
 
   const getActionItems = (goal: BrandGoal): DropdownMenuItem[] => [
@@ -53,7 +217,7 @@ const BrandGoals: React.FC<BrandGoalsProps> = ({ brandId }) => {
       label: 'Edit',
       icon: 'edit',
       variant: 'default',
-      onClick: () => handleEditGoal(goal.id)
+      onClick: () => handleEditGoal(goal)
     },
     {
       id: 'delete',
@@ -65,22 +229,67 @@ const BrandGoals: React.FC<BrandGoalsProps> = ({ brandId }) => {
   ];
 
   const stackedListItems: StackedListItem[] = goals.map((goal) => ({
-    id: goal.id,
-    text: goal.title,
+    id: goal.id.toString(),
+    text: goal.goal,
     actionItems: getActionItems(goal),
     actionTriggerIcon: 'more-vertical',
     actionTriggerVariant: 'secondary',
     actionTriggerSize: 'sm',
-    actionTriggerAriaLabel: `More options for ${goal.title}`
+    actionTriggerAriaLabel: `More options for ${goal.goal}`
   }));
 
+  if (isLoading && goals.length === 0) {
+    return (
+      <div className="flex justify-center items-center py-8">
+        <LoadingSpinner size="md" />
+      </div>
+    );
+  }
+
   return (
-    <StackedList 
-      items={stackedListItems}
-      bordered={false}
-      aria-label="Brand goals list"
-    />
+    <div className="space-y-4">
+      {error && (
+        <ErrorMessage 
+          message={error} 
+          onDismiss={clearError}
+          variant="error"
+        />
+      )}
+
+      {goals.length === 0 ? (
+        <div className="text-center py-8">
+          <p className="text-gray-500">No goals set for this brand yet.</p>
+          <p className="text-sm text-gray-400 mt-1">Add your first goal to get started.</p>
+        </div>
+      ) : (
+        <StackedList 
+          items={stackedListItems}
+          bordered={false}
+          aria-label="Brand goals list"
+        />
+      )}
+
+      <AddGoalModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddGoal}
+        isLoading={actionLoading}
+      />
+
+      <EditGoalModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setEditingGoal(null);
+        }}
+        onSubmit={handleUpdateGoal}
+        isLoading={actionLoading}
+        currentGoal={editingGoal?.goal || ''}
+      />
+    </div>
   );
-};
+});
+
+BrandGoals.displayName = 'BrandGoals';
 
 export default BrandGoals;
