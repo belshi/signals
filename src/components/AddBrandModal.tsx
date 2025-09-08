@@ -1,6 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import { Modal, Button, InputLabel, TextInput } from './index';
 import { useBrandsContext } from '../contexts';
+import { getSimpleIndustryOptions } from '../constants';
 import type { CreateBrandForm } from '../types/enhanced';
 
 interface AddBrandModalProps {
@@ -9,19 +10,8 @@ interface AddBrandModalProps {
   onSuccess?: () => void;
 }
 
-// Industry options based on mock data
-const INDUSTRY_OPTIONS = [
-  { value: 'Technology', label: 'Technology' },
-  { value: 'Healthcare', label: 'Healthcare' },
-  { value: 'Energy', label: 'Energy' },
-  { value: 'Finance', label: 'Finance' },
-  { value: 'Retail', label: 'Retail' },
-  { value: 'Manufacturing', label: 'Manufacturing' },
-  { value: 'Education', label: 'Education' },
-  { value: 'Transportation', label: 'Transportation' },
-  { value: 'Media', label: 'Media & Entertainment' },
-  { value: 'Real Estate', label: 'Real Estate' },
-];
+// Get comprehensive industry options
+const INDUSTRY_OPTIONS = getSimpleIndustryOptions();
 
 const AddBrandModal: React.FC<AddBrandModalProps> = ({
   isOpen,
