@@ -233,7 +233,7 @@ export const signalService = {
       name: data.name,
       prompt: data.prompt,
       brand_id: Number(data.brandId as unknown as string),
-      copilot_id: data.copilotId ? Number(data.copilotId) : null,
+      copilot_id: data.copilotId || null,
       insights: placeholderInsights,
       recommendations: JSON.stringify(placeholderRecommendations),
       updated_at: new Date().toISOString(),
@@ -320,7 +320,7 @@ export const signalService = {
         name: data.name,
         prompt: data.prompt,
         brand_id: Number(data.brandId as unknown as string),
-        copilot_id: data.copilotId ? Number(data.copilotId) : null,
+        copilot_id: data.copilotId || null,
         insights: insights.content,
         recommendations: JSON.stringify(insights.recommendations),
         updated_at: new Date().toISOString(),
@@ -374,6 +374,101 @@ export const signalService = {
     }
 
     return recommendations.slice(0, 5); // Limit to 5 recommendations
+  },
+
+  // Refresh AI insights for an existing signal
+  async refreshSignalInsights(
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> {
+    onProgress?.('Loading signal details...');
+
+    // Get the existing signal
+    const existingSignal = await this.getSignalById(signalId);
+    if (!existingSignal) {
+      throw new Error('Signal not found');
+    }
+
+    // Check if signal has a copilot ID
+    if (!existingSignal.metadata?.copilotId) {
+      throw new Error('Signal does not have a copilot assigned. Cannot refresh AI insights.');
+    }
+
+    try {
+      onProgress?.('Getting fresh AI insights from Talkwalker...');
+      
+      // Call Talkwalker chat API to get new insights
+      const chatResponse = await talkwalkerService.chatWithCopilot(
+        existingSignal.metadata.copilotId as string,
+        existingSignal.prompt,
+        brandDetails
+      );
+
+      onProgress?.('Processing new AI response...');
+
+      // Extract insights from the chat response
+      const aiContent = chatResponse.yeti_answer?.reply?.content || '';
+      
+      // Use the raw AI response as insights
+      const insights = {
+        content: aiContent,
+        recommendations: this.extractRecommendations(aiContent),
+      };
+      
+      onProgress?.('Updating signal with new insights...');
+
+      // Update the signal with new AI insights
+      if (!isSupabaseConfigured) {
+        console.log('Using mock data for signal insights refresh:', signalId);
+        
+        // Find and update the signal in mock data
+        const signalIndex = MOCK_SIGNALS.findIndex(s => s.id === signalId);
+        if (signalIndex !== -1) {
+          MOCK_SIGNALS[signalIndex] = {
+            ...MOCK_SIGNALS[signalIndex],
+            aiInsights: {
+              content: insights.content,
+            },
+            aiRecommendations: insights.recommendations,
+            metadata: {
+              ...MOCK_SIGNALS[signalIndex].metadata,
+              talkwalkerRequestId: chatResponse.request_id,
+              lastRefreshed: new Date().toISOString(),
+            },
+            updatedAt: new Date().toISOString() as ISODateString,
+          };
+          return MOCK_SIGNALS[signalIndex];
+        }
+        throw new Error('Signal not found in mock data');
+      }
+
+      // Update in Supabase
+      const updatePayload: Database['public']['Tables']['signals']['Update'] = {
+        insights: insights.content,
+        recommendations: JSON.stringify(insights.recommendations),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data: updated, error } = await typedSupabase
+        .from('signals')
+        .update(updatePayload)
+        .eq('id', Number(signalId as unknown as string))
+        .select('*')
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to update signal insights: ${error.message}`);
+      }
+
+      onProgress?.('AI insights refreshed successfully!');
+      return transformSignalFromDB(updated);
+
+    } catch (error) {
+      console.error('Failed to refresh signal insights:', error);
+      onProgress?.('Failed to refresh insights. Please try again.');
+      throw error;
+    }
   },
 
   // Update signal
@@ -627,6 +722,9 @@ function transformSignalFromDB(db: SignalRow): EnhancedSignal {
     createdAt: createISODateString(db.created_at),
     updatedAt: createISODateString(db.updated_at || db.created_at),
     brandId: db.brand_id != null ? (db.brand_id.toString() as unknown as BrandId) : undefined,
+    metadata: db.copilot_id ? {
+      copilotId: db.copilot_id,
+    } : undefined,
     aiInsights: db.insights ? {
       content: db.insights,
     } : undefined,

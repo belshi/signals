@@ -93,7 +93,7 @@ export interface Database {
           id: number; // BIGINT
           created_at: string; // timestamptz
           updated_at: string | null; // timestamp without tz
-          copilot_id: number | null; // INTEGER
+          copilot_id: string | null; // TEXT
           brand_id: number | null; // BIGINT
           name: string | null; // TEXT
           prompt: string | null; // TEXT
@@ -104,7 +104,7 @@ export interface Database {
           id?: number; // BIGINT
           created_at?: string;
           updated_at?: string | null;
-          copilot_id?: number | null;
+          copilot_id?: string | null;
           brand_id?: number | null;
           name?: string | null;
           prompt?: string | null;
@@ -115,7 +115,7 @@ export interface Database {
           id?: number; // BIGINT
           created_at?: string;
           updated_at?: string | null;
-          copilot_id?: number | null;
+          copilot_id?: string | null;
           brand_id?: number | null;
           name?: string | null;
           prompt?: string | null;
