@@ -2,7 +2,7 @@ import React from 'react';
 
 // Branded types for better type safety
 export type SignalId = string & { readonly __brand: 'SignalId' };
-export type BrandId = number & { readonly __brand: 'BrandId' }; // BIGINT in actual schema
+export type BrandId = string & { readonly __brand: 'BrandId' }; // UUID in actual schema
 export type UserId = string & { readonly __brand: 'UserId' };
 
 // Utility type to create branded types
@@ -307,6 +307,7 @@ export interface UseSignalsReturn {
   signals: EnhancedSignal[];
   isLoading: boolean;
   error: string | null;
+  createSignal: (data: CreateSignalForm) => Promise<EnhancedSignal>;
   updateSignal: (id: SignalId, data: UpdateSignalForm) => Promise<EnhancedSignal>;
   deleteSignal: (id: SignalId) => Promise<void>;
   refreshSignals: () => Promise<void>;

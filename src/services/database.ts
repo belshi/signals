@@ -14,18 +14,10 @@ import type {
   CreateBrandCompetitorForm,
   UpdateBrandCompetitorForm
 } from '../types/enhanced';
-import { createBrandId, createSignalId, createISODateString } from '../utils/typeUtils';
+import { createBrandId, createISODateString } from '../utils/typeUtils';
 
 // Type-safe database row types
 type BrandRow = Database['public']['Tables']['brands']['Row'];
-type BrandInsert = Database['public']['Tables']['brands']['Insert'];
-type BrandUpdate = Database['public']['Tables']['brands']['Update'];
-type BrandGoalRow = Database['public']['Tables']['brand_goals']['Row'];
-type BrandGoalInsert = Database['public']['Tables']['brand_goals']['Insert'];
-type BrandGoalUpdate = Database['public']['Tables']['brand_goals']['Update'];
-type BrandCompetitorRow = Database['public']['Tables']['brand_competitors']['Row'];
-type BrandCompetitorInsert = Database['public']['Tables']['brand_competitors']['Insert'];
-type BrandCompetitorUpdate = Database['public']['Tables']['brand_competitors']['Update'];
 
 // Brand service functions
 export const brandService = {

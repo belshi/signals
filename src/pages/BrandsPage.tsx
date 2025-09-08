@@ -33,7 +33,7 @@ const BrandsPage: React.FC = () => {
       key: 'name',
       label: 'Name',
       className: 'w-1/4 min-w-[200px]',
-      render: (brand, value) => (
+      render: (brand) => (
         <div className="flex items-center space-x-3">
           {brand.logo && (
             <img
@@ -54,7 +54,7 @@ const BrandsPage: React.FC = () => {
       key: 'description',
       label: 'Description',
       className: 'w-full min-w-[400px]',
-      render: (brand, value) => (
+      render: (brand) => (
         <div>
           <p className="text-sm text-gray-900 whitespace-normal">
             {brand.description}
@@ -66,7 +66,7 @@ const BrandsPage: React.FC = () => {
       key: 'industry',
       label: 'Industry',
       className: 'w-1/6 min-w-[120px]',
-      render: (brand, value) => (
+      render: (brand) => (
         <Badge variant="primary" size="md">
           {brand.industry}
         </Badge>
@@ -76,7 +76,7 @@ const BrandsPage: React.FC = () => {
       key: 'employeeCount',
       label: 'Employees',
       className: 'w-1/6 min-w-[100px]',
-      render: (brand, value) => (
+      render: (brand) => (
         <div className="text-sm text-gray-900">
           {brand.employeeCount ? brand.employeeCount.toLocaleString() : 'N/A'}
         </div>

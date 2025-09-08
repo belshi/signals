@@ -276,7 +276,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
           <div>
             <InputLabel
               required
-              ariaLabelledBy="promptMode-label"
+              aria-labelledby="promptMode-label"
             >
               Prompt Type
             </InputLabel>

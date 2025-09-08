@@ -36,7 +36,7 @@ const DropdownMenu: React.FC<DropdownMenuProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement | HTMLDivElement>(null);
 
-  const buttonKeyboardRef = useKeyboardNavigation({
+  useKeyboardNavigation({
     onEnter: () => setIsOpen(!isOpen),
     onSpace: () => setIsOpen(!isOpen),
     onEscape: () => setIsOpen(false),

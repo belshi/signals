@@ -188,7 +188,7 @@ const SignalDetailPage: React.FC = () => {
             description="Basic information about this signal"
             icon={<Icon name="building" className="text-indigo-600" size="md" />}
           >
-            <SignalDetails signal={signal} brand={brand} />
+            <SignalDetails signal={signal} brand={brand || undefined} />
           </Card>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

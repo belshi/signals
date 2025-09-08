@@ -3,7 +3,7 @@ import { StackedList, Button, Modal, TextInput, LoadingSpinner, ErrorMessage, ty
 import { useBrandCompetitors } from '../hooks';
 import type { BrandId, BrandCompetitor } from '../types/enhanced';
 
-interface CompetitorsRef {
+export interface CompetitorsRef {
   openAddModal: () => void;
 }
 

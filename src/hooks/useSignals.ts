@@ -5,6 +5,7 @@ import { useErrorHandler } from './useErrorHandler';
 import type { 
   EnhancedSignal, 
   SignalId, 
+  CreateSignalForm,
   UpdateSignalForm,
   UseSignalsReturn 
 } from '../types/enhanced';
@@ -50,6 +51,27 @@ export const useSignals = (): UseSignalsReturn => {
       setIsLoading(false);
     }
   }, [handleError]);
+
+  const createSignal = useCallback(async (data: CreateSignalForm): Promise<EnhancedSignal> => {
+    setIsLoading(true);
+    setError(null);
+    
+    const createSignalOperation = async (): Promise<EnhancedSignal> => {
+      const newSignal = await signalService.createSignal(data);
+      setSignals(prev => [...prev, newSignal]);
+      return newSignal;
+    };
+
+    try {
+      return await retry(createSignalOperation);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [retry, handleError]);
 
   const updateSignal = useCallback(async (id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> => {
     setIsLoading(true);
@@ -107,11 +129,12 @@ export const useSignals = (): UseSignalsReturn => {
     signals,
     isLoading,
     error,
+    createSignal,
     updateSignal,
     deleteSignal,
     refreshSignals,
     getSignal,
-  }), [signals, isLoading, error, updateSignal, deleteSignal, refreshSignals, getSignal]);
+  }), [signals, isLoading, error, createSignal, updateSignal, deleteSignal, refreshSignals, getSignal]);
 
   return returnValue;
 };

@@ -29,7 +29,7 @@ const CSVDataBlock: React.FC<CSVDataBlockProps> = ({ signal, className = '' }) =
 
   const handleCopyToClipboard = async () => {
     try {
-      await navigator.clipboard.writeText(signal.csvData);
+      await navigator.clipboard.writeText(signal.csvData || '');
       // You could add a toast notification here
       console.log('CSV data copied to clipboard');
     } catch (err) {
@@ -38,7 +38,7 @@ const CSVDataBlock: React.FC<CSVDataBlockProps> = ({ signal, className = '' }) =
   };
 
   const handleDownloadCSV = () => {
-    const blob = new Blob([signal.csvData], { type: 'text/csv' });
+    const blob = new Blob([signal.csvData || ''], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;

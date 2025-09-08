@@ -1,6 +1,5 @@
 import React from 'react';
 import { DetailRow } from './index';
-import { Badge } from './index';
 import type { EnhancedSignal, EnhancedBrandDetails } from '../types/enhanced';
 
 interface SignalDetailsProps {

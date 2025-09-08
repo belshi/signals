@@ -200,7 +200,7 @@ const FormExample: React.FC = () => {
             required
             error={!!errors.experience}
             description="Select your level of professional experience"
-            ariaLabelledBy="experience-label"
+            aria-labelledby="experience-label"
           >
             Experience Level
           </InputLabel>
@@ -210,7 +210,7 @@ const FormExample: React.FC = () => {
             value={formData.experience}
             onChange={(value) => handleInputChange('experience', value)}
             error={!!errors.experience}
-            ariaLabelledBy="experience-label"
+            aria-labelledby="experience-label"
             ariaDescribedBy={errors.experience ? 'experience-error' : 'experience-description'}
           />
           {errors.experience && (
@@ -246,7 +246,7 @@ const FormExample: React.FC = () => {
             required
             error={!!errors.notifications}
             description="Choose how you'd like to receive notifications"
-            ariaLabelledBy="notifications-label"
+            aria-labelledby="notifications-label"
           >
             Notification Preferences
           </InputLabel>
@@ -256,7 +256,7 @@ const FormExample: React.FC = () => {
             value={formData.notifications}
             onChange={(value) => handleInputChange('notifications', value)}
             error={!!errors.notifications}
-            ariaLabelledBy="notifications-label"
+            aria-labelledby="notifications-label"
             ariaDescribedBy={errors.notifications ? 'notifications-error' : 'notifications-description'}
           />
           {errors.notifications && (
