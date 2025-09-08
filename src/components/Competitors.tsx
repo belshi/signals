@@ -67,7 +67,7 @@ const AddCompetitorModal: React.FC<AddCompetitorModalProps> = ({ isOpen, onClose
         <div className="flex justify-end space-x-3">
           <Button
             type="button"
-            variant="secondary"
+            variant="brandGray"
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -75,7 +75,7 @@ const AddCompetitorModal: React.FC<AddCompetitorModalProps> = ({ isOpen, onClose
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             loading={isLoading}
             disabled={!name.trim()}
           >
@@ -131,7 +131,7 @@ const EditCompetitorModal: React.FC<EditCompetitorModalProps> = ({ isOpen, onClo
         <div className="flex justify-end space-x-3">
           <Button
             type="button"
-            variant="secondary"
+            variant="brandGray"
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -139,7 +139,7 @@ const EditCompetitorModal: React.FC<EditCompetitorModalProps> = ({ isOpen, onClo
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             loading={isLoading}
             disabled={!name.trim() || name.trim() === currentCompetitor}
           >

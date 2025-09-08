@@ -68,7 +68,7 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({ isOpen, onClose, onSubmit, 
         <div className="flex justify-end space-x-3">
           <Button
             type="button"
-            variant="secondary"
+            variant="brandGray"
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -76,7 +76,7 @@ const AddGoalModal: React.FC<AddGoalModalProps> = ({ isOpen, onClose, onSubmit, 
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             loading={isLoading}
             disabled={!goal.trim()}
           >

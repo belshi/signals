@@ -427,7 +427,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
         <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
           <Button
             type="button"
-            variant="secondary"
+            variant="brandGray"
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -435,7 +435,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             loading={isLoading}
             disabled={isLoading}
           >

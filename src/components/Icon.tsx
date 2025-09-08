@@ -3,6 +3,7 @@ import {
   PlusIcon,
   BuildingOfficeIcon,
   CheckCircleIcon,
+  BoltIcon,
   UsersIcon,
   EllipsisVerticalIcon,
   PencilIcon,
@@ -29,7 +30,7 @@ export type IconName =
 const iconMap = {
   'plus': PlusIcon,
   'building': BuildingOfficeIcon,
-  'target': CheckCircleIcon,
+  'target': BoltIcon,
   'users': UsersIcon,
   'more-vertical': EllipsisVerticalIcon,
   'edit': PencilIcon,
@@ -48,7 +49,7 @@ export interface IconProps {
 
 const sizeClasses = {
   sm: 'w-4 h-4',
-  md: 'w-5 h-5',
+  md: 'w-6 h-6',
   lg: 'w-6 h-6',
   xl: 'w-8 h-8',
 };

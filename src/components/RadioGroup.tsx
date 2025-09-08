@@ -61,7 +61,7 @@ const RadioGroup = forwardRef<HTMLFieldSetElement, RadioGroupProps>(
       
       const colorClasses = error
         ? 'text-red-600 focus:ring-red-500 border-red-300'
-        : 'text-indigo-600 focus:ring-indigo-500 border-gray-300';
+        : 'text-brand-600 focus:ring-brand-500 border-gray-300';
 
       return `${sizeClasses[size]} ${colorClasses} focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed`;
     }, [size, error]);

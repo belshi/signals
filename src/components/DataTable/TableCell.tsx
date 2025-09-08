@@ -7,7 +7,7 @@ import type { TableColumn } from './types';
 const DATA_TABLE_CLASSES = {
   cell: 'px-6 py-4 whitespace-nowrap text-sm text-gray-900',
   cellSelectable: 'px-6 py-4 whitespace-nowrap',
-  checkbox: 'h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded',
+  checkbox: 'h-4 w-4 text-brand-600 focus:ring-brand-500 border-gray-300 rounded',
 } as const;
 
 export interface TableCellProps<T extends Record<string, any>> {

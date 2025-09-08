@@ -15,7 +15,7 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({ signal, className
       <Card
         title="AI Recommendations"
         description="AI-generated recommendations based on brand and brand goals"
-        icon={<Icon name="target" className="text-indigo-600" size="md" />}
+        icon={<Icon name="target" className="text-nocturn" size="md" />}
         className={className}
       >
         <div className="text-center py-8">
@@ -29,15 +29,15 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({ signal, className
     <Card
       title="AI Recommendations"
       description="AI-generated recommendations based on brand and brand goals"
-      icon={<Icon name="target" className="text-indigo-600" size="md" />}
+      icon={<Icon name="target" className="text-nocturn" size="md" />}
       className={className}
     >
       <div className="space-y-4">
         {signal.aiRecommendations.map((recommendation, index) => (
           <div key={index} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
             <div className="flex-shrink-0">
-              <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                <span className="text-xs font-medium text-indigo-600">
+              <div className="w-6 h-6 bg-brand-50 rounded-full flex items-center justify-center">
+                <span className="text-xs font-medium text-brand-600">
                   {index + 1}
                 </span>
               </div>

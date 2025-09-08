@@ -7,8 +7,8 @@ import TableCell, { SelectableCell } from './TableCell';
  */
 const DATA_TABLE_CLASSES = {
   row: 'hover:bg-gray-50 cursor-pointer transition-colors duration-150',
-  rowSelected: 'bg-indigo-50',
-  rowFocused: 'ring-2 ring-indigo-500',
+  rowSelected: 'bg-brand-50',
+  rowFocused: 'bg-brand-gray',
 } as const;
 
 /**

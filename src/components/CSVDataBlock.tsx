@@ -17,7 +17,7 @@ const CSVDataBlock: React.FC<CSVDataBlockProps> = ({ signal, className = '' }) =
       <Card
         title="Signal Data"
         description="CSV formatted signal data with insights and recommendations"
-        icon={<Icon name="building" className="text-indigo-600" size="md" />}
+        icon={<Icon name="building" className="text-brand-600" size="md" />}
         className={className}
       >
         <div className="text-center py-8">
@@ -53,7 +53,7 @@ const CSVDataBlock: React.FC<CSVDataBlockProps> = ({ signal, className = '' }) =
     <Card
       title="Signal Data"
       description="CSV formatted signal data with insights and recommendations"
-      icon={<Icon name="building" className="text-indigo-600" size="md" />}
+      icon={<Icon name="building" className="text-brand-600" size="md" />}
       className={className}
       buttons={[
         {

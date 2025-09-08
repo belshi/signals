@@ -188,7 +188,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
               className={`w-full px-3 py-2 border rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 ${
                 errors.industry
                   ? 'border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500'
-                  : 'border-gray-300 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500'
+                  : 'border-gray-300 text-gray-900 focus:ring-brand-500 focus:border-brand-500'
               }`}
               disabled={isLoading}
               aria-invalid={!!errors.industry}
@@ -264,7 +264,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
         <div className="flex justify-end space-x-3 pt-6 border-t border-gray-200">
           <Button
             type="button"
-            variant="secondary"
+            variant="brandGray"
             onClick={handleClose}
             disabled={isLoading}
           >
@@ -272,7 +272,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
           </Button>
           <Button
             type="submit"
-            variant="primary"
+            variant="secondary"
             loading={isLoading}
             disabled={isLoading}
           >

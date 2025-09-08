@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { Navbar, ErrorBoundary, NetworkStatus } from './components';
+import { Sidebar, ErrorBoundary, NetworkStatus } from './components';
 import { ErrorProvider, LayoutProvider, SignalsProvider, BrandsProvider, BrandGoalsProvider, BrandCompetitorsProvider } from './contexts';
 import SignalsPage from './pages/SignalsPage';
 import SignalDetailPage from './pages/SignalDetailPage';
@@ -12,15 +12,15 @@ const App: React.FC = () => {
     <ErrorProvider maxErrors={5}>
       <LayoutProvider>
           <Router>
-            <div className="min-h-screen bg-gray-50">
+            <div className="min-h-screen flex">
               <NetworkStatus />
               <ErrorBoundary
                 onError={(error, errorInfo) => {
                   console.error('App-level error:', error, errorInfo);
                 }}
               >
-                <Navbar />
-                <main role="main">
+                <Sidebar />
+                <main role="main" className="flex-1 sm:ml-20 pt-16 sm:pt-0">
                   <Routes>
                     <Route path={ROUTES.HOME} element={<Navigate to={ROUTES.BRANDS} replace />} />
                     <Route 

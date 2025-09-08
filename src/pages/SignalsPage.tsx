@@ -35,8 +35,7 @@ const SignalsPage: React.FC = () => {
           {
             label: 'New Signal',
             onClick: handleAddSignal,
-            variant: 'primary',
-            icon: <Icon name="plus" size="sm" />,
+            variant: 'secondary',
           },
         ]}
       />
@@ -45,7 +44,7 @@ const SignalsPage: React.FC = () => {
         <Page.Error onRetry={refreshSignals} />
         <Page.Loading message="Loading signals..." />
         
-        <Card noPadding>
+        <Card noPadding={false}>
           <BrandsProvider>
             <SignalsTable onRowClick={handleSignalClick} />
           </BrandsProvider>
