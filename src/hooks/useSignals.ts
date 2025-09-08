@@ -73,6 +73,31 @@ export const useSignals = (): UseSignalsReturn => {
     }
   }, [retry, handleError]);
 
+  const createSignalWithAI = useCallback(async (
+    data: CreateSignalForm,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> => {
+    setIsLoading(true);
+    setError(null);
+    
+    const createSignalWithAIOperation = async (): Promise<EnhancedSignal> => {
+      const newSignal = await signalService.createSignalWithAI(data, brandDetails, onProgress);
+      setSignals(prev => [...prev, newSignal]);
+      return newSignal;
+    };
+
+    try {
+      return await retry(createSignalWithAIOperation);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [retry, handleError]);
+
   const updateSignal = useCallback(async (id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> => {
     setIsLoading(true);
     setError(null);
@@ -130,11 +155,12 @@ export const useSignals = (): UseSignalsReturn => {
     isLoading,
     error,
     createSignal,
+    createSignalWithAI,
     updateSignal,
     deleteSignal,
     refreshSignals,
     getSignal,
-  }), [signals, isLoading, error, createSignal, updateSignal, deleteSignal, refreshSignals, getSignal]);
+  }), [signals, isLoading, error, createSignal, createSignalWithAI, updateSignal, deleteSignal, refreshSignals, getSignal]);
 
   return returnValue;
 };

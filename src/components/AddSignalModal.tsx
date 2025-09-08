@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Modal, Button, InputLabel, TextInput, TextArea, RadioGroup, SingleSelect } from './index';
+import { Modal, Button, InputLabel, TextInput, TextArea, RadioGroup, SingleSelect, LoadingSpinner } from './index';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
 import type { CreateSignalForm, CopilotType, BrandId } from '../types/enhanced';
@@ -46,9 +46,10 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const { createSignal } = useSignalsContext();
+  const { createSignalWithAI } = useSignalsContext();
   const { brands } = useBrandsContext();
   const [isLoading, setIsLoading] = useState(false);
+  const [progressMessage, setProgressMessage] = useState<string>('');
   const [errors, setErrors] = useState<Record<string, string>>({});
   
   const [formData, setFormData] = useState<CreateSignalForm>({
@@ -177,8 +178,24 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
     try {
       setIsLoading(true);
       setErrors({});
+      setProgressMessage('');
       
-      await createSignal(formData);
+      // Get brand details for the selected brand
+      const selectedBrand = brands.find(brand => brand.id === formData.brandId);
+      if (!selectedBrand) {
+        throw new Error('Selected brand not found');
+      }
+
+      const brandDetails = {
+        name: selectedBrand.name,
+        industry: selectedBrand.industry,
+        description: selectedBrand.description,
+      };
+
+      // Create signal with AI insights
+      await createSignalWithAI(formData, brandDetails, (message) => {
+        setProgressMessage(message);
+      });
       
       // Reset form and close modal
       resetForm();
@@ -188,8 +205,9 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       setErrors({ submit: err instanceof Error ? err.message : 'Failed to create signal' });
     } finally {
       setIsLoading(false);
+      setProgressMessage('');
     }
-  }, [formData, validateForm, createSignal, onSuccess, onClose]);
+  }, [formData, validateForm, createSignalWithAI, brands, onSuccess, onClose]);
 
   const resetForm = useCallback(() => {
     setFormData({
@@ -226,6 +244,16 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
         {errors.submit && (
           <div className="rounded-md bg-red-50 p-4">
             <div className="text-sm text-red-700">{errors.submit}</div>
+          </div>
+        )}
+
+        {/* Progress Indicator */}
+        {isLoading && progressMessage && (
+          <div className="rounded-md bg-blue-50 p-4">
+            <div className="flex items-center space-x-3">
+              <LoadingSpinner size="sm" />
+              <div className="text-sm text-blue-700">{progressMessage}</div>
+            </div>
           </div>
         )}
 
@@ -411,7 +439,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
             loading={isLoading}
             disabled={isLoading}
           >
-            {isLoading ? 'Creating...' : 'Create Signal'}
+            {isLoading ? (progressMessage ? 'Getting AI Insights...' : 'Creating...') : 'Create Signal'}
           </Button>
         </div>
       </form>

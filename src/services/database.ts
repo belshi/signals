@@ -1,5 +1,6 @@
 import { typedSupabase, isSupabaseConfigured, type Database } from '../lib/supabase';
 import { MOCK_BRANDS, MOCK_SIGNALS } from '../constants/mockData';
+import { talkwalkerService } from './talkwalker';
 import type { 
   EnhancedBrandDetails, 
   EnhancedSignal, 
@@ -220,8 +221,7 @@ export const signalService = {
           copilotId: data.copilotId,
         },
         aiInsights: {
-          socialListening: placeholderInsights,
-          consumerInsights: placeholderInsights,
+          content: placeholderInsights,
         },
         aiRecommendations: placeholderRecommendations,
       };
@@ -250,6 +250,130 @@ export const signalService = {
     }
 
     return transformSignalFromDB(inserted);
+  },
+
+  // Create signal with AI insights from Talkwalker
+  async createSignalWithAI(
+    data: CreateSignalForm,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> {
+    onProgress?.('Initializing signal creation...');
+
+    // If no copilot is selected, fall back to regular signal creation
+    if (!data.copilotId) {
+      onProgress?.('No copilot selected, creating signal with placeholder insights...');
+      return this.createSignal(data);
+    }
+
+    try {
+      onProgress?.('Getting AI insights from Talkwalker...');
+      
+      // Call Talkwalker chat API to get insights
+      const chatResponse = await talkwalkerService.chatWithCopilot(
+        data.copilotId,
+        data.prompt,
+        brandDetails
+      );
+
+      onProgress?.('Processing AI response...');
+
+      // Extract insights from the chat response
+      const aiContent = chatResponse.yeti_answer?.reply?.content || '';
+      
+      // Use the raw AI response as insights
+      const insights = {
+        content: aiContent,
+        recommendations: this.extractRecommendations(aiContent),
+      };
+      
+      onProgress?.('Saving signal with AI insights...');
+
+      // Create the signal with real AI insights
+      if (!isSupabaseConfigured) {
+        console.log('Using mock data for signal creation with AI:', data);
+        const newSignal: EnhancedSignal = {
+          id: `signal-${Date.now()}` as SignalId,
+          name: data.name,
+          prompt: data.prompt,
+          type: data.type || 'Analytics',
+          status: 'active',
+          createdAt: new Date().toISOString() as ISODateString,
+          updatedAt: new Date().toISOString() as ISODateString,
+          tags: data.tags || [],
+          brandId: data.brandId,
+          metadata: {
+            copilotType: data.copilotType,
+            copilotId: data.copilotId,
+            talkwalkerRequestId: chatResponse.request_id,
+          },
+          aiInsights: {
+            content: insights.content,
+          },
+          aiRecommendations: insights.recommendations,
+        };
+        MOCK_SIGNALS.push(newSignal);
+        return newSignal;
+      }
+
+      const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
+        name: data.name,
+        prompt: data.prompt,
+        brand_id: Number(data.brandId as unknown as string),
+        copilot_id: data.copilotId ? Number(data.copilotId) : null,
+        insights: insights.content,
+        recommendations: JSON.stringify(insights.recommendations),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data: inserted, error } = await typedSupabase
+        .from('signals')
+        .insert(insertPayload)
+        .select('*')
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to create signal: ${error.message}`);
+      }
+
+      onProgress?.('Signal created successfully!');
+      return transformSignalFromDB(inserted);
+
+    } catch (error) {
+      console.error('Failed to create signal with AI insights:', error);
+      onProgress?.('AI insights failed, creating signal with placeholder data...');
+      
+      // Fall back to regular signal creation if AI fails
+      return this.createSignal(data);
+    }
+  },
+
+  // Helper function to extract recommendations from AI response
+  extractRecommendations(aiContent: string): string[] {
+    const lines = aiContent.split('\n').filter(line => line.trim());
+    const recommendations: string[] = [];
+
+    for (const line of lines) {
+      const lowerLine = line.toLowerCase();
+      
+      // Look for recommendation patterns
+      if (lowerLine.includes('recommend') || lowerLine.includes('suggest') || lowerLine.includes('action')) {
+        // Extract individual recommendations
+        if (line.includes('•') || line.includes('-') || line.includes('*')) {
+          const cleanRec = line.replace(/^[•\-*]\s*/, '').trim();
+          if (cleanRec) recommendations.push(cleanRec);
+        }
+      }
+    }
+
+    // If no specific recommendations found, provide generic ones
+    if (recommendations.length === 0) {
+      recommendations.push('Monitor social media sentiment regularly');
+      recommendations.push('Analyze competitor strategies');
+      recommendations.push('Track consumer behavior patterns');
+    }
+
+    return recommendations.slice(0, 5); // Limit to 5 recommendations
   },
 
   // Update signal
@@ -504,8 +628,7 @@ function transformSignalFromDB(db: SignalRow): EnhancedSignal {
     updatedAt: createISODateString(db.updated_at || db.created_at),
     brandId: db.brand_id != null ? (db.brand_id.toString() as unknown as BrandId) : undefined,
     aiInsights: db.insights ? {
-      socialListening: db.insights,
-      consumerInsights: db.insights,
+      content: db.insights,
     } : undefined,
     aiRecommendations: (() => {
       if (!db.recommendations) return undefined;

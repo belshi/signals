@@ -105,8 +105,7 @@ export interface EnhancedSignal {
   brandId?: BrandId;
   triggeredAt?: ISODateString;
   aiInsights?: {
-    socialListening: string;
-    consumerInsights: string;
+    content: string;
   };
   aiRecommendations?: string[];
   csvData?: string;
@@ -310,6 +309,11 @@ export interface UseSignalsReturn {
   isLoading: boolean;
   error: string | null;
   createSignal: (data: CreateSignalForm) => Promise<EnhancedSignal>;
+  createSignalWithAI: (
+    data: CreateSignalForm,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ) => Promise<EnhancedSignal>;
   updateSignal: (id: SignalId, data: UpdateSignalForm) => Promise<EnhancedSignal>;
   deleteSignal: (id: SignalId) => Promise<void>;
   refreshSignals: () => Promise<void>;
