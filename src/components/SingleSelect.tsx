@@ -51,7 +51,7 @@ const SingleSelect = forwardRef<HTMLSelectElement, SingleSelectProps>(
 
       const colorClasses = error
         ? 'border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500'
-        : 'border-gray-300 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500';
+        : 'border-gray-300 text-gray-900 focus:ring-brand-500 focus:border-brand-500';
 
       const widthClasses = fullWidth ? 'w-full' : '';
 

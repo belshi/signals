@@ -37,7 +37,7 @@ export { default as ListItem } from './ListItem';
 export { default as LoadingSpinner } from './LoadingSpinner';
 export { default as Modal } from './Modal';
 export { default as MoreMenu } from './MoreMenu';
-export { default as Navbar } from './Navbar';
+export { default as Sidebar } from './Sidebar';
 export { default as NetworkStatus } from './NetworkStatus';
 export { default as Page } from './Page';
 export { default as PageHeader } from './PageHeader';

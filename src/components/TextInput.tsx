@@ -32,7 +32,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
   ) => {
 
     const inputClasses = useMemo(() => {
-      const baseClasses = 'block border rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50';
+      const baseClasses = 'block border rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50';
       
       const sizeClasses = {
         sm: 'px-3 py-1.5 text-sm',
@@ -42,7 +42,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
 
       const colorClasses = error
         ? 'border-red-300 text-red-900 placeholder-red-300 focus:ring-red-500 focus:border-red-500'
-        : 'border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-indigo-500 focus:border-indigo-500';
+        : 'border-gray-300 text-gray-900 placeholder-gray-400 focus:ring-brand-500 focus:border-brand-500';
 
       const widthClasses = fullWidth ? 'w-full' : '';
 

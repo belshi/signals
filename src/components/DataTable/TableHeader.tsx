@@ -5,8 +5,8 @@ import type { TableColumn } from './types';
  * Centralized Tailwind CSS classes for better maintainability
  */
 const DATA_TABLE_CLASSES = {
-  header: 'bg-gray-50',
-  headerCell: 'px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider',
+  header: 'bg-white',
+  headerCell: 'px-6 py-3 text-left text-[16px] font-bold',
   headerCellSortable: 'cursor-pointer hover:bg-gray-100',
   screenReaderOnly: 'sr-only',
 } as const;

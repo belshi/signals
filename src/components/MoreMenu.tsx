@@ -63,7 +63,7 @@ const MoreMenu: React.FC<MoreMenuProps> = ({ options, className = '' }) => {
       <button
         ref={buttonRef}
         onClick={() => setIsOpen(!isOpen)}
-        className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1 rounded-md transition-colors duration-200"
+        className="p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-brand-500 focus:ring-offset-1 rounded-md transition-colors duration-200"
         aria-label="More options"
         aria-expanded={isOpen}
         aria-haspopup="true"

@@ -123,7 +123,7 @@ const BrandPage: React.FC = () => {
             <p className="text-gray-500">Brand not found</p>
             <button
               onClick={() => navigate('/brands')}
-              className="mt-4 text-indigo-600 hover:text-indigo-500"
+              className="mt-4 text-nocturn hover:text-brand-500"
             >
               Back to Brands
             </button>
@@ -146,14 +146,12 @@ const BrandPage: React.FC = () => {
           {
             label: 'Edit',
             onClick: handleEditBrandDetails,
-            icon: <Icon name="edit" size="sm" />,
-            variant: 'secondary'
+            variant: 'brandGray'
           },
           {
             label: 'Delete',
             onClick: handleDeleteBrand,
-            icon: <Icon name="trash" size="sm" />,
-            variant: 'secondary'
+            variant: 'primary'
           }
         ]}
       />
@@ -163,7 +161,7 @@ const BrandPage: React.FC = () => {
           <Card
             title="Brand Details"
             description="Basic information about this brand"
-            icon={<Icon name="building" className="text-indigo-600" size="md" />}
+            icon={<Icon name="building" className="text-nocturn" size="md" />}
           >
             <BrandDetails brand={brand} />
           </Card>
@@ -172,14 +170,13 @@ const BrandPage: React.FC = () => {
             <Card
               title="Brand Goals"
               description="Track your brand objectives and milestones"
-              icon={<Icon name="target" className="text-indigo-600" size="md" />}
+              icon={<Icon name="target" className="text-nocturn" size="md" />}
               noPadding={true}
               buttons={[
                 {
                   label: 'Add Goal',
                   onClick: handleAddGoal,
-                  icon: <Icon name="plus" size="sm" />,
-                  variant: 'secondary'
+                  variant: 'brandGray'
                 }
               ]}
             >
@@ -189,14 +186,13 @@ const BrandPage: React.FC = () => {
             <Card
               title="Competitors"
               description="Monitor your competitive landscape"
-              icon={<Icon name="users" className="text-indigo-600" size="md" />}
+              icon={<Icon name="users" className="text-nocturn" size="md" />}
               noPadding={true}
               buttons={[
                 {
                   label: 'Add Competitor',
                   onClick: handleAddCompetitor,
-                  icon: <Icon name="plus" size="sm" />,
-                  variant: 'secondary'
+                  variant: 'brandGray'
                 }
               ]}
             >

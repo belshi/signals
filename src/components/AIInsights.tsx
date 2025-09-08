@@ -15,7 +15,7 @@ const AIInsights: React.FC<AIInsightsProps> = ({ signal, className = '' }) => {
       <Card
         title="AI Insights"
         description="AI-powered analysis of social listening and consumer insights"
-        icon={<Icon name="target" className="text-indigo-600" size="md" />}
+        icon={<Icon name="target" className="text-nocturn" size="md" />}
         className={className}
       >
         <div className="text-center py-8">
@@ -28,8 +28,8 @@ const AIInsights: React.FC<AIInsightsProps> = ({ signal, className = '' }) => {
   return (
     <Card
       title="AI Insights"
-      description="AI-powered analysis from Talkwalker"
-      icon={<Icon name="target" className="text-indigo-600" size="md" />}
+      description="AI-powered analysis of social listening and consumer insights"
+      icon={<Icon name="target" className="text-nocturn" size="md" />}
       className={className}
     >
       <div className="prose prose-sm max-w-none">

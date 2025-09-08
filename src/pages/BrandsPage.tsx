@@ -107,13 +107,12 @@ const BrandsPage: React.FC = () => {
     <Page>
       <Page.Header 
         title="Brands"
-        subtitle="Manage and view all your brands"
+        // subtitle="Manage and view all your brands"
         buttons={[
           {
             label: 'Add Brand',
             onClick: handleAddBrand,
-            icon: <Icon name="plus" size="sm" />,
-            variant: 'primary'
+            variant: 'secondary'
           }
         ]}
       />
@@ -130,7 +129,7 @@ const BrandsPage: React.FC = () => {
             }}
           />
         ) : (
-          <Card noPadding={true}>
+          <Card noPadding={false}>
             <DataTable
               data={brands}
               columns={columns}

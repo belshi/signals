@@ -267,7 +267,7 @@ export const signalService = {
     }
 
     try {
-      onProgress?.('Getting AI insights from Talkwalker...');
+      onProgress?.('Getting AI insights...');
       
       // Call Talkwalker chat API to get insights
       const chatResponse = await talkwalkerService.chatWithCopilot(

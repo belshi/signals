@@ -37,7 +37,7 @@ const BrandDetails: React.FC<BrandDetailsProps> = ({ className = '', brand }) =>
               href={brandDetails.website}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-indigo-600 hover:text-indigo-500"
+              className="text-brand-600 hover:text-brand-500"
             >
               {brandDetails.website}
             </a>

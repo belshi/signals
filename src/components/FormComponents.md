@@ -203,7 +203,7 @@ Three size options available across all components:
 
 ### Focus States
 Consistent focus indicators using Tailwind's focus utilities:
-- Focus ring: `focus:ring-2 focus:ring-indigo-500`
+- Focus ring: `focus:ring-2 focus:ring-brand-500`
 - Focus offset: `focus:ring-offset-0` (for better contrast)
 
 ## Best Practices

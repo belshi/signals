@@ -78,7 +78,7 @@ const ErrorToast: React.FC<ErrorToastProps> = ({
             <div className="ml-4 flex-shrink-0">
               <button
                 onClick={handleDismiss}
-                className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                className="inline-flex text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-500"
                 type="button"
               >
                 <span className="sr-only">Dismiss</span>

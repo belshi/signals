@@ -4,7 +4,7 @@ import Button from './Button';
 export interface CardButton {
   label: string;
   onClick: () => void;
-  variant?: 'primary' | 'secondary';
+  variant?: 'primary' | 'secondary' | 'brandGray';
   icon?: React.ReactNode;
 }
 
@@ -27,11 +27,14 @@ const Card: React.FC<CardProps> = ({
   className = '',
   noPadding = false,
 }) => {
-  const getButtonVariant = (variant: CardButton['variant'] = 'primary'): 'primary' | 'secondary' => {
+  const getButtonVariant = (variant: CardButton['variant'] = 'primary'): 'primary' | 'secondary' | 'brandGray' => {
     switch (variant) {
       case 'secondary':
         return 'secondary';
+      case 'brandGray':
+        return 'brandGray';
       case 'primary':
+            return 'primary';
       default:
         return 'primary';
     }
@@ -40,14 +43,14 @@ const Card: React.FC<CardProps> = ({
   const hasHeader = title || description || icon || (buttons && buttons.length > 0);
 
   return (
-    <div className={`bg-white shadow-sm rounded-xl border border-gray-200 ${className}`}>
+    <div className={`bg-white rounded-xl ${className}`}>
       {hasHeader && (
-        <div className="px-6 py-5 border-b border-gray-200 bg-gray-50/50">
+        <div className="px-6 py-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               {icon && (
                 <div className="flex-shrink-0">
-                  <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
+                  <div className="rounded-lg flex items-center justify-center">
                     {icon}
                   </div>
                 </div>
@@ -57,7 +60,7 @@ const Card: React.FC<CardProps> = ({
                   <h2 className="text-lg font-semibold text-gray-900">{title}</h2>
                 )}
                 {description && (
-                  <p className="text-sm text-gray-500">{description}</p>
+                  <p className="text-sm text-gray-500 -mt-1">{description}</p>
                 )}
               </div>
             </div>

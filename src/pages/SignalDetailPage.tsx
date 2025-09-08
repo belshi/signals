@@ -162,7 +162,7 @@ const SignalDetailPage: React.FC = () => {
             <p className="text-gray-500">Signal not found</p>
             <button
               onClick={() => navigate('/signals')}
-              className="mt-4 text-indigo-600 hover:text-indigo-500"
+              className="mt-4 text-nocturn hover:text-brand-500"
             >
               Back to Signals
             </button>
@@ -184,21 +184,18 @@ const SignalDetailPage: React.FC = () => {
           {
             label: 'Edit name',
             onClick: handleOpenEdit,
-            icon: <Icon name="edit" size="sm" />,
-            variant: 'secondary',
+            variant: 'brandGray',
           },
           {
             label: 'Refresh',
             onClick: refreshSignalDetails,
-            icon: <Icon name="building" size="sm" />,
             variant: 'secondary',
             loading: isRefreshing
           },
           {
             label: 'Delete',
             onClick: handleDeleteSignal,
-            icon: <Icon name="trash" size="sm" />,
-            variant: 'secondary',
+            variant: 'primary',
             loading: isDeleting
           }
         ]}
@@ -209,8 +206,7 @@ const SignalDetailPage: React.FC = () => {
           <Card
             title="Signal Details"
             description="Basic information about this signal"
-            icon={<Icon name="building" className="text-indigo-600" size="md" />}
-          >
+            icon={<Icon name="building" className="text-nocturn" size="md" />}>
             <SignalDetails signal={signal} brand={brand || undefined} />
           </Card>
           
@@ -218,9 +214,7 @@ const SignalDetailPage: React.FC = () => {
             <AIInsights signal={signal} />
             <AIRecommendations signal={signal} />
           </div>
-          
-          
-        </div>
+                  </div>
       </Page.Content>
 
       <EditSignalModal
