@@ -36,10 +36,6 @@ const SignalDetails: React.FC<SignalDetailsProps> = ({ className = '', signal, b
         value={brand ? brand.name : 'No brand linked'}
       />
       <DetailRow
-        label="Signal Name"
-        value={signal.name}
-      />
-      <DetailRow
         label="Prompt"
         value={signal.prompt || 'No prompt available'}
       />
