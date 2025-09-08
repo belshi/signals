@@ -40,7 +40,7 @@ const Card: React.FC<CardProps> = ({
   const hasHeader = title || description || icon || (buttons && buttons.length > 0);
 
   return (
-    <div className={`bg-white shadow-sm rounded-xl border border-gray-200 overflow-hidden ${className}`}>
+    <div className={`bg-white shadow-sm rounded-xl border border-gray-200 ${className}`}>
       {hasHeader && (
         <div className="px-6 py-5 border-b border-gray-200 bg-gray-50/50">
           <div className="flex items-center justify-between">
