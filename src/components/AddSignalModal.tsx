@@ -123,7 +123,11 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       })
       .catch((err: unknown) => {
         if (aborted) return;
-        setCopilotsError(err instanceof Error ? err.message : 'Failed to load copilots');
+        const errorMessage = err instanceof Error ? err.message : 'Failed to load copilots';
+        console.warn('Talkwalker copilots not available:', errorMessage);
+        setCopilotsError(errorMessage);
+        // Don't block the form - allow users to proceed without copilots
+        setCopilots([]);
       })
       .finally(() => {
         if (aborted) return;
@@ -150,7 +154,8 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       newErrors.prompt = 'Prompt is required';
     }
 
-    if (!formData.copilotId) {
+    // Only require copilot if copilots are available
+    if (copilots.length > 0 && !formData.copilotId) {
       newErrors.copilotId = 'Please select a copilot';
     }
 
@@ -260,7 +265,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
           <div>
             <InputLabel
               htmlFor="copilotId"
-              required
+              required={copilots.length > 0}
               error={!!errors.copilotId}
             >
               Copilot
@@ -270,12 +275,20 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
               options={copilots.map(c => ({ value: c.id, label: c.name }))}
               value={formData.copilotId}
               onChange={(value) => handleInputChange('copilotId', value)}
-              placeholder={copilotsLoading ? 'Loading copilots...' : 'Select a copilot'}
+              placeholder={
+                copilotsLoading 
+                  ? 'Loading copilots...' 
+                  : copilots.length === 0 
+                    ? 'No copilots available (optional)'
+                    : 'Select a copilot'
+              }
               disabled={isLoading || copilotsLoading}
               ariaDescribedBy={errors.copilotId ? 'copilotId-error' : undefined}
             />
             {copilotsError && (
-              <p className="mt-1 text-sm text-red-600">{copilotsError}</p>
+              <p className="mt-1 text-sm text-amber-600">
+                ⚠️ {copilotsError}. You can still create signals without copilots.
+              </p>
             )}
             {errors.copilotId && (
               <p id="copilotId-error" className="mt-1 text-sm text-red-600">

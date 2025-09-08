@@ -19,6 +19,39 @@ interface TalkwalkerListResponse {
 
 export const talkwalkerService = {
   async listCopilots(signal?: AbortSignal): Promise<TalkwalkerCopilot[]> {
+    // Check if we're in a browser environment and should use the proxy
+    const isBrowser = typeof window !== 'undefined';
+    const shouldUseProxy = isBrowser && (config.app.isProduction || window.location.hostname !== 'localhost');
+
+    if (shouldUseProxy) {
+      // Use Vercel API proxy to avoid CORS issues
+      try {
+        const response = await fetch('/api/talkwalker-proxy', {
+          method: 'POST',
+          signal,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (response.ok) {
+          const data = (await response.json()) as TalkwalkerListResponse;
+          if (data.status_code === '0') {
+            return data.yeti_answer?.custom_yetis ?? [];
+          } else {
+            throw new Error(`Talkwalker error: ${data.status_message || 'Unknown error'}`);
+          }
+        } else {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `Proxy request failed: ${response.status} ${response.statusText}`);
+        }
+      } catch (err) {
+        console.error('Talkwalker proxy request failed:', err);
+        throw err;
+      }
+    }
+
+    // Fallback to direct API calls (for development or when proxy is not available)
     if (!config.talkwalker.baseUrl || !config.talkwalker.accessToken) {
       console.warn('Talkwalker not configured. Skipping copilot fetch.');
       return [];
