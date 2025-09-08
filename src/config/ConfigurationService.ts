@@ -50,6 +50,13 @@ export class ConfigurationService {
   }
 
   /**
+   * Get OpenAI configuration
+   */
+  get openai(): OpenAIConfig {
+    return this.config.openai;
+  }
+
+  /**
    * Get application configuration
    */
   get app(): AppEnvironmentConfig {
@@ -71,12 +78,20 @@ export class ConfigurationService {
   }
 
   /**
+   * Check if OpenAI is properly configured
+   */
+  get isOpenAIConfigured(): boolean {
+    return this.config.openai.isConfigured;
+  }
+
+  /**
    * Load configuration from environment variables
    */
   private loadConfiguration(): AppConfig {
     return {
       supabase: this.loadSupabaseConfig(),
       talkwalker: this.loadTalkwalkerConfig(),
+      openai: this.loadOpenAIConfig(),
       app: this.loadAppConfig(),
     };
   }
@@ -118,6 +133,18 @@ export class ConfigurationService {
       userEmail,
       isConfigured: hasRequiredFields,
       hasOptionalFields,
+    };
+  }
+
+  /**
+   * Load OpenAI configuration
+   */
+  private loadOpenAIConfig(): OpenAIConfig {
+    const apiKey = this.getEnvVar(['VITE_OPENAI_API_KEY', 'NEXT_PUBLIC_OPENAI_API_KEY']);
+
+    return {
+      apiKey,
+      isConfigured: !!apiKey,
     };
   }
 
@@ -185,6 +212,15 @@ export class ConfigurationService {
       );
     }
 
+    // Validate OpenAI configuration
+    if (!this.config.openai.isConfigured) {
+      warnings.push(
+        'OpenAI configuration is missing. ' +
+        'Set VITE_OPENAI_API_KEY (or NEXT_PUBLIC_ equivalent). ' +
+        'AI recommendations will be disabled.'
+      );
+    }
+
     // Log warnings
     if (warnings.length > 0) {
       console.warn('Configuration warnings:', warnings.join('\n'));
@@ -221,6 +257,10 @@ export class ConfigurationService {
         hasAccessToken: !!this.config.talkwalker.accessToken,
         hasOptionalFields: this.config.talkwalker.hasOptionalFields,
       },
+      openai: {
+        configured: this.config.openai.isConfigured,
+        hasApiKey: !!this.config.openai.apiKey,
+      },
       app: {
         environment: this.config.app.environment,
         isDevelopment: this.config.app.isDevelopment,
@@ -236,6 +276,7 @@ export class ConfigurationService {
 export interface AppConfig {
   supabase: SupabaseConfig;
   talkwalker: TalkwalkerConfig;
+  openai: OpenAIConfig;
   app: AppEnvironmentConfig;
 }
 
@@ -256,6 +297,11 @@ export interface TalkwalkerConfig {
   hasOptionalFields: boolean;
 }
 
+export interface OpenAIConfig {
+  apiKey?: string;
+  isConfigured: boolean;
+}
+
 export interface AppEnvironmentConfig {
   isDevelopment: boolean;
   isProduction: boolean;
@@ -273,6 +319,10 @@ export interface ConfigurationSummary {
     hasBaseUrl: boolean;
     hasAccessToken: boolean;
     hasOptionalFields: boolean;
+  };
+  openai: {
+    configured: boolean;
+    hasApiKey: boolean;
   };
   app: {
     environment: string;
@@ -292,5 +342,6 @@ export const configService = ConfigurationService.getInstance();
 export const config = {
   supabase: configService.supabase,
   talkwalker: configService.talkwalker,
+  openai: configService.openai,
   app: configService.app,
 };

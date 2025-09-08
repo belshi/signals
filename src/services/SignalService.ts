@@ -2,6 +2,8 @@ import { BrandedBaseService } from './BaseService';
 import { withServiceErrorHandling } from './ServiceDecorator';
 import { configService } from '../config/ConfigurationService';
 import { talkwalkerService } from './talkwalker';
+import { openAIService } from './OpenAIService';
+import { brandGoalsService } from './database';
 import type { 
   EnhancedSignal, 
   SignalId, 
@@ -205,10 +207,16 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       // Extract insights from the chat response
       const aiContent = chatResponse.yeti_answer?.reply?.content || '';
       
-      // Use the raw AI response as insights
+      // Generate recommendations using OpenAI
+      const recommendations = await this.generateOpenAIRecommendations(
+        aiContent,
+        brandDetails,
+        data.brandId
+      );
+      
       const insights = {
         content: aiContent,
-        recommendations: this.extractRecommendations(aiContent),
+        recommendations,
       };
       
       onProgress?.('Saving signal with AI insights...');
@@ -389,6 +397,36 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
     }
 
     return this.getByField('copilot_id', copilotId);
+  }
+
+  /**
+   * Generate recommendations using OpenAI
+   */
+  private async generateOpenAIRecommendations(
+    insights: string,
+    brandDetails: { name: string; industry: string; description: string },
+    brandId: BrandId
+  ): Promise<string[]> {
+    try {
+      // Get brand goals
+      const brandGoals = await brandGoalsService.getGoalsByBrandId(brandId);
+      
+      const request = {
+        insights,
+        brandDetails,
+        brandGoals: brandGoals.map(goal => ({ name: goal.name })),
+      };
+
+      return await openAIService.generateRecommendations(request);
+    } catch (error) {
+      console.error('Failed to generate OpenAI recommendations:', error);
+      // Fallback to simple recommendations
+      return [
+        'Monitor social media sentiment regularly',
+        'Analyze competitor strategies',
+        'Track consumer behavior patterns',
+      ];
+    }
   }
 
   /**
