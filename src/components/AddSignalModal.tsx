@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Modal, Button, InputLabel, TextInput, TextArea, RadioGroup, SingleSelect } from './index';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
 import type { CreateSignalForm, CopilotType, BrandId } from '../types/enhanced';
+import { talkwalkerService, type TalkwalkerCopilot } from '../services/talkwalker';
 
 interface AddSignalModalProps {
   isOpen: boolean;
@@ -67,6 +68,9 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
   });
   const [promptMode, setPromptMode] = useState<'predefined' | 'custom'>('predefined');
   const [selectedUseCase, setSelectedUseCase] = useState<string>('');
+  const [copilots, setCopilots] = useState<TalkwalkerCopilot[]>([]);
+  const [copilotsLoading, setCopilotsLoading] = useState(false);
+  const [copilotsError, setCopilotsError] = useState<string | null>(null);
 
   const handleInputChange = useCallback((field: keyof CreateSignalForm, value: string | BrandId | CopilotType | string[]) => {
     setFormData(prev => ({
@@ -112,6 +116,33 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
     }
   }, [formData.copilotType]);
 
+  // Load Talkwalker copilots when modal opens
+  useEffect(() => {
+    if (!isOpen) return;
+    let aborted = false;
+    const abort = new AbortController();
+    setCopilotsLoading(true);
+    setCopilotsError(null);
+    talkwalkerService
+      .listCopilots(abort.signal)
+      .then((list) => {
+        if (aborted) return;
+        setCopilots(list);
+      })
+      .catch((err: unknown) => {
+        if (aborted) return;
+        setCopilotsError(err instanceof Error ? err.message : 'Failed to load copilots');
+      })
+      .finally(() => {
+        if (aborted) return;
+        setCopilotsLoading(false);
+      });
+    return () => {
+      aborted = true;
+      abort.abort();
+    };
+  }, [isOpen]);
+
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
@@ -125,6 +156,10 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
 
     if (!formData.prompt.trim()) {
       newErrors.prompt = 'Prompt is required';
+    }
+
+    if (!formData.copilotId) {
+      newErrors.copilotId = 'Please select a copilot';
     }
 
     if (promptMode === 'predefined' && !selectedUseCase) {
@@ -203,32 +238,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
         )}
 
         <div className="space-y-6">
-          {/* Signal Name */}
-          <div>
-            <InputLabel
-              htmlFor="name"
-              required
-              error={!!errors.name}
-            >
-              Signal Name
-            </InputLabel>
-            <TextInput
-              id="name"
-              value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              placeholder="Enter signal name"
-              error={!!errors.name}
-              disabled={isLoading}
-              ariaDescribedBy={errors.name ? 'name-error' : undefined}
-            />
-            {errors.name && (
-              <p id="name-error" className="mt-1 text-sm text-red-600">
-                {errors.name}
-              </p>
-            )}
-          </div>
-
-          {/* Brand Selection */}
+          {/* Brand Selection (moved to first position) */}
           <div>
             <InputLabel
               htmlFor="brandId"
@@ -254,23 +264,59 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
             )}
           </div>
 
-          {/* Copilot Type */}
+          {/* Copilot Selection */}
           <div>
             <InputLabel
-              htmlFor="copilotType"
+              htmlFor="copilotId"
               required
+              error={!!errors.copilotId}
             >
-              Copilot Type
+              Copilot
             </InputLabel>
             <SingleSelect
-              id="copilotType"
-              options={COPILOT_TYPE_OPTIONS}
-              value={formData.copilotType}
-              onChange={(value) => handleInputChange('copilotType', value as CopilotType)}
-              placeholder="Select copilot type"
-              disabled={isLoading}
+              id="copilotId"
+              options={copilots.map(c => ({ value: c.id, label: c.name }))}
+              value={formData.copilotId}
+              onChange={(value) => handleInputChange('copilotId', value)}
+              placeholder={copilotsLoading ? 'Loading copilots...' : 'Select a copilot'}
+              disabled={isLoading || copilotsLoading}
+              ariaDescribedBy={errors.copilotId ? 'copilotId-error' : undefined}
             />
+            {copilotsError && (
+              <p className="mt-1 text-sm text-red-600">{copilotsError}</p>
+            )}
+            {errors.copilotId && (
+              <p id="copilotId-error" className="mt-1 text-sm text-red-600">
+                {errors.copilotId}
+              </p>
+            )}
           </div>
+          {/* Signal Name */}
+          <div>
+            <InputLabel
+              htmlFor="name"
+              required
+              error={!!errors.name}
+            >
+              Signal Name
+            </InputLabel>
+            <TextInput
+              id="name"
+              value={formData.name}
+              onChange={(e) => handleInputChange('name', e.target.value)}
+              placeholder="Enter signal name"
+              error={!!errors.name}
+              disabled={isLoading}
+              ariaDescribedBy={errors.name ? 'name-error' : undefined}
+            />
+            {errors.name && (
+              <p id="name-error" className="mt-1 text-sm text-red-600">
+                {errors.name}
+              </p>
+            )}
+          </div>
+
+          
 
           {/* Prompt Mode Toggle */}
           <div>

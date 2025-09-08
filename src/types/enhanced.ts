@@ -205,6 +205,7 @@ export interface CreateSignalForm {
   prompt: string;
   brandId: BrandId;
   copilotType: CopilotType;
+  copilotId?: string;
   type?: SignalType;
   tags?: string[];
 }

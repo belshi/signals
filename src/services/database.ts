@@ -167,6 +167,7 @@ export const signalService = {
       brandId: data.brandId,
       metadata: {
         copilotType: data.copilotType,
+        copilotId: data.copilotId,
       },
     };
     MOCK_SIGNALS.push(newSignal);
