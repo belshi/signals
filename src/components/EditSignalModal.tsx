@@ -77,12 +77,21 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
     }
   }, [signal, formData, validateForm, updateSignal, onSuccess, onClose]);
 
+  const resetForm = useCallback(() => {
+    if (signal) {
+      setFormData({
+        name: signal.name,
+      });
+    }
+    setErrors({});
+  }, [signal]);
+
   const handleClose = useCallback(() => {
     if (!isLoading) {
-      setErrors({});
+      resetForm();
       onClose();
     }
-  }, [isLoading, onClose]);
+  }, [isLoading, onClose, resetForm]);
 
   if (!signal) {
     return null;

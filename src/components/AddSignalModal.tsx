@@ -180,17 +180,8 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       
       await createSignal(formData);
       
-      // Reset form
-      setFormData({
-        name: '',
-        prompt: '',
-        brandId: '' as BrandId,
-        copilotType: 'Market Research',
-        tags: [],
-      });
-      setSelectedUseCase('');
-      setPromptMode('predefined');
-      
+      // Reset form and close modal
+      resetForm();
       onSuccess?.();
       onClose();
     } catch (err) {
@@ -200,21 +191,25 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
     }
   }, [formData, validateForm, createSignal, onSuccess, onClose]);
 
+  const resetForm = useCallback(() => {
+    setFormData({
+      name: '',
+      prompt: '',
+      brandId: '' as BrandId,
+      copilotType: 'Market Research',
+      tags: [],
+    });
+    setSelectedUseCase('');
+    setPromptMode('predefined');
+    setErrors({});
+  }, []);
+
   const handleClose = useCallback(() => {
     if (!isLoading) {
-      setFormData({
-        name: '',
-        prompt: '',
-        brandId: '' as BrandId,
-        copilotType: 'Market Research',
-        tags: [],
-      });
-      setSelectedUseCase('');
-      setPromptMode('predefined');
-      setErrors({});
+      resetForm();
       onClose();
     }
-  }, [isLoading, onClose]);
+  }, [isLoading, onClose, resetForm]);
 
   const currentUseCases = USE_CASES[formData.copilotType];
 

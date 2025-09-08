@@ -82,7 +82,11 @@ const SignalDetailPage: React.FC = () => {
   const handleDeleteSignal = useCallback(async () => {
     if (!signal) return;
     
-    if (window.confirm(`Are you sure you want to delete "${signal.name}"? This action cannot be undone.`)) {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${signal.name}"? This action cannot be undone.`
+    );
+    
+    if (confirmed) {
       try {
         setIsDeleting(true);
         await deleteSignal(signal.id);

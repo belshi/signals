@@ -23,9 +23,9 @@ const SignalsPage: React.FC = () => {
   }, []);
 
   const handleSignalCreated = useCallback(() => {
-    // Refresh the signals list after successful creation
-    refreshSignals();
-  }, [refreshSignals]);
+    // No need to refresh signals as the hook already updates the state optimistically
+    // The signals list will automatically reflect the new signal
+  }, []);
 
   return (
     <Page>

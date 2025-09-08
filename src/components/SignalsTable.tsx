@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useMemo } from 'react';
 import { DataTable, MoreMenu, EditSignalModal } from './index';
 import { Icon } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
@@ -13,12 +13,34 @@ interface SignalsTableProps {
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
-  const { signals, deleteSignal, refreshSignals } = useSignalsContext();
+  const { signals, deleteSignal } = useSignalsContext();
   const { getBrand } = useBrandsContext();
   const [editingSignal, setEditingSignal] = useState<EnhancedSignal | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  const columns: TableColumn<EnhancedSignal>[] = [
+  const handleEditSignal = useCallback((signal: EnhancedSignal) => {
+    setEditingSignal(signal);
+    setIsEditModalOpen(true);
+  }, []);
+
+  const handleDeleteSignal = useCallback(async (signal: EnhancedSignal) => {
+    const confirmed = window.confirm(
+      `Are you sure you want to delete "${signal.name}"? This action cannot be undone.`
+    );
+    
+    if (confirmed) {
+      try {
+        await deleteSignal(signal.id);
+        // No need to refresh signals as the hook already updates the state optimistically
+      } catch (error) {
+        console.error('Failed to delete signal:', error);
+        // The error is already handled by the useSignals hook and will be displayed via the error context
+        // Consider showing a toast notification for better UX
+      }
+    }
+  }, [deleteSignal]);
+
+  const columns: TableColumn<EnhancedSignal>[] = useMemo(() => [
     {
       key: 'name',
       label: 'Name',
@@ -81,7 +103,7 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
         </div>
       ),
     },
-  ];
+  ], [getBrand, handleEditSignal, handleDeleteSignal]);
 
   const handleRowClick = (signal: EnhancedSignal, _index: number) => {
     onRowClick?.(signal);
@@ -91,31 +113,15 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
     onRowSelect?.(signal);
   };
 
-  const handleEditSignal = useCallback((signal: EnhancedSignal) => {
-    setEditingSignal(signal);
-    setIsEditModalOpen(true);
-  }, []);
-
-  const handleDeleteSignal = useCallback(async (signal: EnhancedSignal) => {
-    if (window.confirm(`Are you sure you want to delete "${signal.name}"? This action cannot be undone.`)) {
-      try {
-        await deleteSignal(signal.id);
-        await refreshSignals();
-      } catch (error) {
-        console.error('Failed to delete signal:', error);
-        // You might want to show a toast notification here
-      }
-    }
-  }, [deleteSignal, refreshSignals]);
-
   const handleEditModalClose = useCallback(() => {
     setIsEditModalOpen(false);
     setEditingSignal(null);
   }, []);
 
-  const handleEditSuccess = useCallback(async () => {
-    await refreshSignals();
-  }, [refreshSignals]);
+  const handleEditSuccess = useCallback(() => {
+    // No need to refresh signals as the hook already updates the state optimistically
+    // The signals list will automatically reflect the updated signal
+  }, []);
 
   return (
     <>
