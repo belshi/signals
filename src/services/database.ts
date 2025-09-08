@@ -1,4 +1,4 @@
-import { typedSupabase, isSupabaseConfigured } from '../lib/supabase';
+import { typedSupabase, isSupabaseConfigured, type Database } from '../lib/supabase';
 import { MOCK_BRANDS, MOCK_SIGNALS } from '../constants/mockData';
 import type { 
   EnhancedBrandDetails, 
@@ -15,6 +15,17 @@ import type {
   UpdateBrandCompetitorForm
 } from '../types/enhanced';
 import { createBrandId, createSignalId, createISODateString } from '../utils/typeUtils';
+
+// Type-safe database row types
+type BrandRow = Database['public']['Tables']['brands']['Row'];
+type BrandInsert = Database['public']['Tables']['brands']['Insert'];
+type BrandUpdate = Database['public']['Tables']['brands']['Update'];
+type BrandGoalRow = Database['public']['Tables']['brand_goals']['Row'];
+type BrandGoalInsert = Database['public']['Tables']['brand_goals']['Insert'];
+type BrandGoalUpdate = Database['public']['Tables']['brand_goals']['Update'];
+type BrandCompetitorRow = Database['public']['Tables']['brand_competitors']['Row'];
+type BrandCompetitorInsert = Database['public']['Tables']['brand_competitors']['Insert'];
+type BrandCompetitorUpdate = Database['public']['Tables']['brand_competitors']['Update'];
 
 // Brand service functions
 export const brandService = {
@@ -69,7 +80,7 @@ export const brandService = {
       description: brandData.description || null,
       website: brandData.website || null,
       industry: brandData.industry || null,
-      location: null, // Not in your schema, but we'll handle it
+      location: null,
       employees: brandData.employeeCount ? brandData.employeeCount.toString() : null,
       created_at: new Date().toISOString(),
     };
@@ -124,129 +135,37 @@ export const brandService = {
   },
 };
 
-// Signal service functions
+// Signal service functions - Note: No signals table in actual schema
+// This service is kept for backward compatibility but will always return mock data
 export const signalService = {
   // Get all signals
   async getAllSignals(): Promise<EnhancedSignal[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Using mock data for signals');
-      return MOCK_SIGNALS;
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      // If the signals table doesn't exist, return empty array instead of throwing
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.signals" does not exist')) {
-        console.warn('Signals table not found, returning empty array. Create the signals table to enable signal functionality.');
-        return [];
-      }
-      throw new Error(`Failed to fetch signals: ${error.message}`);
-    }
-
-    return data.map(transformSignalFromDB);
+    console.log('Using mock data for signals - no signals table in database schema');
+    return MOCK_SIGNALS;
   },
 
   // Get signal by ID
   async getSignalById(id: SignalId): Promise<EnhancedSignal | null> {
-    if (!isSupabaseConfigured) {
-      console.log('Using mock data for signal by ID:', id);
-      const signalIdStr = id.toString();
-      return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .eq('id', id)
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // Signal not found
-      }
-      // If the signals table doesn't exist, return null
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.signals" does not exist')) {
-        console.warn('Signals table not found, returning null.');
-        return null;
-      }
-      throw new Error(`Failed to fetch signal: ${error.message}`);
-    }
-
-    return transformSignalFromDB(data);
+    console.log('Using mock data for signal by ID:', id);
+    const signalIdStr = id.toString();
+    return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
   },
 
   // Get signals by brand ID
   async getSignalsByBrandId(brandId: BrandId): Promise<EnhancedSignal[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Using mock data for signals by brand ID:', brandId);
-      const brandIdStr = brandId.toString();
-      return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .eq('brand_id', brandId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      // If the signals table doesn't exist, return empty array
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.signals" does not exist')) {
-        console.warn('Signals table not found, returning empty array.');
-        return [];
-      }
-      throw new Error(`Failed to fetch signals for brand: ${error.message}`);
-    }
-
-    return data.map(transformSignalFromDB);
+    console.log('Using mock data for signals by brand ID:', brandId);
+    const brandIdStr = brandId.toString();
+    return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
   },
 
   // Update signal
   async updateSignal(id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> {
-    const updateData = {
-      ...(updates.name && { name: updates.name }),
-      ...(updates.type && { type: updates.type }),
-      ...(updates.status && { status: updates.status }),
-      ...(updates.tags && { tags: updates.tags }),
-      updated_at: new Date().toISOString(),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      // If the signals table doesn't exist, throw a more helpful error
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.signals" does not exist')) {
-        throw new Error('Signals table not found. Please create the signals table to enable signal functionality.');
-      }
-      throw new Error(`Failed to update signal: ${error.message}`);
-    }
-
-    return transformSignalFromDB(data);
+    throw new Error('Signal updates not supported - no signals table in database schema');
   },
 
   // Delete signal
   async deleteSignal(id: SignalId): Promise<void> {
-    const { error } = await typedSupabase
-      .from('signals')
-      .delete()
-      .eq('id', id);
-
-    if (error) {
-      // If the signals table doesn't exist, throw a more helpful error
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.signals" does not exist')) {
-        throw new Error('Signals table not found. Please create the signals table to enable signal functionality.');
-      }
-      throw new Error(`Failed to delete signal: ${error.message}`);
-    }
+    throw new Error('Signal deletion not supported - no signals table in database schema');
   },
 };
 
@@ -297,7 +216,7 @@ export const brandGoalsService = {
       throw new Error(`Failed to create brand goal: ${error.message}`);
     }
 
-    return data;
+    return data as BrandGoal;
   },
 
   // Update goal
@@ -321,7 +240,7 @@ export const brandGoalsService = {
       throw new Error(`Failed to update brand goal: ${error.message}`);
     }
 
-    return data;
+    return data as BrandGoal;
   },
 
   // Delete goal
@@ -388,7 +307,7 @@ export const brandCompetitorsService = {
       throw new Error(`Failed to create brand competitor: ${error.message}`);
     }
 
-    return data;
+    return data as BrandCompetitor;
   },
 
   // Update competitor
@@ -412,7 +331,7 @@ export const brandCompetitorsService = {
       throw new Error(`Failed to update brand competitor: ${error.message}`);
     }
 
-    return data;
+    return data as BrandCompetitor;
   },
 
   // Delete competitor
@@ -433,44 +352,23 @@ export const brandCompetitorsService = {
 };
 
 // Transform functions to convert database rows to our application types
-function transformBrandFromDB(dbBrand: any): EnhancedBrandDetails {
+function transformBrandFromDB(dbBrand: BrandRow): EnhancedBrandDetails {
   return {
     id: createBrandId(dbBrand.id),
     name: dbBrand.name || '',
     description: dbBrand.description || '',
     website: dbBrand.website || '',
     industry: dbBrand.industry || '',
-    logo: '', // Not in your schema
+    logo: '', // Not in actual schema
     employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
-    revenue: 0, // Not in your schema
+    revenue: 0, // Not in actual schema
     socialMedia: {
       twitter: '',
       linkedin: '',
       facebook: '',
-    }, // Not in your schema
+    }, // Not in actual schema
     createdAt: createISODateString(dbBrand.created_at),
-    updatedAt: createISODateString(dbBrand.created_at), // Use created_at since no updated_at
+    updatedAt: createISODateString(dbBrand.created_at), // No updated_at in actual schema
   };
 }
 
-function transformSignalFromDB(dbSignal: any): EnhancedSignal {
-  return {
-    id: createSignalId(dbSignal.id),
-    name: dbSignal.name,
-    prompt: dbSignal.prompt,
-    type: dbSignal.type,
-    status: dbSignal.status,
-    tags: dbSignal.tags || [],
-    brandId: createBrandId(dbSignal.brand_id),
-    triggeredAt: dbSignal.triggered_at ? createISODateString(dbSignal.triggered_at) : undefined,
-    aiInsights: dbSignal.ai_insights || {
-      socialListening: '',
-      consumerInsights: '',
-    },
-    aiRecommendations: dbSignal.ai_recommendations || [],
-    csvData: dbSignal.csv_data || '',
-    metadata: dbSignal.metadata || {},
-    createdAt: createISODateString(dbSignal.created_at),
-    updatedAt: createISODateString(dbSignal.updated_at),
-  };
-}

@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { signalService } from '../services/database';
 import { useRetry } from './useRetry';
 import { useErrorHandler } from './useErrorHandler';
@@ -102,7 +102,8 @@ export const useSignals = (): UseSignalsReturn => {
     return signals.find(signal => signal.id === id);
   }, [signals]);
 
-  return {
+  // Memoize the return object to prevent unnecessary re-renders
+  const returnValue = useMemo(() => ({
     signals,
     isLoading,
     error,
@@ -110,5 +111,7 @@ export const useSignals = (): UseSignalsReturn => {
     deleteSignal,
     refreshSignals,
     getSignal,
-  };
+  }), [signals, isLoading, error, updateSignal, deleteSignal, refreshSignals, getSignal]);
+
+  return returnValue;
 };

@@ -2,7 +2,7 @@ import React from 'react';
 
 // Branded types for better type safety
 export type SignalId = string & { readonly __brand: 'SignalId' };
-export type BrandId = number & { readonly __brand: 'BrandId' };
+export type BrandId = number & { readonly __brand: 'BrandId' }; // BIGINT in actual schema
 export type UserId = string & { readonly __brand: 'UserId' };
 
 // Utility type to create branded types
@@ -36,6 +36,41 @@ export interface ApiError {
   details?: Record<string, unknown>;
   timestamp: ISODateString;
 }
+
+// Enhanced error types for better error handling
+export interface DatabaseError extends Error {
+  code?: string;
+  details?: string;
+  hint?: string;
+  table?: string;
+  column?: string;
+  constraint?: string;
+}
+
+export interface NetworkError extends Error {
+  status?: number;
+  statusText?: string;
+  url?: string;
+}
+
+export interface ValidationError extends Error {
+  field?: string;
+  value?: unknown;
+  constraint?: string;
+}
+
+// Error type guards
+export const isDatabaseError = (error: unknown): error is DatabaseError => {
+  return error instanceof Error && 'code' in error;
+};
+
+export const isNetworkError = (error: unknown): error is NetworkError => {
+  return error instanceof Error && 'status' in error;
+};
+
+export const isValidationError = (error: unknown): error is ValidationError => {
+  return error instanceof Error && 'field' in error;
+};
 
 // Pagination types
 export interface PaginationParams {

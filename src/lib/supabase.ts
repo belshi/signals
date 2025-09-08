@@ -12,99 +12,80 @@ if (!isSupabaseConfigured) {
   console.warn('Supabase environment variables not configured. Application will use mock data.');
 }
 
-// Database types (will be generated from your schema)
+// Database types matching the actual schema
 export interface Database {
   public: {
     Tables: {
       brands: {
         Row: {
-          id: number;
+          id: number; // BIGINT
+          created_at: string;
           name: string | null;
           description: string | null;
           website: string | null;
           industry: string | null;
           location: string | null;
           employees: string | null;
-          created_at: string;
         };
         Insert: {
-          id?: number;
+          id?: number; // BIGINT
+          created_at?: string;
           name?: string | null;
           description?: string | null;
           website?: string | null;
           industry?: string | null;
           location?: string | null;
           employees?: string | null;
-          created_at?: string;
         };
         Update: {
-          id?: number;
+          id?: number; // BIGINT
+          created_at?: string;
           name?: string | null;
           description?: string | null;
           website?: string | null;
           industry?: string | null;
           location?: string | null;
           employees?: string | null;
-          created_at?: string;
         };
       };
-      signals: {
+      brand_goals: {
         Row: {
-          id: string;
-          name: string;
-          prompt: string;
-          type: string;
-          status: 'active' | 'inactive' | 'pending';
-          tags: string[];
-          brand_id: string;
-          triggered_at: string | null;
-          ai_insights: {
-            socialListening?: string;
-            consumerInsights?: string;
-          } | null;
-          ai_recommendations: string[] | null;
-          csv_data: string | null;
-          metadata: Record<string, any> | null;
+          id: number; // BIGINT
           created_at: string;
-          updated_at: string;
+          name: string | null;
+          brand_id: number | null; // BIGINT
         };
         Insert: {
-          id?: string;
-          name: string;
-          prompt: string;
-          type: string;
-          status?: 'active' | 'inactive' | 'pending';
-          tags?: string[];
-          brand_id: string;
-          triggered_at?: string | null;
-          ai_insights?: {
-            socialListening?: string;
-            consumerInsights?: string;
-          } | null;
-          ai_recommendations?: string[] | null;
-          csv_data?: string | null;
-          metadata?: Record<string, any> | null;
+          id?: number; // BIGINT
           created_at?: string;
-          updated_at?: string;
+          name?: string | null;
+          brand_id?: number | null; // BIGINT
         };
         Update: {
-          id?: string;
-          name?: string;
-          prompt?: string;
-          type?: string;
-          status?: 'active' | 'inactive' | 'pending';
-          tags?: string[];
-          brand_id?: string;
-          triggered_at?: string | null;
-          ai_insights?: {
-            socialListening?: string;
-            consumerInsights?: string;
-          } | null;
-          ai_recommendations?: string[] | null;
-          csv_data?: string | null;
-          metadata?: Record<string, any> | null;
+          id?: number; // BIGINT
           created_at?: string;
-          updated_at?: string;
+          name?: string | null;
+          brand_id?: number | null; // BIGINT
+        };
+      };
+      brand_competitors: {
+        Row: {
+          id: number; // BIGINT
+          created_at: string;
+          name: string | null;
+          brand_id: number | null; // BIGINT
+        };
+        Insert: {
+          id?: number; // BIGINT
+          created_at?: string;
+          name?: string | null;
+          brand_id?: number | null; // BIGINT
+        };
+        Update: {
+          id?: number; // BIGINT
+          created_at?: string;
+          name?: string | null;
+          brand_id?: number | null; // BIGINT
         };
       };
     };

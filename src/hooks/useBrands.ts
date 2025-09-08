@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { brandService } from '../services/database';
 import type { EnhancedBrandDetails, BrandId, CreateBrandForm, UseBrandsReturn } from '../types/enhanced';
 import { useErrorHandler } from './useErrorHandler';
@@ -94,7 +94,8 @@ export const useBrands = (): UseBrandsReturn => {
     await loadBrands();
   }, [loadBrands]);
 
-  return {
+  // Memoize the return object to prevent unnecessary re-renders
+  const returnValue = useMemo(() => ({
     brands,
     isLoading,
     error,
@@ -103,5 +104,7 @@ export const useBrands = (): UseBrandsReturn => {
     updateBrand,
     deleteBrand,
     refreshBrands,
-  };
+  }), [brands, isLoading, error, getBrand, createBrand, updateBrand, deleteBrand, refreshBrands]);
+
+  return returnValue;
 };
