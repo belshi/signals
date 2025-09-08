@@ -69,6 +69,9 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
     if (updates.industry !== undefined) {
       updateData.industry = updates.industry;
     }
+    if (updates.location !== undefined) {
+      updateData.location = updates.location;
+    }
     if (updates.employeeCount !== undefined) {
       updateData.employee_count = updates.employeeCount?.toString() ?? null;
     }
