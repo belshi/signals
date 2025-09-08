@@ -1,8 +1,9 @@
 // Environment configuration
 export const config = {
   supabase: {
-    url: import.meta.env.VITE_SUPABASE_URL,
-    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY,
+    // Support both Vite (VITE_) and Vercel/Next.js (NEXT_PUBLIC_) naming conventions
+    url: import.meta.env.VITE_SUPABASE_URL || import.meta.env.NEXT_PUBLIC_SUPABASE_URL,
+    anonKey: import.meta.env.VITE_SUPABASE_ANON_KEY || import.meta.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
   app: {
     isDevelopment: import.meta.env.DEV,
@@ -15,11 +16,11 @@ export const validateEnvironment = () => {
   const missingVars: string[] = [];
 
   if (!config.supabase.url) {
-    missingVars.push('VITE_SUPABASE_URL');
+    missingVars.push('VITE_SUPABASE_URL or NEXT_PUBLIC_SUPABASE_URL');
   }
 
   if (!config.supabase.anonKey) {
-    missingVars.push('VITE_SUPABASE_ANON_KEY');
+    missingVars.push('VITE_SUPABASE_ANON_KEY or NEXT_PUBLIC_SUPABASE_ANON_KEY');
   }
 
   if (missingVars.length > 0) {
@@ -27,9 +28,9 @@ export const validateEnvironment = () => {
     console.warn(
       `Missing Supabase environment variables: ${missingVars.join(', ')}\n` +
       'Application will use mock data instead.\n' +
-      'To use real database, create a .env.local file with:\n' +
-      'VITE_SUPABASE_URL=your_supabase_project_url\n' +
-      'VITE_SUPABASE_ANON_KEY=your_supabase_anon_key'
+      'To use real database, set one of these environment variable pairs:\n' +
+      'For Vite: VITE_SUPABASE_URL=your_supabase_project_url, VITE_SUPABASE_ANON_KEY=your_supabase_anon_key\n' +
+      'For Vercel/Next.js: NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url, NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key'
     );
   }
 };
