@@ -6,13 +6,15 @@ import type {
   BrandId, 
   SignalId,
   CreateBrandForm,
+  CreateSignalForm,
   UpdateSignalForm,
   BrandGoal,
   CreateBrandGoalForm,
   UpdateBrandGoalForm,
   BrandCompetitor,
   CreateBrandCompetitorForm,
-  UpdateBrandCompetitorForm
+  UpdateBrandCompetitorForm,
+  ISODateString
 } from '../types/enhanced';
 import { createBrandId, createISODateString } from '../utils/typeUtils';
 
