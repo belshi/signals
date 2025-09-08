@@ -11,7 +11,7 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     createdAt: createISODateString('2024-01-15'),
     updatedAt: createISODateString('2024-01-20'),
     tags: ['market', 'trends', 'analysis'],
-    brandId: createBrandId('brand-1'),
+    brandId: createBrandId(1),
     triggeredAt: createISODateString('2024-01-20T10:30:00Z'),
     aiInsights: {
       socialListening: 'Increased mentions of "sustainable technology" by 45% across social platforms, with positive sentiment trending upward. Key influencers are discussing green tech solutions and environmental impact.',
@@ -39,7 +39,7 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     createdAt: createISODateString('2024-01-10'),
     updatedAt: createISODateString('2024-01-18'),
     tags: ['social', 'sentiment', 'monitoring'],
-    brandId: createBrandId('brand-2'),
+    brandId: createBrandId(2),
     triggeredAt: createISODateString('2024-01-18T14:15:00Z'),
     aiInsights: {
       socialListening: 'Negative sentiment spike detected around customer service complaints. 67% of negative mentions relate to response time and support quality. Viral complaint thread gaining traction.',
@@ -67,7 +67,7 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     createdAt: createISODateString('2024-01-12'),
     updatedAt: createISODateString('2024-01-19'),
     tags: ['competitor', 'monitoring', 'intelligence'],
-    brandId: createBrandId('brand-3'),
+    brandId: createBrandId(3),
     triggeredAt: createISODateString('2024-01-19T09:45:00Z'),
     aiInsights: {
       socialListening: 'Competitor launched new AI-powered diagnostic tool with significant media coverage. Social engagement up 200% with positive reception from healthcare professionals.',
@@ -90,13 +90,12 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
 
 export const MOCK_BRANDS: EnhancedBrandDetails[] = [
   {
-    id: createBrandId('brand-1'),
+    id: createBrandId(1),
     name: 'TechCorp Solutions',
     description: 'A leading technology company specializing in innovative software solutions for businesses.',
     website: 'https://techcorp.com',
     industry: 'Technology',
     logo: '/logos/techcorp.png',
-    foundedYear: 2015,
     employeeCount: 250,
     revenue: 50000000,
     socialMedia: {
@@ -108,13 +107,12 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     updatedAt: createISODateString('2024-01-20'),
   },
   {
-    id: createBrandId('brand-2'),
+    id: createBrandId(2),
     name: 'GreenEnergy Corp',
     description: 'Sustainable energy solutions provider focused on renewable technologies and environmental impact.',
     website: 'https://greenenergy.com',
     industry: 'Energy',
     logo: '/logos/greenenergy.png',
-    foundedYear: 2018,
     employeeCount: 180,
     revenue: 35000000,
     socialMedia: {
@@ -126,13 +124,12 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     updatedAt: createISODateString('2024-01-18'),
   },
   {
-    id: createBrandId('brand-3'),
+    id: createBrandId(3),
     name: 'HealthTech Innovations',
     description: 'Revolutionary healthcare technology company developing AI-powered medical solutions.',
     website: 'https://healthtech.com',
     industry: 'Healthcare',
     logo: '/logos/healthtech.png',
-    foundedYear: 2020,
     employeeCount: 120,
     revenue: 25000000,
     socialMedia: {
@@ -144,13 +141,12 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     updatedAt: createISODateString('2024-01-15'),
   },
   {
-    id: createBrandId('brand-4'),
+    id: createBrandId(4),
     name: 'FinanceFlow Systems',
     description: 'Advanced financial technology platform providing comprehensive banking and investment solutions.',
     website: 'https://financeflow.com',
     industry: 'Financial Services',
     logo: '/logos/financeflow.png',
-    foundedYear: 2017,
     employeeCount: 300,
     revenue: 75000000,
     socialMedia: {
@@ -162,13 +158,12 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     updatedAt: createISODateString('2024-01-22'),
   },
   {
-    id: createBrandId('brand-5'),
+    id: createBrandId(5),
     name: 'EduTech Academy',
     description: 'Online education platform offering interactive learning experiences and professional development courses.',
     website: 'https://edutech.com',
     industry: 'Education',
     logo: '/logos/edutech.png',
-    foundedYear: 2019,
     employeeCount: 95,
     revenue: 18000000,
     socialMedia: {

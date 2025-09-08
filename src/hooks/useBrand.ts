@@ -55,7 +55,6 @@ export const useBrand = (options: UseBrandOptions = {}) => {
         description: updates.description,
         website: updates.website,
         industry: updates.industry,
-        foundedYear: updates.foundedYear,
         employeeCount: updates.employeeCount,
       });
       setBrandDetails(updatedBrand);

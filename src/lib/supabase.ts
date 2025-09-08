@@ -5,8 +5,11 @@ import { config } from '../config/environment';
 const supabaseUrl = config.supabase.url;
 const supabaseAnonKey = config.supabase.anonKey;
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. Please check your .env.local file.');
+// Check if Supabase is configured
+export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+
+if (!isSupabaseConfigured) {
+  console.warn('Supabase environment variables not configured. Application will use mock data.');
 }
 
 // Database types (will be generated from your schema)
@@ -112,7 +115,7 @@ export interface Database {
 let supabaseClient: any = null;
 
 const createSupabaseClient = () => {
-  if (!supabaseClient) {
+  if (!supabaseClient && isSupabaseConfigured) {
     supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
   }
   return supabaseClient;

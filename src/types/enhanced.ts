@@ -85,7 +85,6 @@ export interface EnhancedBrandDetails {
   website?: string;
   industry: string;
   logo?: string;
-  foundedYear?: number;
   employeeCount?: number;
   revenue?: number;
   socialMedia?: {
@@ -154,7 +153,6 @@ export interface CreateBrandForm {
   description: string;
   website?: string;
   industry: string;
-  foundedYear?: number;
   employeeCount?: number;
 }
 

@@ -23,9 +23,11 @@ export const validateEnvironment = () => {
   }
 
   if (missingVars.length > 0) {
-    throw new Error(
-      `Missing required environment variables: ${missingVars.join(', ')}\n\n` +
-      'Please create a .env.local file with the following variables:\n' +
+    // Don't throw error, just log warning
+    console.warn(
+      `Missing Supabase environment variables: ${missingVars.join(', ')}\n` +
+      'Application will use mock data instead.\n' +
+      'To use real database, create a .env.local file with:\n' +
       'VITE_SUPABASE_URL=your_supabase_project_url\n' +
       'VITE_SUPABASE_ANON_KEY=your_supabase_anon_key'
     );
@@ -34,20 +36,5 @@ export const validateEnvironment = () => {
 
 // Call validation on import
 if (typeof window !== 'undefined') {
-  try {
-    validateEnvironment();
-  } catch (error) {
-    console.error('Environment validation failed:', error);
-    // In development, show a helpful error message
-    if (config.app.isDevelopment) {
-      console.warn(
-        'To fix this issue:\n' +
-        '1. Create a .env.local file in your project root\n' +
-        '2. Add your Supabase credentials:\n' +
-        '   VITE_SUPABASE_URL=https://your-project-id.supabase.co\n' +
-        '   VITE_SUPABASE_ANON_KEY=your-anon-key-here\n' +
-        '3. Restart your development server'
-      );
-    }
-  }
+  validateEnvironment();
 }

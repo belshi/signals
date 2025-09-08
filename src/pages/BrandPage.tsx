@@ -1,66 +1,31 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal } from '../components';
 import { Icon } from '../components';
 import { useBrandsContext } from '../contexts';
-import type { EnhancedBrandDetails, BrandId } from '../types/enhanced';
+import { brandService } from '../services/database';
+import { createBrandId } from '../utils/typeUtils';
 
 const BrandPage: React.FC = () => {
   const { brandId } = useParams<{ brandId: string }>();
   const navigate = useNavigate();
-  const { getBrand, refreshBrands } = useBrandsContext();
-  const [brand, setBrand] = useState<EnhancedBrandDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { isLoading, error, refreshBrands, getBrand } = useBrandsContext();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  useEffect(() => {
-    const loadBrand = async () => {
-      if (!brandId) {
-        setError('Brand ID is required');
-        setIsLoading(false);
-        return;
-      }
+  // Convert string brandId to BrandId type and find the brand from the loaded list
+  const brandIdTyped = brandId ? createBrandId(parseInt(brandId)) : undefined;
+  const brand = useMemo(() => {
+    return brandIdTyped ? getBrand(brandIdTyped) : undefined;
+  }, [brandIdTyped, getBrand]);
 
-      try {
-        setIsLoading(true);
-        setError(null);
-        
-        // Refresh brands data first
-        await refreshBrands();
-        
-        // Get the specific brand
-        const brandData = getBrand(brandId as BrandId);
-        if (!brandData) {
-          setError('Brand not found');
-          navigate('/brands', { replace: true });
-          return;
-        }
-        
-        setBrand(brandData);
-      } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to load brand');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadBrand();
-  }, [brandId, getBrand, refreshBrands, navigate]);
-
-  const refreshBrandDetails = useCallback(async () => {
-    if (!brandId) return;
-    
-    try {
-      await refreshBrands();
-      const brandData = getBrand(brandId as BrandId);
-      if (brandData) {
-        setBrand(brandData);
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh brand details');
+  // Handle navigation if brand is not found
+  React.useEffect(() => {
+    if (brandId && !isLoading && !error && !brand) {
+      // Brand not found, navigate back to brands list
+      navigate('/brands', { replace: true });
     }
-  }, [brandId, getBrand, refreshBrands]);
+  }, [brandId, isLoading, error, brand, navigate]);
+
 
   const handleAddGoal = useCallback(() => {
     console.log('Add new goal');
@@ -80,18 +45,25 @@ const BrandPage: React.FC = () => {
     setIsEditModalOpen(false);
   }, []);
 
+  // Create a wrapper function that matches the expected signature for EditBrandModal
+  const handleUpdateBrand = useCallback(async (_id: any, updates: any) => {
+    if (!brand) return;
+    // The updateBrand function from useBrandsContext will handle the update
+    // and automatically update the brands list
+    await brandService.updateBrand(brand.id, updates);
+  }, [brand]);
+
   const handleBrandUpdated = useCallback(() => {
-    // Refresh the brand details after successful update
-    refreshBrandDetails();
-  }, [refreshBrandDetails]);
+    // Refresh the brands list to keep it in sync
+    refreshBrands();
+  }, [refreshBrands]);
 
   const handleDeleteBrand = useCallback(async () => {
     if (!brand) return;
     
     if (window.confirm(`Are you sure you want to delete "${brand.name}"? This action cannot be undone.`)) {
       try {
-        // TODO: Implement delete functionality
-        console.log('Delete brand:', brand.id);
+        await brandService.deleteBrand(brand.id);
         // After successful deletion, navigate back to brands list
         navigate('/brands');
       } catch (error) {
@@ -112,7 +84,7 @@ const BrandPage: React.FC = () => {
           ]}
         />
         <Page.Content>
-          <Page.Error onRetry={refreshBrandDetails} />
+          <Page.Error onRetry={refreshBrands} />
         </Page.Content>
       </Page>
     );
@@ -238,6 +210,7 @@ const BrandPage: React.FC = () => {
         onClose={handleEditModalClose}
         onSuccess={handleBrandUpdated}
         brand={brand}
+        updateBrand={handleUpdateBrand}
       />
     </Page>
   );

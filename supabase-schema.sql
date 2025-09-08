@@ -12,7 +12,6 @@ CREATE TABLE IF NOT EXISTS brands (
     website VARCHAR(500),
     industry VARCHAR(100),
     logo VARCHAR(500),
-    founded_year INTEGER,
     employee_count INTEGER,
     revenue BIGINT,
     social_media JSONB,
@@ -83,10 +82,10 @@ CREATE POLICY "Allow all operations on signals for authenticated users" ON signa
     FOR ALL USING (auth.role() = 'authenticated');
 
 -- Insert some sample data (optional - remove if you don't want sample data)
-INSERT INTO brands (id, name, description, website, industry, founded_year, employee_count, revenue, social_media) VALUES
-    ('550e8400-e29b-41d4-a716-446655440001', 'TechCorp Solutions', 'A leading technology company specializing in innovative software solutions for businesses.', 'https://techcorp.com', 'Technology', 2015, 250, 50000000, '{"twitter": "@techcorp", "linkedin": "techcorp-solutions", "facebook": "techcorp.solutions"}'),
-    ('550e8400-e29b-41d4-a716-446655440002', 'GreenEnergy Corp', 'Sustainable energy solutions provider focused on renewable technologies and environmental impact.', 'https://greenenergy.com', 'Energy', 2018, 180, 35000000, '{"twitter": "@greenenergy", "linkedin": "greenenergy-corp", "facebook": "greenenergy.corp"}'),
-    ('550e8400-e29b-41d4-a716-446655440003', 'HealthTech Innovations', 'Revolutionary healthcare technology company developing AI-powered medical solutions.', 'https://healthtech.com', 'Healthcare', 2020, 120, 25000000, '{"twitter": "@healthtech", "linkedin": "healthtech-innovations", "facebook": "healthtech.innovations"}');
+INSERT INTO brands (id, name, description, website, industry, employee_count, revenue, social_media) VALUES
+    ('550e8400-e29b-41d4-a716-446655440001', 'TechCorp Solutions', 'A leading technology company specializing in innovative software solutions for businesses.', 'https://techcorp.com', 'Technology', 250, 50000000, '{"twitter": "@techcorp", "linkedin": "techcorp-solutions", "facebook": "techcorp.solutions"}'),
+    ('550e8400-e29b-41d4-a716-446655440002', 'GreenEnergy Corp', 'Sustainable energy solutions provider focused on renewable technologies and environmental impact.', 'https://greenenergy.com', 'Energy', 180, 35000000, '{"twitter": "@greenenergy", "linkedin": "greenenergy-corp", "facebook": "greenenergy.corp"}'),
+    ('550e8400-e29b-41d4-a716-446655440003', 'HealthTech Innovations', 'Revolutionary healthcare technology company developing AI-powered medical solutions.', 'https://healthtech.com', 'Healthcare', 120, 25000000, '{"twitter": "@healthtech", "linkedin": "healthtech-innovations", "facebook": "healthtech.innovations"}');
 
 INSERT INTO signals (id, name, prompt, type, status, tags, brand_id, triggered_at, ai_insights, ai_recommendations, csv_data, metadata) VALUES
     ('650e8400-e29b-41d4-a716-446655440001', 'Market Trend Analysis', 'Analyze market trends and consumer behavior patterns for sustainable technology products. Focus on social media sentiment, search volume, and competitor activity.', 'Analytics', 'active', '{"market", "trends", "analysis"}', '550e8400-e29b-41d4-a716-446655440001', '2024-01-20T10:30:00Z', '{"socialListening": "Increased mentions of sustainable technology by 45%", "consumerInsights": "Consumer preference for eco-friendly products up 78%"}', '{"Launch sustainability campaign", "Introduce eco-friendly variants", "Engage environmental influencers"}', 'Signal ID,Name,Type,Status,Brand,Triggered At,Social Listening Insights,Consumer Insights,Recommendations\n1,Market Trend Analysis,Analytics,active,TechCorp Solutions,2024-01-20T10:30:00Z,"Increased mentions of sustainable technology by 45%","Consumer preference for eco-friendly products up 78%","Launch sustainability campaign,Introduce eco-friendly variants,Engage environmental influencers"', '{"source": "market-data-api", "confidence": 0.95}'),

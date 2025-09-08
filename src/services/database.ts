@@ -1,4 +1,5 @@
-import { typedSupabase } from '../lib/supabase';
+import { typedSupabase, isSupabaseConfigured } from '../lib/supabase';
+import { MOCK_BRANDS, MOCK_SIGNALS } from '../constants/mockData';
 import type { 
   EnhancedBrandDetails, 
   EnhancedSignal, 
@@ -13,6 +14,11 @@ import { createBrandId, createSignalId, createISODateString } from '../utils/typ
 export const brandService = {
   // Get all brands
   async getAllBrands(): Promise<EnhancedBrandDetails[]> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for brands');
+      return MOCK_BRANDS;
+    }
+
     const { data, error } = await typedSupabase
       .from('brands')
       .select('*')
@@ -27,6 +33,13 @@ export const brandService = {
 
   // Get brand by ID
   async getBrandById(id: BrandId): Promise<EnhancedBrandDetails | null> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for brand by ID:', id);
+      // Convert BrandId to string for comparison with mock data
+      const brandIdStr = id.toString();
+      return MOCK_BRANDS.find(brand => brand.id.toString() === brandIdStr) || null;
+    }
+
     const { data, error } = await typedSupabase
       .from('brands')
       .select('*')
@@ -109,6 +122,11 @@ export const brandService = {
 export const signalService = {
   // Get all signals
   async getAllSignals(): Promise<EnhancedSignal[]> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signals');
+      return MOCK_SIGNALS;
+    }
+
     const { data, error } = await typedSupabase
       .from('signals')
       .select('*')
@@ -128,6 +146,12 @@ export const signalService = {
 
   // Get signal by ID
   async getSignalById(id: SignalId): Promise<EnhancedSignal | null> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signal by ID:', id);
+      const signalIdStr = id.toString();
+      return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
+    }
+
     const { data, error } = await typedSupabase
       .from('signals')
       .select('*')
@@ -151,6 +175,12 @@ export const signalService = {
 
   // Get signals by brand ID
   async getSignalsByBrandId(brandId: BrandId): Promise<EnhancedSignal[]> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signals by brand ID:', brandId);
+      const brandIdStr = brandId.toString();
+      return MOCK_SIGNALS.filter(signal => signal.brandId.toString() === brandIdStr);
+    }
+
     const { data, error } = await typedSupabase
       .from('signals')
       .select('*')
@@ -224,7 +254,6 @@ function transformBrandFromDB(dbBrand: any): EnhancedBrandDetails {
     website: dbBrand.website || '',
     industry: dbBrand.industry || '',
     logo: '', // Not in your schema
-    foundedYear: 0, // Not in your schema
     employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
     revenue: 0, // Not in your schema
     socialMedia: {

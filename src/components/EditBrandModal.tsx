@@ -8,6 +8,7 @@ interface EditBrandModalProps {
   onClose: () => void;
   onSuccess?: () => void;
   brand: EnhancedBrandDetails | null;
+  updateBrand?: (id: any, updates: any) => Promise<void>;
 }
 
 // Industry options based on mock data
@@ -29,8 +30,10 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
   onClose,
   onSuccess,
   brand,
+  updateBrand: propUpdateBrand,
 }) => {
-  const { updateBrand } = useBrandsContext();
+  const { updateBrand: contextUpdateBrand } = useBrandsContext();
+  const updateBrand = propUpdateBrand || contextUpdateBrand;
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
@@ -39,7 +42,6 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
     description: '',
     website: '',
     industry: '',
-    foundedYear: undefined,
     employeeCount: undefined,
   });
 
@@ -51,7 +53,6 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
         description: brand.description,
         website: brand.website || '',
         industry: brand.industry,
-        foundedYear: brand.foundedYear,
         employeeCount: brand.employeeCount,
       });
     }
@@ -87,9 +88,6 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
       newErrors.website = 'Please enter a valid URL (starting with http:// or https://)';
     }
 
-    if (formData.foundedYear && (formData.foundedYear < 1800 || formData.foundedYear > new Date().getFullYear())) {
-      newErrors.foundedYear = `Founded year must be between 1800 and ${new Date().getFullYear()}`;
-    }
 
     if (formData.employeeCount && formData.employeeCount < 1) {
       newErrors.employeeCount = 'Employee count must be at least 1';
@@ -269,32 +267,6 @@ const EditBrandModal: React.FC<EditBrandModalProps> = ({
             )}
           </div>
 
-          {/* Founded Year */}
-          <div>
-            <InputLabel
-              htmlFor="foundedYear"
-              error={!!errors.foundedYear}
-            >
-              Founded Year
-            </InputLabel>
-            <TextInput
-              id="foundedYear"
-              type="number"
-              value={formData.foundedYear?.toString() || ''}
-              onChange={(e) => handleInputChange('foundedYear', e.target.value ? parseInt(e.target.value) : undefined)}
-              placeholder="2020"
-              min="1800"
-              max={new Date().getFullYear()}
-              error={!!errors.foundedYear}
-              disabled={isLoading}
-              ariaDescribedBy={errors.foundedYear ? 'foundedYear-error' : undefined}
-            />
-            {errors.foundedYear && (
-              <p id="foundedYear-error" className="mt-1 text-sm text-red-600">
-                {errors.foundedYear}
-              </p>
-            )}
-          </div>
 
           {/* Employee Count */}
           <div>

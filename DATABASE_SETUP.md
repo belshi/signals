@@ -91,7 +91,6 @@ The application uses two main tables:
 - `website`: Brand website URL
 - `industry`: Industry category
 - `logo`: Logo image URL
-- `founded_year`: Year the company was founded
 - `employee_count`: Number of employees
 - `revenue`: Annual revenue
 - `social_media`: JSON object with social media handles
