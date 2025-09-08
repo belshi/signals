@@ -14,8 +14,18 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     brandId: createBrandId(1),
     triggeredAt: createISODateString('2024-01-20T10:30:00Z'),
     aiInsights: {
-      socialListening: 'Increased mentions of "sustainable technology" by 45% across social platforms, with positive sentiment trending upward. Key influencers are discussing green tech solutions and environmental impact.',
-      consumerInsights: 'Consumer behavior shows growing preference for eco-friendly products (78% increase in searches). Price sensitivity remains high, but willingness to pay premium for sustainable options has increased by 23%.'
+      content: `# Market Trend Analysis for Sustainable Technology
+
+## Social Listening Insights
+Increased mentions of "sustainable technology" by **45%** across social platforms, with positive sentiment trending upward. Key influencers are discussing green tech solutions and environmental impact.
+
+## Consumer Behavior Analysis
+Consumer behavior shows growing preference for eco-friendly products (**78% increase** in searches). Price sensitivity remains high, but willingness to pay premium for sustainable options has increased by **23%**.
+
+### Key Findings:
+- **Green tech adoption** is accelerating across all demographics
+- **Influencer engagement** is driving awareness and consideration
+- **Price sensitivity** is decreasing for verified sustainable products`
     },
     aiRecommendations: [
       'Launch a sustainability-focused marketing campaign highlighting your green initiatives',
@@ -28,6 +38,8 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
       source: 'market-data-api',
       confidence: 0.95,
       lastUpdated: createISODateString('2024-01-20'),
+      copilotId: '4ee0b0c7-eb6e-4c4c-bc2d-b003546e538e',
+      copilotType: 'Market Research',
     },
   },
   {
@@ -42,8 +54,23 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     brandId: createBrandId(2),
     triggeredAt: createISODateString('2024-01-18T14:15:00Z'),
     aiInsights: {
-      socialListening: 'Negative sentiment spike detected around customer service complaints. 67% of negative mentions relate to response time and support quality. Viral complaint thread gaining traction.',
-      consumerInsights: 'Customer satisfaction scores dropped 12% this week. Main pain points: slow response times (34%), unclear communication (28%), and unresolved issues (38%).'
+      content: `# Social Media Sentiment Analysis
+
+## 🚨 Alert: Negative Sentiment Spike Detected
+
+**67%** of negative mentions relate to response time and support quality. A viral complaint thread is gaining traction across platforms.
+
+## Customer Satisfaction Impact
+Customer satisfaction scores dropped **12%** this week. Main pain points identified:
+
+- **Slow response times**: 34% of complaints
+- **Unclear communication**: 28% of complaints  
+- **Unresolved issues**: 38% of complaints
+
+## Platform Breakdown
+- **Twitter**: Highest volume of complaints
+- **Facebook**: Customer service page flooded
+- **Instagram**: Negative comments on recent posts`
     },
     aiRecommendations: [
       'Implement 24/7 customer support chatbot to address immediate concerns',
@@ -56,6 +83,8 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
       platforms: ['twitter', 'facebook', 'instagram'],
       sentiment: 'negative',
       volume: 1250,
+      copilotId: '4ee0b0c7-eb6e-4c4c-bc2d-b003546e538e',
+      copilotType: 'Social Media',
     },
   },
   {
@@ -70,8 +99,24 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
     brandId: createBrandId(3),
     triggeredAt: createISODateString('2024-01-19T09:45:00Z'),
     aiInsights: {
-      socialListening: 'Competitor launched new AI-powered diagnostic tool with significant media coverage. Social engagement up 200% with positive reception from healthcare professionals.',
-      consumerInsights: 'Market research shows 89% of healthcare providers are interested in AI diagnostic tools. Price point and accuracy are the top decision factors.'
+      content: `# Competitor Intelligence Report
+
+## 🚀 Major Product Launch Detected
+
+**Competitor A** launched new AI-powered diagnostic tool with significant media coverage. Social engagement up **200%** with positive reception from healthcare professionals.
+
+## Market Impact Analysis
+Market research shows **89%** of healthcare providers are interested in AI diagnostic tools. Key decision factors:
+
+1. **Price point** - Most critical factor
+2. **Accuracy** - Second most important
+3. **Integration** - Ease of implementation
+4. **Support** - Training and maintenance
+
+## Competitive Positioning
+- **Market share threat**: High
+- **Technology gap**: Moderate
+- **Response time**: Critical (3-6 months)`
     },
     aiRecommendations: [
       'Accelerate development of your AI diagnostic solution to maintain competitive position',
@@ -84,6 +129,8 @@ export const MOCK_SIGNALS: EnhancedSignal[] = [
       competitors: ['competitor-a', 'competitor-b'],
       frequency: 'daily',
       alerts: true,
+      copilotId: '4ee0b0c7-eb6e-4c4c-bc2d-b003546e538e',
+      copilotType: 'Competitive Analysis',
     },
   },
 ];
