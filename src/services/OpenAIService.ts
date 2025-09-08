@@ -42,7 +42,7 @@ export class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: 'You are a marketing strategy expert. Generate actionable recommendations based on insights, brand context, and goals.'
+              content: 'You are a marketing strategy expert. Generate exactly 3-5 actionable recommendations in plain text format. Use numbered lists (1., 2., 3., etc.) and avoid any markdown formatting.'
             },
             {
               role: 'user',
@@ -72,7 +72,7 @@ export class OpenAIService {
       ? request.brandGoals.map(goal => `- ${goal.name}`).join('\n')
       : 'No specific goals defined';
 
-    return `Based on the following insights, brand details, and goals, generate 3-5 actionable marketing recommendations.
+    return `You are a marketing strategy expert. Based on the insights provided, generate exactly 3-5 actionable marketing recommendations.
 
 BRAND DETAILS:
 - Name: ${request.brandDetails.name}
@@ -85,7 +85,20 @@ ${goalsText}
 INSIGHTS:
 ${request.insights}
 
-Please provide 3-5 specific, actionable recommendations that align with the brand's goals and leverage the insights provided. Each recommendation should be concise and actionable.`;
+INSTRUCTIONS:
+- Generate exactly 3-5 recommendations
+- Each recommendation should be 1-2 sentences maximum
+- Use plain text only (no markdown, no formatting)
+- Make each recommendation specific and actionable
+- Base recommendations on the insights provided
+- Align with the brand's goals and industry
+
+Format your response as a simple numbered list:
+1. First recommendation here
+2. Second recommendation here
+3. Third recommendation here
+4. Fourth recommendation here
+5. Fifth recommendation here`;
   }
 
   /**
@@ -97,22 +110,60 @@ Please provide 3-5 specific, actionable recommendations that align with the bran
 
     for (const line of lines) {
       const trimmed = line.trim();
-      // Look for numbered or bulleted recommendations
-      if (trimmed.match(/^\d+\./) || trimmed.match(/^[-•*]/)) {
-        const cleanRec = trimmed.replace(/^\d+\.\s*/, '').replace(/^[-•*]\s*/, '').trim();
-        if (cleanRec) {
+      
+      // Look for numbered recommendations (1., 2., etc.)
+      if (trimmed.match(/^\d+\./)) {
+        const cleanRec = this.cleanRecommendationText(trimmed.replace(/^\d+\.\s*/, ''));
+        if (cleanRec && cleanRec.length > 10) {
+          recommendations.push(cleanRec);
+        }
+      }
+      // Look for bulleted recommendations (-, •, *)
+      else if (trimmed.match(/^[-•*]/)) {
+        const cleanRec = this.cleanRecommendationText(trimmed.replace(/^[-•*]\s*/, ''));
+        if (cleanRec && cleanRec.length > 10) {
           recommendations.push(cleanRec);
         }
       }
     }
 
-    // If no structured recommendations found, split by sentences
+    // If no structured recommendations found, try to extract from paragraphs
     if (recommendations.length === 0) {
-      const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 10);
-      recommendations.push(...sentences.slice(0, 5).map(s => s.trim()));
+      const paragraphs = content.split(/\n\s*\n/).filter(p => p.trim().length > 20);
+      for (const paragraph of paragraphs.slice(0, 5)) {
+        const cleanRec = this.cleanRecommendationText(paragraph);
+        if (cleanRec && cleanRec.length > 10) {
+          recommendations.push(cleanRec);
+        }
+      }
     }
 
-    return recommendations.slice(0, 5); // Limit to 5 recommendations
+    // Fallback: split by sentences if still no recommendations
+    if (recommendations.length === 0) {
+      const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 15);
+      recommendations.push(...sentences.slice(0, 5).map(s => this.cleanRecommendationText(s)));
+    }
+
+    return recommendations.slice(0, 5).filter(rec => rec && rec.length > 10);
+  }
+
+  /**
+   * Clean recommendation text by removing markdown and formatting
+   */
+  private cleanRecommendationText(text: string): string {
+    return text
+      .trim()
+      // Remove markdown formatting
+      .replace(/\*\*(.*?)\*\*/g, '$1') // Bold
+      .replace(/\*(.*?)\*/g, '$1') // Italic
+      .replace(/`(.*?)`/g, '$1') // Code
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Links
+      .replace(/#{1,6}\s*/g, '') // Headers
+      .replace(/^\s*[-•*]\s*/gm, '') // Bullet points
+      .replace(/^\s*\d+\.\s*/gm, '') // Numbered lists
+      // Clean up extra whitespace
+      .replace(/\s+/g, ' ')
+      .trim();
   }
 }
 
