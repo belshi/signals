@@ -39,20 +39,29 @@ export class OpenAIService {
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           temperature: 0.4,
-          max_tokens: 1500,
-          messages: [
+          max_output_tokens: 1500,
+          input: [
             {
               role: 'system',
               content: 'From the user prompt, generate recommendations directly for each insight provided. For every listed insight, produce 5–7 comprehensive, actionable recommendations that are aligned with the brand\'s strategic goals. Output must follow the schema.'
             },
             {
               role: 'user',
-              content: prompt
+              content: [
+                {
+                  type: 'input_text',
+                  text: 'Locale hint: en'
+                },
+                {
+                  type: 'input_text',
+                  text: prompt
+                }
+              ]
             }
           ],
-          response_format: {
-            type: 'json_schema',
-            json_schema: {
+          text: {
+            format: {
+              type: 'json_schema',
               name: 'insights_recommendations',
               strict: true,
               schema: {
@@ -61,6 +70,8 @@ export class OpenAIService {
                 properties: {
                   insights: {
                     type: 'array',
+                    minItems: 5,
+                    maxItems: 5,
                     items: {
                       type: 'object',
                       additionalProperties: false,
@@ -86,25 +97,23 @@ export class OpenAIService {
       'OpenAI Recommendations'
     );
 
-    if (!response.choices || !response.choices[0]?.message?.content) {
+    if (!response.text) {
       throw new Error('Invalid response from OpenAI');
     }
 
-    const content = response.choices[0].message.content;
-    return this.parseStructuredRecommendations(content);
+    return this.parseStructuredRecommendations(response.text);
   }
 
   /**
    * Create a prompt for generating recommendations
+   * NOTE: This does NOT include the original user prompt - only brand details, goals, and Talkwalker insights
    */
   private createRecommendationPrompt(request: OpenAIRecommendationRequest): string {
     const goalsText = request.brandGoals.length > 0 
       ? request.brandGoals.map((goal, index) => `${index + 1}. ${goal.name}`).join('\n')
       : 'No specific goals defined';
 
-    return `Locale hint: en
-
-User prompt:
+    return `User prompt:
 Brand: ${request.brandDetails.name}
 Industry: ${request.brandDetails.industry}
 Description: ${request.brandDetails.description}
