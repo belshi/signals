@@ -145,6 +145,19 @@ src/
 4. **Open your browser**
    Navigate to `http://localhost:5173`
 
+### Configure Supabase (optional for real data)
+
+By default, the app uses mock data. To connect to Supabase in local dev:
+
+1. Create a `.env.local` in the project root with:
+   ```bash
+   VITE_SUPABASE_URL=your-supabase-project-url
+   VITE_SUPABASE_ANON_KEY=your-supabase-anon-key
+   ```
+2. In your Supabase project, open the SQL editor and run `supabase-schema.sql` from the repo to create tables and policies.
+3. Ensure RLS policies allow your anon key to read/write during development.
+4. Restart the dev server. The app will detect Supabase and switch off mock data automatically.
+
 ### Available Scripts
 
 - `npm run dev` - Start development server with HMR

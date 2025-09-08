@@ -18,8 +18,8 @@ export interface Database {
     Tables: {
       brands: {
         Row: {
-          id: number; // BIGINT
-          created_at: string;
+          id: number; // BIGINT identity
+          created_at: string; // timestamptz
           name: string | null;
           description: string | null;
           website: string | null;
@@ -28,7 +28,7 @@ export interface Database {
           employees: string | null;
         };
         Insert: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
           description?: string | null;
@@ -38,7 +38,7 @@ export interface Database {
           employees?: string | null;
         };
         Update: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
           description?: string | null;
@@ -50,42 +50,42 @@ export interface Database {
       };
       brand_goals: {
         Row: {
-          id: number; // BIGINT
-          created_at: string;
+          id: number; // BIGINT identity
+          created_at: string; // timestamptz
           name: string | null;
           brand_id: number | null; // BIGINT
         };
         Insert: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
-          brand_id?: number | null; // BIGINT
+          brand_id?: number | null;
         };
         Update: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
-          brand_id?: number | null; // BIGINT
+          brand_id?: number | null;
         };
       };
       brand_competitors: {
         Row: {
-          id: number; // BIGINT
-          created_at: string;
+          id: number; // BIGINT identity
+          created_at: string; // timestamptz
           name: string | null;
           brand_id: number | null; // BIGINT
         };
         Insert: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
-          brand_id?: number | null; // BIGINT
+          brand_id?: number | null;
         };
         Update: {
-          id?: number; // BIGINT
+          id?: number;
           created_at?: string;
           name?: string | null;
-          brand_id?: number | null; // BIGINT
+          brand_id?: number | null;
         };
       };
       signals: {

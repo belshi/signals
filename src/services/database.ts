@@ -20,6 +20,7 @@ import { createBrandId, createISODateString } from '../utils/typeUtils';
 
 // Type-safe database row types
 type BrandRow = Database['public']['Tables']['brands']['Row'];
+type SignalRow = Database['public']['Tables']['signals']['Row'];
 
 // Brand service functions
 export const brandService = {
@@ -54,7 +55,7 @@ export const brandService = {
     const { data, error } = await typedSupabase
       .from('brands')
       .select('*')
-      .eq('id', id)
+      .eq('id', Number(id as unknown as string))
       .single();
 
     if (error) {
@@ -69,7 +70,7 @@ export const brandService = {
 
   // Create new brand
   async createBrand(brandData: CreateBrandForm): Promise<EnhancedBrandDetails> {
-    const brandToInsert = {
+    const brandToInsert: Database['public']['Tables']['brands']['Insert'] = {
       name: brandData.name,
       description: brandData.description || null,
       website: brandData.website || null,
@@ -94,12 +95,12 @@ export const brandService = {
 
   // Update brand
   async updateBrand(id: BrandId, updates: Partial<CreateBrandForm>): Promise<EnhancedBrandDetails> {
-    const updateData = {
-      ...(updates.name && { name: updates.name }),
+    const updateData: Database['public']['Tables']['brands']['Update'] = {
+      ...(updates.name !== undefined && { name: updates.name }),
       ...(updates.description !== undefined && { description: updates.description }),
       ...(updates.website !== undefined && { website: updates.website }),
       ...(updates.industry !== undefined && { industry: updates.industry }),
-      ...(updates.employeeCount !== undefined && { employees: updates.employeeCount.toString() }),
+      ...(updates.employeeCount !== undefined && { employees: updates.employeeCount?.toString() ?? null }),
     };
 
     const { data, error } = await typedSupabase
@@ -158,11 +159,10 @@ export const signalService = {
       return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
     }
 
-    const numericId = Number(id as unknown as string);
     const { data, error } = await typedSupabase
       .from('signals')
       .select('*')
-      .eq('id', numericId)
+      .eq('id', Number(id as unknown as string))
       .single();
 
     if (error) {
@@ -487,25 +487,13 @@ function transformBrandFromDB(dbBrand: BrandRow): EnhancedBrandDetails {
     website: dbBrand.website || '',
     industry: dbBrand.industry || '',
     employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
-    revenue: 0, // Not in actual schema
-    socialMedia: {
-      twitter: '',
-      linkedin: '',
-      facebook: '',
-    }, // Not in actual schema
     createdAt: createISODateString(dbBrand.created_at),
-    updatedAt: createISODateString(dbBrand.created_at), // No updated_at in actual schema
+    updatedAt: createISODateString(dbBrand.created_at),
   };
 }
 
 // Transform DB signal row to EnhancedSignal used in UI
-type SignalRow = Database['public']['Tables']['signals']['Row'];
 function transformSignalFromDB(db: SignalRow): EnhancedSignal {
-  const recommendations: string[] | null = (() => {
-    if (!db.recommendations) return null;
-    try { return JSON.parse(db.recommendations); } catch { return [db.recommendations]; }
-  })();
-
   return {
     id: (`${db.id}`) as SignalId,
     name: db.name || '',
@@ -519,7 +507,10 @@ function transformSignalFromDB(db: SignalRow): EnhancedSignal {
       socialListening: db.insights,
       consumerInsights: db.insights,
     } : undefined,
-    aiRecommendations: recommendations ?? undefined,
+    aiRecommendations: (() => {
+      if (!db.recommendations) return undefined;
+      try { return JSON.parse(db.recommendations); } catch { return [db.recommendations]; }
+    })(),
   };
 }
 
