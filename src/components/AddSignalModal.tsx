@@ -15,29 +15,46 @@ interface AddSignalModalProps {
 // Use cases for different copilot types
 const USE_CASES: Record<CopilotType, Array<{ name: string; prompt: string }>> = {
   'Market Research': [
-    { name: 'Sustainable Technology Trends', prompt: 'Analyze market trends and consumer behavior patterns for sustainable technology products. Focus on social media sentiment, search volume, and competitor activity.' },
-    { name: 'Healthcare Tech Opportunities', prompt: 'Research emerging market opportunities in the healthcare technology sector. Identify key trends, consumer needs, and competitive landscape.' },
-    { name: 'Eco-Friendly Packaging Demand', prompt: 'Monitor market demand for eco-friendly packaging solutions. Track consumer preferences, regulatory changes, and competitor innovations.' }
+    { name: 'Consumer Pain Points', prompt: 'Identify recurring complaints or frustrations consumers share about my products or services.' },
+    { name: 'Unmet Needs', prompt: 'What needs do people say my products or services fail to meet?' },
+    { name: 'Buying Intent', prompt: 'Find posts where people ask for recommendations or say they are looking to buy products or services like mine.' },
+    { name: 'Decision Criteria', prompt: 'What factors do consumers mention most often when choosing between my products/services and alternatives?' },
+    { name: 'Trend Signals', prompt: 'What new hashtags, keywords, or cultural trends are rising in conversations that relate to my products or services?' },
+    { name: 'GTM Opportunities', prompt: 'What untapped niches or underserved needs are visible in consumer conversations that could inform my go-to-market strategy?' },
+    { name: 'Emerging Use Cases', prompt: 'What new or unexpected ways are consumers using my products or services?' },
+    { name: 'Regional Differences', prompt: 'How does consumer sentiment about my brand vary across different regions or markets?' }
   ],
   'Social Media': [
     { name: 'Brand Sentiment Monitoring', prompt: 'Monitor social media sentiment for our brand across Twitter, Facebook, and Instagram. Track mentions, sentiment changes, and identify potential PR issues or opportunities.' },
     { name: 'Competitor Social Strategy', prompt: 'Analyze competitor social media strategies and engagement rates. Identify successful content types and posting patterns.' },
-    { name: 'Hashtag Performance Tracking', prompt: 'Track hashtag performance and trending topics related to our industry. Identify opportunities for content creation and engagement.' }
+    { name: 'Hashtag Performance Tracking', prompt: 'Track hashtag performance and trending topics related to our industry. Identify opportunities for content creation and engagement.' },
+    { name: 'Influencer Mentions', prompt: 'Which influencers or creators are talking about my brand, and what is their sentiment?' },
+    { name: 'Campaign Impact', prompt: 'How are people reacting to my latest marketing campaigns or product launches on social media?' },
+    { name: 'Word-of-Mouth Signals', prompt: 'When consumers recommend my brand to others, what reasons or benefits do they highlight?' }
   ],
   'Competitive Analysis': [
+    { name: 'Competitor Sentiment', prompt: 'Summarize positive and negative themes in consumer conversations about my competitors.' },
+    { name: 'Brand Comparison', prompt: 'How do consumers compare my brand to competitors? What drives preference?' },
     { name: 'Competitor Product Launches', prompt: 'Track competitor product launches, pricing changes, marketing campaigns, and market positioning. Alert on significant competitive moves that could impact our market share.' },
     { name: 'Website Change Monitoring', prompt: 'Monitor competitor website changes, new features, and content updates. Identify strategic shifts and new market entries.' },
-    { name: 'Customer Review Analysis', prompt: 'Analyze competitor customer reviews and feedback across platforms. Identify their strengths, weaknesses, and areas for improvement.' }
+    { name: 'Customer Review Analysis', prompt: 'Analyze competitor customer reviews and feedback across platforms. Identify their strengths, weaknesses, and areas for improvement.' },
+    { name: 'Pricing Sensitivity', prompt: 'What do consumers say about the price of my products or services compared to competitors?' }
   ],
   'Brand Monitoring': [
+    { name: 'Brand Perception', prompt: 'How do consumers describe my brand on social platforms? What emotions or themes emerge?' },
+    { name: 'Advocacy & Criticism', prompt: 'What aspects of my brand or products do people praise most, and what do they criticize most?' },
     { name: 'Brand Mention Tracking', prompt: 'Monitor brand mentions across all digital channels. Track sentiment, identify influencers, and detect potential reputation issues.' },
     { name: 'Brand Awareness Metrics', prompt: 'Track brand awareness metrics and share of voice in our industry. Compare performance against competitors.' },
-    { name: 'IP Protection Monitoring', prompt: 'Monitor unauthorized use of brand assets, trademarks, and intellectual property across the web.' }
+    { name: 'IP Protection Monitoring', prompt: 'Monitor unauthorized use of brand assets, trademarks, and intellectual property across the web.' },
+    { name: 'Emotional Triggers', prompt: 'What emotions do consumers most often associate with my brand or products in their conversations?' }
   ],
   'Consumer Insights': [
     { name: 'Product Feedback Analysis', prompt: 'Analyze consumer feedback and reviews to identify product improvement opportunities. Track satisfaction trends and common pain points.' },
     { name: 'Consumer Behavior Research', prompt: 'Research consumer preferences and buying behavior patterns. Identify demographic trends and market segments.' },
-    { name: 'Feature Request Monitoring', prompt: 'Monitor consumer discussions about our products and services. Identify feature requests and improvement suggestions.' }
+    { name: 'Feature Request Monitoring', prompt: 'Monitor consumer discussions about our products and services. Identify feature requests and improvement suggestions.' },
+    { name: 'Customer Loyalty Signals', prompt: 'What signs of loyalty or repeat purchase behavior do consumers express about my brand?' },
+    { name: 'Churn Risk', prompt: 'What reasons do people give for switching away from my brand or products?' },
+    { name: 'Customer Experience', prompt: 'What do people say about their experience with my brand\'s customer service or support?' }
   ]
 };
 

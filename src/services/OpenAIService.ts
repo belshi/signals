@@ -72,7 +72,15 @@ export class OpenAIService {
                           type: 'array',
                           minItems: 2,
                           maxItems: 3,
-                          items: { type: 'string' }
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            properties: {
+                              title: { type: 'string' },
+                              content: { type: 'string' }
+                            },
+                            required: ['title', 'content']
+                          }
                         }
                       },
                       required: ['insight', 'recommendations']
@@ -115,7 +123,11 @@ ${goalsText}
 Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
 ${request.insights}
 
-Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals. Each recommendation should be thorough, specific, and provide clear implementation guidance.`;
+Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals. Each recommendation should include:
+1. A clear, descriptive title (3-8 words)
+2. Detailed content with specific implementation guidance
+
+Format each recommendation as an object with "title" and "content" fields. Use basic markdown formatting (bold, italic, lists) in the content for better readability.`;
   }
 
   /**
@@ -179,7 +191,16 @@ Task: For each insight, generate 2-3 comprehensive, detailed, and highly actiona
       
       for (const insightData of parsed.insights) {
         if (insightData.recommendations && Array.isArray(insightData.recommendations)) {
-          allRecommendations.push(...insightData.recommendations);
+          for (const rec of insightData.recommendations) {
+            if (rec && typeof rec === 'object' && rec.title && rec.content) {
+              // Format as "**Title**\n\nContent" for markdown rendering
+              const formattedRec = `**${rec.title}**\n\n${rec.content}`;
+              allRecommendations.push(formattedRec);
+            } else if (typeof rec === 'string' && rec.trim().length > 10) {
+              // Fallback for old format
+              allRecommendations.push(rec);
+            }
+          }
         }
       }
 
