@@ -1,4 +1,5 @@
 import React from 'react';
+import ReactMarkdown from 'react-markdown';
 import { Card } from './index';
 import { Icon } from './index';
 import type { EnhancedSignal } from '../types/enhanced';
@@ -41,9 +42,22 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({ signal, className
                 </span>
               </div>
             </div>
-            <p className="text-sm text-gray-700 leading-relaxed">
-              {recommendation}
-            </p>
+            <div className="text-sm text-gray-700 leading-relaxed">
+              <ReactMarkdown
+                components={{
+                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                  strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                  em: ({ children }) => <em className="italic">{children}</em>,
+                  code: ({ children }) => <code className="bg-gray-200 px-1 py-0.5 rounded text-xs font-mono">{children}</code>,
+                  ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                  li: ({ children }) => <li className="text-sm">{children}</li>,
+                  blockquote: ({ children }) => <blockquote className="border-l-4 border-indigo-200 pl-4 italic text-gray-600">{children}</blockquote>,
+                }}
+              >
+                {recommendation}
+              </ReactMarkdown>
+            </div>
           </div>
         ))}
       </div>

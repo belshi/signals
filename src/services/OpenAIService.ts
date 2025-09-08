@@ -42,7 +42,7 @@ export class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: 'You are a social listening and consumer insights expert. Generate one actionable recommendation for each insight provided, in plain text format. Use numbered lists (1., 2., 3., etc.) and avoid any markdown formatting.'
+              content: 'You are a social listening and consumer insights expert. Generate one actionable recommendation for each insight provided. You may use basic markdown formatting (bold, italic, lists) for better readability. Use numbered lists (1., 2., 3., etc.) for the main structure.'
             },
             {
               role: 'user',
@@ -88,7 +88,7 @@ ${request.insights}
 INSTRUCTIONS:
 - Provide one specific recommendation for each insight mentioned above
 - Each recommendation should be 1-2 sentences maximum
-- Use plain text only (no markdown, no formatting)
+- You may use basic markdown formatting (bold, italic, lists) for better readability
 - Make each recommendation actionable and specific to the insight
 - Align recommendations with the brand's goals and industry context
 - Base your recommendations on social listening and consumer insights expertise
@@ -147,19 +147,16 @@ Format your response as a simple numbered list with one recommendation per insig
   }
 
   /**
-   * Clean recommendation text by removing markdown and formatting
+   * Clean recommendation text by removing excessive markdown while preserving basic formatting
    */
   private cleanRecommendationText(text: string): string {
     return text
       .trim()
-      // Remove markdown formatting
-      .replace(/\*\*(.*?)\*\*/g, '$1') // Bold
-      .replace(/\*(.*?)\*/g, '$1') // Italic
-      .replace(/`(.*?)`/g, '$1') // Code
-      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Links
-      .replace(/#{1,6}\s*/g, '') // Headers
-      .replace(/^\s*[-•*]\s*/gm, '') // Bullet points
-      .replace(/^\s*\d+\.\s*/gm, '') // Numbered lists
+      // Remove excessive markdown formatting but preserve basic ones
+      .replace(/\[(.*?)\]\(.*?\)/g, '$1') // Remove links but keep text
+      .replace(/#{1,6}\s*/g, '') // Remove headers
+      .replace(/^\s*[-•*]\s*/gm, '') // Remove bullet points
+      .replace(/^\s*\d+\.\s*/gm, '') // Remove numbered list markers
       // Clean up extra whitespace
       .replace(/\s+/g, ' ')
       .trim();
