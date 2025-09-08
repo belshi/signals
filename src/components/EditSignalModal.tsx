@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useEffect } from 'react';
-import { Modal, Button, InputLabel, TextInput, RadioGroup, SingleSelect } from './index';
+import { Modal, Button, InputLabel, TextInput } from './index';
 import { useSignalsContext } from '../contexts';
-import type { EnhancedSignal, UpdateSignalForm } from '../types/enhanced';
+import type { EnhancedSignal } from '../types/enhanced';
 
 interface EditSignalModalProps {
   isOpen: boolean;
@@ -20,10 +20,8 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   
-  const [formData, setFormData] = useState<UpdateSignalForm>({
+  const [formData, setFormData] = useState<{ name: string }>({
     name: '',
-    type: 'Analytics',
-    status: 'active',
   });
 
   // Initialize form data when signal changes
@@ -31,13 +29,11 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
     if (signal) {
       setFormData({
         name: signal.name,
-        type: signal.type,
-        status: signal.status,
       });
     }
   }, [signal]);
 
-  const handleInputChange = useCallback((field: keyof UpdateSignalForm, value: string) => {
+  const handleInputChange = useCallback((field: 'name', value: string) => {
     setFormData(prev => ({
       ...prev,
       [field]: value,
@@ -51,7 +47,7 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
 
-    if (!formData.name?.trim()) {
+    if (!formData.name.trim()) {
       newErrors.name = 'Signal name is required';
     }
 
@@ -70,7 +66,7 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
       setIsLoading(true);
       setErrors({});
       
-      await updateSignal(signal.id, formData);
+      await updateSignal(signal.id, { name: formData.name });
       
       onSuccess?.();
       onClose();
@@ -96,7 +92,7 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
     <Modal
       isOpen={isOpen}
       onClose={handleClose}
-      title="Edit Signal"
+      title="Edit Signal Name"
       size="lg"
       closeOnOverlayClick={!isLoading}
       closeOnEscape={!isLoading}
@@ -109,7 +105,6 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
         )}
 
         <div className="space-y-6">
-          {/* Signal Name */}
           <div>
             <InputLabel
               htmlFor="name"
@@ -120,7 +115,7 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
             </InputLabel>
             <TextInput
               id="name"
-              value={formData.name || ''}
+              value={formData.name}
               onChange={(e) => handleInputChange('name', e.target.value)}
               placeholder="Enter signal name"
               error={!!errors.name}
@@ -132,51 +127,6 @@ const EditSignalModal: React.FC<EditSignalModalProps> = ({
                 {errors.name}
               </p>
             )}
-          </div>
-
-          {/* Signal Type */}
-          <div>
-            <InputLabel
-              htmlFor="type"
-              required
-            >
-              Signal Type
-            </InputLabel>
-            <SingleSelect
-              id="type"
-              options={[
-                { value: 'Analytics', label: 'Analytics' },
-                { value: 'Social', label: 'Social' },
-                { value: 'Competitive', label: 'Competitive' },
-                { value: 'Market', label: 'Market' },
-                { value: 'Financial', label: 'Financial' },
-              ]}
-              value={formData.type || 'Analytics'}
-              onChange={(value) => handleInputChange('type', value)}
-              placeholder="Select signal type"
-              disabled={isLoading}
-            />
-          </div>
-
-          {/* Signal Status */}
-          <div>
-            <InputLabel
-              htmlFor="status"
-              required
-            >
-              Status
-            </InputLabel>
-            <RadioGroup
-              name="status"
-              options={[
-                { value: 'active', label: 'Active' },
-                { value: 'inactive', label: 'Inactive' },
-                { value: 'pending', label: 'Pending' },
-              ]}
-              value={formData.status || 'active'}
-              onChange={(value) => handleInputChange('status', value)}
-              disabled={isLoading}
-            />
           </div>
         </div>
 
