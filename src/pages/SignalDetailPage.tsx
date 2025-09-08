@@ -4,6 +4,7 @@ import { Page, Card, SignalDetails, AIInsights, AIRecommendations, EditSignalMod
 import { Icon } from '../components';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
+import { talkwalkerService, type TalkwalkerCopilot } from '../services/talkwalker';
 import type { EnhancedSignal, EnhancedBrandDetails, SignalId, BrandId } from '../types/enhanced';
 
 const SignalDetailPage: React.FC = () => {
@@ -13,6 +14,7 @@ const SignalDetailPage: React.FC = () => {
   const { getBrand } = useBrandsContext();
   const [signal, setSignal] = useState<EnhancedSignal | null>(null);
   const [brand, setBrand] = useState<EnhancedBrandDetails | null>(null);
+  const [copilot, setCopilot] = useState<TalkwalkerCopilot | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -46,6 +48,18 @@ const SignalDetailPage: React.FC = () => {
         if (signalData.brandId) {
           const brandData = getBrand(signalData.brandId as BrandId);
           setBrand(brandData || null);
+        }
+        
+        // Get the copilot if available
+        if (signalData.metadata?.copilotId) {
+          try {
+            const copilots = await talkwalkerService.listCopilots();
+            const copilotData = copilots.find(c => c.id === signalData.metadata?.copilotId);
+            setCopilot(copilotData || null);
+          } catch (err) {
+            console.warn('Failed to load copilot details:', err);
+            setCopilot(null);
+          }
         }
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load signal');
@@ -182,7 +196,7 @@ const SignalDetailPage: React.FC = () => {
   return (
     <Page>
       <Page.Header 
-        title={signal.name}
+        title={copilot ? `${signal.name} - ${copilot.name}` : signal.name}
         breadcrumbs={[
           { label: 'Signals', href: '/signals' },
           { label: signal.name }
