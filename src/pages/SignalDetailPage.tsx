@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Page, Card, SignalDetails, AIInsights, AIRecommendations, CSVDataBlock, EditSignalModal } from '../components';
+import { Page, Card, SignalDetails, AIInsights, AIRecommendations, EditSignalModal } from '../components';
 import { Icon } from '../components';
 import { useSignalsContext } from '../contexts';
 import { useBrandsContext } from '../contexts';
@@ -215,7 +215,7 @@ const SignalDetailPage: React.FC = () => {
             <AIRecommendations signal={signal} />
           </div>
           
-          <CSVDataBlock signal={signal} />
+          
         </div>
       </Page.Content>
 
