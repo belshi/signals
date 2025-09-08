@@ -23,14 +23,14 @@ export abstract class BaseTalkwalkerService {
 
   /**
    * Check if we should use proxy for requests
+   * Never use proxy - always make direct requests
    */
   protected shouldUseProxy(): boolean {
-    const isBrowser = typeof window !== 'undefined';
-    return isBrowser && (configService.app.isProduction || window.location.hostname !== 'localhost');
+    return false;
   }
 
   /**
-   * Get the default request payload
+   * Get the default request payload for list API
    */
   protected getDefaultPayload(): Record<string, any> {
     return {
@@ -42,7 +42,19 @@ export abstract class BaseTalkwalkerService {
   }
 
   /**
-   * Make a request with automatic proxy/direct fallback
+   * Get the chat request payload (different field names)
+   */
+  protected getChatPayload(): Record<string, any> {
+    return {
+      origin: String(configService.talkwalker.origin || ''),
+      context: [String(configService.talkwalker.workspaceId || '')],
+      account_id: String(configService.talkwalker.accountId || ''),
+      email: String(configService.talkwalker.userEmail || ''),
+    };
+  }
+
+  /**
+   * Make a direct request to Talkwalker API
    */
   protected async makeRequest<T>(
     payload: any,
@@ -60,53 +72,9 @@ export abstract class BaseTalkwalkerService {
       }
     }
 
-    const shouldUseProxy = this.shouldUseProxy();
-    
-    if (shouldUseProxy) {
-      return this.makeProxyRequest<T>(payload, signal, cacheKey);
-    } else {
-      return this.makeDirectRequest<T>(payload, signal, cacheKey);
-    }
+    return this.makeDirectRequest<T>(payload, signal, cacheKey);
   }
 
-  /**
-   * Make a request through the proxy
-   */
-  private async makeProxyRequest<T>(
-    payload: any,
-    signal?: AbortSignal,
-    cacheKey?: string | null
-  ): Promise<T> {
-    const proxyEndpoint = this.getProxyEndpoint();
-    const endMeasurement = performanceMonitor.startMeasurement(`talkwalker:proxy:${this.getEndpoint()}`);
-    
-    try {
-      const data = await enhancedFetch<T>(
-        proxyEndpoint,
-        {
-          method: 'POST',
-          signal,
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        },
-        `Talkwalker Proxy ${this.getEndpoint()}`
-      );
-      
-      // Cache the result if cache key is provided
-      if (cacheKey) {
-        cacheService.set(cacheKey, data, this.getCacheTTL());
-      }
-      
-      endMeasurement();
-      return data;
-    } catch (err) {
-      endMeasurement();
-      console.error(`Talkwalker proxy request failed for ${this.getEndpoint()}:`, err);
-      throw err;
-    }
-  }
 
   /**
    * Make a direct request to Talkwalker API
@@ -161,10 +129,6 @@ export abstract class BaseTalkwalkerService {
     }
   }
 
-  /**
-   * Get the proxy endpoint for this service
-   */
-  protected abstract getProxyEndpoint(): string;
 
   /**
    * Get the cache TTL for this service
@@ -213,7 +177,7 @@ Please provide detailed insights and analysis based on the brand context and use
     const contextualMessage = this.createContextualMessage(message, brandDetails);
     
     return {
-      ...this.getDefaultPayload(),
+      ...this.getChatPayload(),
       yeti_id: copilotId,
       message: {
         user_id: 'U074V17S75L', // This could be made configurable
@@ -245,10 +209,6 @@ Please provide detailed insights and analysis based on the brand context and use
 export class TalkwalkerListService extends BaseTalkwalkerService {
   protected getEndpoint(): string {
     return '/api/v3/yeti/list';
-  }
-
-  protected getProxyEndpoint(): string {
-    return '/api/talkwalker-proxy';
   }
 
   protected getCacheKey(payload: any): string {
@@ -283,10 +243,6 @@ export class TalkwalkerListService extends BaseTalkwalkerService {
 export class TalkwalkerChatService extends BaseTalkwalkerService {
   protected getEndpoint(): string {
     return '/api/v3/yeti/chat';
-  }
-
-  protected getProxyEndpoint(): string {
-    return '/api/talkwalker-chat-proxy';
   }
 
   protected getCacheKey(payload: any): string {
