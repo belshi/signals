@@ -11,52 +11,29 @@ interface AddSignalModalProps {
   onSuccess?: () => void;
 }
 
-
-// Use cases for different copilot types
-const USE_CASES: Record<CopilotType, Array<{ name: string; prompt: string }>> = {
-  'Market Research': [
-    { name: 'Consumer Pain Points', prompt: 'Identify recurring complaints or frustrations consumers share about my products or services.' },
-    { name: 'Unmet Needs', prompt: 'What needs do people say my products or services fail to meet?' },
-    { name: 'Buying Intent', prompt: 'Find posts where people ask for recommendations or say they are looking to buy products or services like mine.' },
-    { name: 'Decision Criteria', prompt: 'What factors do consumers mention most often when choosing between my products/services and alternatives?' },
-    { name: 'Trend Signals', prompt: 'What new hashtags, keywords, or cultural trends are rising in conversations that relate to my products or services?' },
-    { name: 'GTM Opportunities', prompt: 'What untapped niches or underserved needs are visible in consumer conversations that could inform my go-to-market strategy?' },
-    { name: 'Emerging Use Cases', prompt: 'What new or unexpected ways are consumers using my products or services?' },
-    { name: 'Regional Differences', prompt: 'How does consumer sentiment about my brand vary across different regions or markets?' }
-  ],
-  'Social Media': [
-    { name: 'Brand Sentiment Monitoring', prompt: 'Monitor social media sentiment for our brand across Twitter, Facebook, and Instagram. Track mentions, sentiment changes, and identify potential PR issues or opportunities.' },
-    { name: 'Competitor Social Strategy', prompt: 'Analyze competitor social media strategies and engagement rates. Identify successful content types and posting patterns.' },
-    { name: 'Hashtag Performance Tracking', prompt: 'Track hashtag performance and trending topics related to our industry. Identify opportunities for content creation and engagement.' },
-    { name: 'Influencer Mentions', prompt: 'Which influencers or creators are talking about my brand, and what is their sentiment?' },
-    { name: 'Campaign Impact', prompt: 'How are people reacting to my latest marketing campaigns or product launches on social media?' },
-    { name: 'Word-of-Mouth Signals', prompt: 'When consumers recommend my brand to others, what reasons or benefits do they highlight?' }
-  ],
-  'Competitive Analysis': [
-    { name: 'Competitor Sentiment', prompt: 'Summarize positive and negative themes in consumer conversations about my competitors.' },
-    { name: 'Brand Comparison', prompt: 'How do consumers compare my brand to competitors? What drives preference?' },
-    { name: 'Competitor Product Launches', prompt: 'Track competitor product launches, pricing changes, marketing campaigns, and market positioning. Alert on significant competitive moves that could impact our market share.' },
-    { name: 'Website Change Monitoring', prompt: 'Monitor competitor website changes, new features, and content updates. Identify strategic shifts and new market entries.' },
-    { name: 'Customer Review Analysis', prompt: 'Analyze competitor customer reviews and feedback across platforms. Identify their strengths, weaknesses, and areas for improvement.' },
-    { name: 'Pricing Sensitivity', prompt: 'What do consumers say about the price of my products or services compared to competitors?' }
-  ],
-  'Brand Monitoring': [
-    { name: 'Brand Perception', prompt: 'How do consumers describe my brand on social platforms? What emotions or themes emerge?' },
-    { name: 'Advocacy & Criticism', prompt: 'What aspects of my brand or products do people praise most, and what do they criticize most?' },
-    { name: 'Brand Mention Tracking', prompt: 'Monitor brand mentions across all digital channels. Track sentiment, identify influencers, and detect potential reputation issues.' },
-    { name: 'Brand Awareness Metrics', prompt: 'Track brand awareness metrics and share of voice in our industry. Compare performance against competitors.' },
-    { name: 'IP Protection Monitoring', prompt: 'Monitor unauthorized use of brand assets, trademarks, and intellectual property across the web.' },
-    { name: 'Emotional Triggers', prompt: 'What emotions do consumers most often associate with my brand or products in their conversations?' }
-  ],
-  'Consumer Insights': [
-    { name: 'Product Feedback Analysis', prompt: 'Analyze consumer feedback and reviews to identify product improvement opportunities. Track satisfaction trends and common pain points.' },
-    { name: 'Consumer Behavior Research', prompt: 'Research consumer preferences and buying behavior patterns. Identify demographic trends and market segments.' },
-    { name: 'Feature Request Monitoring', prompt: 'Monitor consumer discussions about our products and services. Identify feature requests and improvement suggestions.' },
-    { name: 'Customer Loyalty Signals', prompt: 'What signs of loyalty or repeat purchase behavior do consumers express about my brand?' },
-    { name: 'Churn Risk', prompt: 'What reasons do people give for switching away from my brand or products?' },
-    { name: 'Customer Experience', prompt: 'What do people say about their experience with my brand\'s customer service or support?' }
-  ]
-};
+// Predefined use cases for signal creation
+const USE_CASES = [
+  { name: 'Consumer Pain Points', prompt: 'Identify recurring complaints or frustrations consumers share about my products or services.' },
+  { name: 'Unmet Needs', prompt: 'What needs do people say my products or services fail to meet?' },
+  { name: 'Buying Intent', prompt: 'Find posts where people ask for recommendations or say they are looking to buy products or services like mine.' },
+  { name: 'Decision Criteria', prompt: 'What factors do consumers mention most often when choosing between my products/services and alternatives?' },
+  { name: 'Competitor Sentiment', prompt: 'Summarize positive and negative themes in consumer conversations about my competitors.' },
+  { name: 'Brand Comparison', prompt: 'How do consumers compare my brand to competitors? What drives preference?' },
+  { name: 'Trend Signals', prompt: 'What new hashtags, keywords, or cultural trends are rising in conversations that relate to my products or services?' },
+  { name: 'Brand Perception', prompt: 'How do consumers describe my brand on social platforms? What emotions or themes emerge?' },
+  { name: 'Advocacy & Criticism', prompt: 'What aspects of my brand or products do people praise most, and what do they criticize most?' },
+  { name: 'GTM Opportunities', prompt: 'What untapped niches or underserved needs are visible in consumer conversations that could inform my go-to-market strategy?' },
+  { name: 'Customer Loyalty Signals', prompt: 'What signs of loyalty or repeat purchase behavior do consumers express about my brand?' },
+  { name: 'Churn Risk', prompt: 'What reasons do people give for switching away from my brand or products?' },
+  { name: 'Emerging Use Cases', prompt: 'What new or unexpected ways are consumers using my products or services?' },
+  { name: 'Influencer Mentions', prompt: 'Which influencers or creators are talking about my brand, and what is their sentiment?' },
+  { name: 'Pricing Sensitivity', prompt: 'What do consumers say about the price of my products or services compared to competitors?' },
+  { name: 'Campaign Impact', prompt: 'How are people reacting to my latest marketing campaigns or product launches on social media?' },
+  { name: 'Customer Experience', prompt: 'What do people say about their experience with my brand\'s customer service or support?' },
+  { name: 'Regional Differences', prompt: 'How does consumer sentiment about my brand vary across different regions or markets?' },
+  { name: 'Emotional Triggers', prompt: 'What emotions do consumers most often associate with my brand or products in their conversations?' },
+  { name: 'Word-of-Mouth Signals', prompt: 'When consumers recommend my brand to others, what reasons or benefits do they highlight?' }
+];
 
 const AddSignalModal: React.FC<AddSignalModalProps> = ({
   isOpen,
@@ -95,15 +72,14 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
 
   const handleUseCaseSelect = useCallback((useCaseName: string) => {
     setSelectedUseCase(useCaseName);
-    const useCases = USE_CASES[formData.copilotType];
-    const selectedUseCaseData = useCases.find(uc => uc.name === useCaseName);
+    const selectedUseCaseData = USE_CASES.find(uc => uc.name === useCaseName);
     if (selectedUseCaseData) {
       setFormData(prev => ({
         ...prev,
         prompt: selectedUseCaseData.prompt,
       }));
     }
-  }, [formData.copilotType]);
+  }, []);
 
   const handlePromptModeChange = useCallback((mode: 'predefined' | 'custom') => {
     setPromptMode(mode);
@@ -115,16 +91,15 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       }));
     } else {
       // Reset to first use case when switching to predefined
-      const useCases = USE_CASES[formData.copilotType];
-      if (useCases.length > 0) {
-        setSelectedUseCase(useCases[0].name);
+      if (USE_CASES.length > 0) {
+        setSelectedUseCase(USE_CASES[0].name);
         setFormData(prev => ({
           ...prev,
-          prompt: useCases[0].prompt,
+          prompt: USE_CASES[0].prompt,
         }));
       }
     }
-  }, [formData.copilotType]);
+  }, []);
 
   // Load Talkwalker copilots when modal opens
   useEffect(() => {
@@ -246,8 +221,6 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
     }
   }, [isLoading, onClose, resetForm]);
 
-  const currentUseCases = USE_CASES[formData.copilotType];
-
   return (
     <Modal
       isOpen={isOpen}
@@ -336,6 +309,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
               </p>
             )}
           </div>
+          
           {/* Signal Name */}
           <div>
             <InputLabel
@@ -360,8 +334,6 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
               </p>
             )}
           </div>
-
-          
 
           {/* Prompt Mode Toggle */}
           <div>
@@ -396,7 +368,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
               </InputLabel>
               <SingleSelect
                 id="useCase"
-                options={currentUseCases.map((useCase) => ({ value: useCase.name, label: useCase.name }))}
+                options={USE_CASES.map((useCase) => ({ value: useCase.name, label: useCase.name }))}
                 value={selectedUseCase}
                 onChange={handleUseCaseSelect}
                 placeholder="Select a use case"
