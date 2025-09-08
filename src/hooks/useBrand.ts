@@ -52,7 +52,6 @@ export const useBrand = (options: UseBrandOptions = {}) => {
     try {
       const updatedBrand = await brandService.updateBrand(brandDetails.id, {
         name: updates.name,
-        description: updates.description,
         website: updates.website,
         industry: updates.industry,
         employeeCount: updates.employeeCount,

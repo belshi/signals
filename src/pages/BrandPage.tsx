@@ -137,7 +137,6 @@ const BrandPage: React.FC = () => {
     <Page>
       <Page.Header 
         title={brand.name}
-        subtitle={brand.description}
         breadcrumbs={[
           { label: 'Brands', href: '/brands' },
           { label: brand.name }

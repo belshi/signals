@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { Modal, Button, InputLabel, TextInput, TextArea } from './index';
+import { Modal, Button, InputLabel, TextInput } from './index';
 import { useBrandsContext } from '../contexts';
 import type { CreateBrandForm } from '../types/enhanced';
 
@@ -34,7 +34,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
   
   const [formData, setFormData] = useState<CreateBrandForm>({
     name: '',
-    description: '',
     website: '',
     industry: '',
     location: '',
@@ -87,7 +86,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
       // Reset form
       setFormData({
         name: '',
-        description: '',
         website: '',
         industry: '',
         location: '',
@@ -107,7 +105,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
     if (!isLoading) {
       setFormData({
         name: '',
-        description: '',
         website: '',
         industry: '',
         location: '',
@@ -160,32 +157,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
             )}
           </div>
 
-          {/* Description */}
-          <div className="sm:col-span-2">
-            <InputLabel
-              htmlFor="description"
-              error={!!errors.description}
-            >
-              Description
-            </InputLabel>
-            <TextArea
-              id="description"
-              value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
-              placeholder="Enter brand description"
-              autoResize
-              minRows={3}
-              maxRows={6}
-              error={!!errors.description}
-              disabled={isLoading}
-              ariaDescribedBy={errors.description ? 'description-error' : undefined}
-            />
-            {errors.description && (
-              <p id="description-error" className="mt-1 text-sm text-red-600">
-                {errors.description}
-              </p>
-            )}
-          </div>
 
           {/* Website */}
           <div>

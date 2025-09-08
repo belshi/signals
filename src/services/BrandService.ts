@@ -31,7 +31,6 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
     return {
       id: createBrandId(dbBrand.id),
       name: dbBrand.name || '',
-      description: dbBrand.description || '',
       website: dbBrand.website || '',
       industry: dbBrand.industry || '',
       employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
@@ -46,10 +45,9 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
   private transformToInsert(brandData: CreateBrandForm): BrandInsert {
     return {
       name: brandData.name,
-      description: brandData.description || null,
       website: brandData.website || null,
       industry: brandData.industry || null,
-      location: null,
+      location: brandData.location || null,
       employees: brandData.employeeCount ? brandData.employeeCount.toString() : null,
       created_at: new Date().toISOString(),
     };
@@ -63,9 +61,6 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
     
     if (updates.name !== undefined) {
       updateData.name = updates.name;
-    }
-    if (updates.description !== undefined) {
-      updateData.description = updates.description;
     }
     if (updates.website !== undefined) {
       updateData.website = updates.website;

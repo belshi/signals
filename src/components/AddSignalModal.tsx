@@ -189,7 +189,7 @@ const AddSignalModal: React.FC<AddSignalModalProps> = ({
       const brandDetails = {
         name: selectedBrand.name,
         industry: selectedBrand.industry,
-        description: selectedBrand.description,
+        description: '', // Description field removed from brands
       };
 
       // Create signal with AI insights

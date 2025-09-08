@@ -26,10 +26,6 @@ const BrandDetails: React.FC<BrandDetailsProps> = ({ className = '', brand }) =>
         value={brandDetails.name}
       />
       <DetailRow
-        label="Description"
-        value={brandDetails.description}
-      />
-      <DetailRow
         label="Website"
         value={
           brandDetails.website ? (

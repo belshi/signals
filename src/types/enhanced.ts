@@ -115,7 +115,6 @@ export interface EnhancedSignal {
 export interface EnhancedBrandDetails {
   id: BrandId;
   name: string;
-  description: string;
   website?: string;
   industry: string;
   location?: string;
@@ -219,7 +218,6 @@ export interface UpdateSignalForm {
 
 export interface CreateBrandForm {
   name: string;
-  description: string;
   website?: string;
   industry: string;
   location?: string;

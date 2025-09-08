@@ -32,21 +32,9 @@ const BrandsPage: React.FC = () => {
     {
       key: 'name',
       label: 'Name',
-      className: 'w-1/4 min-w-[200px]',
+      className: 'w-1/3 min-w-[200px]',
       render: (brand) => (
         <div className="font-medium text-gray-900 truncate">{brand.name}</div>
-      ),
-    },
-    {
-      key: 'description',
-      label: 'Description',
-      className: 'w-full min-w-[300px]',
-      render: (brand) => (
-        <div>
-          <p className="text-sm text-gray-900 whitespace-normal">
-            {brand.description}
-          </p>
-        </div>
       ),
     },
     {
