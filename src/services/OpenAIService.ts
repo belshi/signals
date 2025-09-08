@@ -42,7 +42,7 @@ export class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: 'You are a marketing strategy expert. Generate exactly 3-5 actionable recommendations in plain text format. Use numbered lists (1., 2., 3., etc.) and avoid any markdown formatting.'
+              content: 'You are a social listening and consumer insights expert. Generate one actionable recommendation for each insight provided, in plain text format. Use numbered lists (1., 2., 3., etc.) and avoid any markdown formatting.'
             },
             {
               role: 'user',
@@ -72,7 +72,7 @@ export class OpenAIService {
       ? request.brandGoals.map(goal => `- ${goal.name}`).join('\n')
       : 'No specific goals defined';
 
-    return `You are a marketing strategy expert. Based on the insights provided, generate exactly 3-5 actionable marketing recommendations.
+    return `You are a social listening and consumer insights expert. Based on the brand details, brand goals, and Talkwalker insights provided, please provide a recommendation for each of these insights.
 
 BRAND DETAILS:
 - Name: ${request.brandDetails.name}
@@ -82,23 +82,22 @@ BRAND DETAILS:
 BRAND GOALS:
 ${goalsText}
 
-INSIGHTS:
+TALKWALKER INSIGHTS:
 ${request.insights}
 
 INSTRUCTIONS:
-- Generate exactly 3-5 recommendations
+- Provide one specific recommendation for each insight mentioned above
 - Each recommendation should be 1-2 sentences maximum
 - Use plain text only (no markdown, no formatting)
-- Make each recommendation specific and actionable
-- Base recommendations on the insights provided
-- Align with the brand's goals and industry
+- Make each recommendation actionable and specific to the insight
+- Align recommendations with the brand's goals and industry context
+- Base your recommendations on social listening and consumer insights expertise
 
-Format your response as a simple numbered list:
-1. First recommendation here
-2. Second recommendation here
-3. Third recommendation here
-4. Fourth recommendation here
-5. Fifth recommendation here`;
+Format your response as a simple numbered list with one recommendation per insight:
+1. Recommendation for first insight
+2. Recommendation for second insight
+3. Recommendation for third insight
+(Continue for each insight provided)`;
   }
 
   /**
