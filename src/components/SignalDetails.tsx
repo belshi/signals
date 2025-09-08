@@ -1,14 +1,16 @@
 import React from 'react';
 import { DetailRow } from './index';
 import type { EnhancedSignal, EnhancedBrandDetails } from '../types/enhanced';
+import type { TalkwalkerCopilot } from '../services/talkwalker';
 
 interface SignalDetailsProps {
   className?: string;
   signal?: EnhancedSignal;
   brand?: EnhancedBrandDetails;
+  copilot?: TalkwalkerCopilot | null;
 }
 
-const SignalDetails: React.FC<SignalDetailsProps> = ({ className = '', signal, brand }) => {
+const SignalDetails: React.FC<SignalDetailsProps> = ({ className = '', signal, brand, copilot }) => {
   if (!signal) {
     return (
       <div className={`text-center py-8 ${className}`}>
@@ -34,6 +36,10 @@ const SignalDetails: React.FC<SignalDetailsProps> = ({ className = '', signal, b
       <DetailRow
         label="Brand"
         value={brand ? brand.name : 'No brand linked'}
+      />
+      <DetailRow
+        label="Copilot"
+        value={copilot ? copilot.name : 'No copilot assigned'}
       />
       <DetailRow
         label="Prompt"

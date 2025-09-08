@@ -196,7 +196,7 @@ const SignalDetailPage: React.FC = () => {
   return (
     <Page>
       <Page.Header 
-        title={copilot ? `${signal.name} - ${copilot.name}` : signal.name}
+        title={signal.name}
         breadcrumbs={[
           { label: 'Signals', href: '/signals' },
           { label: signal.name }
@@ -233,7 +233,7 @@ const SignalDetailPage: React.FC = () => {
             description="Basic information about this signal"
             icon={<Icon name="building" className="text-indigo-600" size="md" />}
           >
-            <SignalDetails signal={signal} brand={brand || undefined} />
+            <SignalDetails signal={signal} brand={brand || undefined} copilot={copilot} />
           </Card>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
