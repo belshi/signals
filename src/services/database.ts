@@ -374,7 +374,6 @@ function transformBrandFromDB(dbBrand: BrandRow): EnhancedBrandDetails {
     description: dbBrand.description || '',
     website: dbBrand.website || '',
     industry: dbBrand.industry || '',
-    logo: '', // Not in actual schema
     employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
     revenue: 0, // Not in actual schema
     socialMedia: {

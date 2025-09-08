@@ -119,7 +119,6 @@ export interface EnhancedBrandDetails {
   description: string;
   website?: string;
   industry: string;
-  logo?: string;
   employeeCount?: number;
   revenue?: number;
   socialMedia?: {

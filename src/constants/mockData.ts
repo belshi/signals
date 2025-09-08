@@ -95,7 +95,6 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     description: 'A leading technology company specializing in innovative software solutions for businesses.',
     website: 'https://techcorp.com',
     industry: 'Technology',
-    logo: '/logos/techcorp.png',
     employeeCount: 250,
     revenue: 50000000,
     socialMedia: {
@@ -112,7 +111,6 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     description: 'Sustainable energy solutions provider focused on renewable technologies and environmental impact.',
     website: 'https://greenenergy.com',
     industry: 'Energy',
-    logo: '/logos/greenenergy.png',
     employeeCount: 180,
     revenue: 35000000,
     socialMedia: {
@@ -129,7 +127,6 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     description: 'Revolutionary healthcare technology company developing AI-powered medical solutions.',
     website: 'https://healthtech.com',
     industry: 'Healthcare',
-    logo: '/logos/healthtech.png',
     employeeCount: 120,
     revenue: 25000000,
     socialMedia: {
@@ -146,7 +143,6 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     description: 'Advanced financial technology platform providing comprehensive banking and investment solutions.',
     website: 'https://financeflow.com',
     industry: 'Financial Services',
-    logo: '/logos/financeflow.png',
     employeeCount: 300,
     revenue: 75000000,
     socialMedia: {
@@ -163,7 +159,6 @@ export const MOCK_BRANDS: EnhancedBrandDetails[] = [
     description: 'Online education platform offering interactive learning experiences and professional development courses.',
     website: 'https://edutech.com',
     industry: 'Education',
-    logo: '/logos/edutech.png',
     employeeCount: 95,
     revenue: 18000000,
     socialMedia: {

@@ -34,20 +34,7 @@ const BrandsPage: React.FC = () => {
       label: 'Name',
       className: 'w-1/4 min-w-[200px]',
       render: (brand) => (
-        <div className="flex items-center space-x-3">
-          {brand.logo && (
-            <img
-              src={brand.logo}
-              alt={`${brand.name} logo`}
-              className="h-8 w-8 rounded-full object-cover flex-shrink-0"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.style.display = 'none';
-              }}
-            />
-          )}
-          <div className="font-medium text-gray-900 truncate">{brand.name}</div>
-        </div>
+        <div className="font-medium text-gray-900 truncate">{brand.name}</div>
       ),
     },
     {
