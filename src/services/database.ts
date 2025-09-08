@@ -1,5 +1,4 @@
 import { typedSupabase, isSupabaseConfigured, type Database } from '../lib/supabase';
-import { MOCK_BRANDS, MOCK_SIGNALS } from '../constants/mockData';
 import { talkwalkerService } from './talkwalker';
 import type { 
   EnhancedBrandDetails, 
@@ -14,8 +13,7 @@ import type {
   UpdateBrandGoalForm,
   BrandCompetitor,
   CreateBrandCompetitorForm,
-  UpdateBrandCompetitorForm,
-  ISODateString
+  UpdateBrandCompetitorForm
 } from '../types/enhanced';
 import { createBrandId, createISODateString } from '../utils/typeUtils';
 
@@ -28,8 +26,8 @@ export const brandService = {
   // Get all brands
   async getAllBrands(): Promise<EnhancedBrandDetails[]> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for brands');
-      return MOCK_BRANDS;
+      console.log('Supabase not configured, returning empty brands array');
+      return [];
     }
 
     const { data, error } = await typedSupabase
@@ -47,10 +45,8 @@ export const brandService = {
   // Get brand by ID
   async getBrandById(id: BrandId): Promise<EnhancedBrandDetails | null> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for brand by ID:', id);
-      // Convert BrandId to string for comparison with mock data
-      const brandIdStr = id.toString();
-      return MOCK_BRANDS.find(brand => brand.id.toString() === brandIdStr) || null;
+      console.log('Supabase not configured, cannot fetch brand by ID:', id);
+      return null;
     }
 
     const { data, error } = await typedSupabase
@@ -71,6 +67,10 @@ export const brandService = {
 
   // Create new brand
   async createBrand(brandData: CreateBrandForm): Promise<EnhancedBrandDetails> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot create brand: Supabase not configured');
+    }
+
     const brandToInsert: Database['public']['Tables']['brands']['Insert'] = {
       name: brandData.name,
       description: brandData.description || null,
@@ -96,6 +96,10 @@ export const brandService = {
 
   // Update brand
   async updateBrand(id: BrandId, updates: Partial<CreateBrandForm>): Promise<EnhancedBrandDetails> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot update brand: Supabase not configured');
+    }
+
     const updateData: Database['public']['Tables']['brands']['Update'] = {
       ...(updates.name !== undefined && { name: updates.name }),
       ...(updates.description !== undefined && { description: updates.description }),
@@ -120,6 +124,10 @@ export const brandService = {
 
   // Delete brand
   async deleteBrand(id: BrandId): Promise<void> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot delete brand: Supabase not configured');
+    }
+
     const { error } = await typedSupabase
       .from('brands')
       .delete()
@@ -136,8 +144,8 @@ export const signalService = {
   // Get all signals
   async getAllSignals(): Promise<EnhancedSignal[]> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for signals');
-      return MOCK_SIGNALS;
+      console.log('Supabase not configured, returning empty signals array');
+      return [];
     }
 
     const { data, error } = await typedSupabase
@@ -155,9 +163,8 @@ export const signalService = {
   // Get signal by ID
   async getSignalById(id: SignalId): Promise<EnhancedSignal | null> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for signal by ID:', id);
-      const signalIdStr = id.toString();
-      return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
+      console.log('Supabase not configured, cannot fetch signal by ID:', id);
+      return null;
     }
 
     const { data, error } = await typedSupabase
@@ -177,9 +184,8 @@ export const signalService = {
   // Get signals by brand ID
   async getSignalsByBrandId(brandId: BrandId): Promise<EnhancedSignal[]> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for signals by brand ID:', brandId);
-      const brandIdStr = brandId.toString();
-      return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
+      console.log('Supabase not configured, returning empty signals array for brand ID:', brandId);
+      return [];
     }
 
     const { data, error } = await typedSupabase
@@ -197,37 +203,16 @@ export const signalService = {
 
   // Create signal
   async createSignal(data: CreateSignalForm): Promise<EnhancedSignal> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot create signal: Supabase not configured');
+    }
+
     const placeholderInsights = `This is a placeholder for AI insights about "${data.name}". Detailed analysis will appear here.`;
     const placeholderRecommendations = [
       'Placeholder recommendation 1 – generated text will go here.',
       'Placeholder recommendation 2 – generated text will go here.',
       'Placeholder recommendation 3 – generated text will go here.'
     ];
-
-    if (!isSupabaseConfigured) {
-      console.log('Using mock data for signal creation:', data);
-      const newSignal: EnhancedSignal = {
-        id: `signal-${Date.now()}` as SignalId,
-        name: data.name,
-        prompt: data.prompt,
-        type: data.type || 'Analytics',
-        status: 'active',
-        createdAt: new Date().toISOString() as ISODateString,
-        updatedAt: new Date().toISOString() as ISODateString,
-        tags: data.tags || [],
-        brandId: data.brandId,
-        metadata: {
-          copilotType: data.copilotType,
-          copilotId: data.copilotId,
-        },
-        aiInsights: {
-          content: placeholderInsights,
-        },
-        aiRecommendations: placeholderRecommendations,
-      };
-      MOCK_SIGNALS.push(newSignal);
-      return newSignal;
-    }
 
     const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
       name: data.name,
@@ -291,29 +276,7 @@ export const signalService = {
 
       // Create the signal with real AI insights
       if (!isSupabaseConfigured) {
-        console.log('Using mock data for signal creation with AI:', data);
-        const newSignal: EnhancedSignal = {
-          id: `signal-${Date.now()}` as SignalId,
-          name: data.name,
-          prompt: data.prompt,
-          type: data.type || 'Analytics',
-          status: 'active',
-          createdAt: new Date().toISOString() as ISODateString,
-          updatedAt: new Date().toISOString() as ISODateString,
-          tags: data.tags || [],
-          brandId: data.brandId,
-          metadata: {
-            copilotType: data.copilotType,
-            copilotId: data.copilotId,
-            talkwalkerRequestId: chatResponse.request_id,
-          },
-          aiInsights: {
-            content: insights.content,
-          },
-          aiRecommendations: insights.recommendations,
-        };
-        MOCK_SIGNALS.push(newSignal);
-        return newSignal;
+        throw new Error('Cannot create signal with AI: Supabase not configured');
       }
 
       const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
@@ -420,27 +383,7 @@ export const signalService = {
 
       // Update the signal with new AI insights
       if (!isSupabaseConfigured) {
-        console.log('Using mock data for signal insights refresh:', signalId);
-        
-        // Find and update the signal in mock data
-        const signalIndex = MOCK_SIGNALS.findIndex(s => s.id === signalId);
-        if (signalIndex !== -1) {
-          MOCK_SIGNALS[signalIndex] = {
-            ...MOCK_SIGNALS[signalIndex],
-            aiInsights: {
-              content: insights.content,
-            },
-            aiRecommendations: insights.recommendations,
-            metadata: {
-              ...MOCK_SIGNALS[signalIndex].metadata,
-              talkwalkerRequestId: chatResponse.request_id,
-              lastRefreshed: new Date().toISOString(),
-            },
-            updatedAt: new Date().toISOString() as ISODateString,
-          };
-          return MOCK_SIGNALS[signalIndex];
-        }
-        throw new Error('Signal not found in mock data');
+        throw new Error('Cannot refresh signal insights: Supabase not configured');
       }
 
       // Update in Supabase
@@ -474,7 +417,7 @@ export const signalService = {
   // Update signal
   async updateSignal(_id: SignalId, _updates: UpdateSignalForm): Promise<EnhancedSignal> {
     if (!isSupabaseConfigured) {
-      throw new Error('Signal updates not supported in mock mode');
+      throw new Error('Cannot update signal: Supabase not configured');
     }
 
     const id = Number(_id as unknown as string);
@@ -500,7 +443,7 @@ export const signalService = {
   // Delete signal
   async deleteSignal(_id: SignalId): Promise<void> {
     if (!isSupabaseConfigured) {
-      throw new Error('Signal deletion not supported in mock mode');
+      throw new Error('Cannot delete signal: Supabase not configured');
     }
 
     const id = Number(_id as unknown as string);
@@ -520,8 +463,7 @@ export const brandGoalsService = {
   // Get all goals for a brand
   async getGoalsByBrandId(brandId: BrandId): Promise<BrandGoal[]> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for brand goals by brand ID:', brandId);
-      // Return empty array for mock data since we don't have mock goals yet
+      console.log('Supabase not configured, returning empty brand goals array for brand ID:', brandId);
       return [];
     }
 
@@ -611,8 +553,7 @@ export const brandCompetitorsService = {
   // Get all competitors for a brand
   async getCompetitorsByBrandId(brandId: BrandId): Promise<BrandCompetitor[]> {
     if (!isSupabaseConfigured) {
-      console.log('Using mock data for brand competitors by brand ID:', brandId);
-      // Return empty array for mock data since we don't have mock competitors yet
+      console.log('Supabase not configured, returning empty brand competitors array for brand ID:', brandId);
       return [];
     }
 

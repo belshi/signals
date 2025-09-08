@@ -68,7 +68,6 @@ src/
 │   └── StatusBadge.tsx          # Status indicator component
 ├── constants/               # Application constants
 │   ├── icons.tsx                # Icon component re-exports
-│   ├── mockData.ts              # Mock data for development
 │   ├── navigation.ts             # Navigation configuration
 │   ├── status.ts                 # Status configurations
 │   └── index.ts                  # Central exports
