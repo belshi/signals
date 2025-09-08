@@ -314,6 +314,33 @@ const debouncedSearch = debounce(searchFunction, 300);
 
 ## Security Guidelines
 
+### Environment Variables Security
+- **NEVER** commit environment variables to version control
+- **NEVER** expose sensitive environment variables in client-side code
+- **NEVER** use `NEXT_PUBLIC_` or `VITE_` prefixes for sensitive data
+- **ALWAYS** use server-side environment variables for API keys, secrets, and tokens
+- **ALWAYS** validate environment variables at application startup
+- **ALWAYS** use `.env.local` or `.env.example` files for local development
+- **ALWAYS** add `.env*` files to `.gitignore` (except `.env.example`)
+- **ALWAYS** use environment variable validation in production
+- **ALWAYS** rotate sensitive credentials regularly
+- **ALWAYS** use different environment variables for different environments (dev, staging, prod)
+
+### Environment Variable Naming Conventions
+- **Client-safe variables**: Use `VITE_` prefix (Vite) or `NEXT_PUBLIC_` prefix (Next.js)
+- **Server-only variables**: Use no prefix or `SERVER_` prefix
+- **Database variables**: Use `DB_` or `DATABASE_` prefix
+- **API variables**: Use `API_` prefix
+- **Authentication variables**: Use `AUTH_` or `JWT_` prefix
+- **External service variables**: Use service name prefix (e.g., `SUPABASE_`, `TALKWALKER_`)
+
+### Environment Variable Validation
+- Implement **runtime validation** for all required environment variables
+- Use **type-safe validation** with libraries like `zod` or `joi`
+- Provide **clear error messages** for missing or invalid variables
+- **Fail fast** on startup if required variables are missing
+- **Log warnings** for optional variables that are missing
+
 ### Input Validation
 - Validate **all user inputs** on client and server
 - Sanitize **HTML content** to prevent XSS
@@ -326,6 +353,7 @@ const debouncedSearch = debounce(searchFunction, 300);
 - Implement **proper authentication** and authorization
 - Sanitize **sensitive data** in logs
 - Use **secure storage** for sensitive information
+- **NEVER** log environment variables or sensitive data
 
 ## Git Workflow & GitHub Integration
 
@@ -375,6 +403,10 @@ const debouncedSearch = debounce(searchFunction, 300);
 - [ ] Documentation is updated
 - [ ] Code follows established patterns
 - [ ] Security considerations are addressed
+- [ ] Environment variables are properly secured
+- [ ] No sensitive data is exposed in client-side code
+- [ ] Environment variable validation is implemented
+- [ ] `.env` files are properly gitignored
 
 ### Quality Gates
 - All **TypeScript errors** must be resolved
@@ -393,6 +425,24 @@ const debouncedSearch = debounce(searchFunction, 300);
 - **Git** for version control
 - **GitHub CLI** (optional but recommended): `brew install gh`
 
+### Environment Setup
+- **Create `.env.local`** for local development (never commit this file)
+- **Create `.env.example`** with placeholder values (commit this file)
+- **Use different `.env` files** for different environments
+- **Validate environment variables** at application startup
+- **Use environment variable validation** libraries like `zod` or `joi`
+- **Never hardcode** sensitive values in source code
+- **Use environment-specific** configuration files
+
+### Environment File Structure
+```
+.env.example          # Template with placeholder values (committed)
+.env.local           # Local development variables (not committed)
+.env.development     # Development environment variables (not committed)
+.env.staging         # Staging environment variables (not committed)
+.env.production      # Production environment variables (not committed)
+```
+
 ### Recommended Extensions
 - **TypeScript and JavaScript Language Features**
 - **ESLint**
@@ -401,6 +451,7 @@ const debouncedSearch = debounce(searchFunction, 300);
 - **Auto Rename Tag**
 - **Bracket Pair Colorizer**
 - **GitLens**
+- **DotENV** (for environment variable syntax highlighting)
 
 ## Troubleshooting
 
@@ -410,6 +461,8 @@ const debouncedSearch = debounce(searchFunction, 300);
 - **Performance problems**: Use React DevTools Profiler
 - **Build errors**: Check Vite configuration and dependencies
 - **Runtime errors**: Check error boundaries and error handling
+- **Environment variable errors**: Check `.env` file configuration and validation
+- **Security issues**: Verify no sensitive data is exposed in client-side code
 
 ### Debugging Tools
 - **React DevTools** for component inspection
