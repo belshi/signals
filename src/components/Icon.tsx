@@ -2,7 +2,6 @@ import React from 'react';
 import {
   PlusIcon,
   BuildingOfficeIcon,
-  CheckCircleIcon,
   BoltIcon,
   UsersIcon,
   EllipsisVerticalIcon,

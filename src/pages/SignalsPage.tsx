@@ -1,7 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Page, Card, SignalsTable, AddSignalModal } from '../components';
-import { Icon } from '../components';
 import { useSignalsContext, BrandsProvider } from '../contexts';
 import type { EnhancedSignal } from '../types/enhanced';
 
