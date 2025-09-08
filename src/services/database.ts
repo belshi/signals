@@ -9,7 +9,10 @@ import type {
   UpdateSignalForm,
   BrandGoal,
   CreateBrandGoalForm,
-  UpdateBrandGoalForm
+  UpdateBrandGoalForm,
+  BrandCompetitor,
+  CreateBrandCompetitorForm,
+  UpdateBrandCompetitorForm
 } from '../types/enhanced';
 import { createBrandId, createSignalId, createISODateString } from '../utils/typeUtils';
 
@@ -334,6 +337,97 @@ export const brandGoalsService = {
 
     if (error) {
       throw new Error(`Failed to delete brand goal: ${error.message}`);
+    }
+  },
+};
+
+// Brand Competitors service functions
+export const brandCompetitorsService = {
+  // Get all competitors for a brand
+  async getCompetitorsByBrandId(brandId: BrandId): Promise<BrandCompetitor[]> {
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for brand competitors by brand ID:', brandId);
+      // Return empty array for mock data since we don't have mock competitors yet
+      return [];
+    }
+
+    const { data, error } = await typedSupabase
+      .from('brand_competitors')
+      .select('*')
+      .eq('brand_id', brandId)
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      // If the brand_competitors table doesn't exist, return empty array
+      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.brand_competitors" does not exist')) {
+        console.warn('Brand competitors table not found, returning empty array.');
+        return [];
+      }
+      throw new Error(`Failed to fetch brand competitors: ${error.message}`);
+    }
+
+    return data || [];
+  },
+
+  // Create new competitor
+  async createCompetitor(competitorData: CreateBrandCompetitorForm): Promise<BrandCompetitor> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot create brand competitor: Supabase not configured');
+    }
+
+    const { data, error } = await typedSupabase
+      .from('brand_competitors')
+      .insert({
+        name: competitorData.name,
+        brand_id: competitorData.brand_id,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create brand competitor: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  // Update competitor
+  async updateCompetitor(id: number, updates: UpdateBrandCompetitorForm): Promise<BrandCompetitor> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot update brand competitor: Supabase not configured');
+    }
+
+    const updateData = {
+      ...(updates.name && { name: updates.name }),
+    };
+
+    const { data, error } = await typedSupabase
+      .from('brand_competitors')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update brand competitor: ${error.message}`);
+    }
+
+    return data;
+  },
+
+  // Delete competitor
+  async deleteCompetitor(id: number): Promise<void> {
+    if (!isSupabaseConfigured) {
+      throw new Error('Cannot delete brand competitor: Supabase not configured');
+    }
+
+    const { error } = await typedSupabase
+      .from('brand_competitors')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(`Failed to delete brand competitor: ${error.message}`);
     }
   },
 };

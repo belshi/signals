@@ -100,16 +100,32 @@ export interface EnhancedBrandDetails {
 export interface BrandGoal {
   id: number;
   name: string;
-  brand_id: number;
+  brand_id: BrandId;
   created_at: string;
 }
 
 export interface CreateBrandGoalForm {
   name: string;
-  brand_id: number;
+  brand_id: BrandId;
 }
 
 export interface UpdateBrandGoalForm {
+  name?: string;
+}
+
+export interface BrandCompetitor {
+  id: number;
+  name: string;
+  brand_id: BrandId;
+  created_at: string;
+}
+
+export interface CreateBrandCompetitorForm {
+  name: string;
+  brand_id: BrandId;
+}
+
+export interface UpdateBrandCompetitorForm {
   name?: string;
 }
 

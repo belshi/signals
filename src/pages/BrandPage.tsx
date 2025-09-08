@@ -1,6 +1,6 @@
 import React, { useCallback, useState, useMemo, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal, type BrandGoalsRef } from '../components';
+import { Page, Card, BrandDetails, BrandGoals, Competitors, EditBrandModal, type BrandGoalsRef, type CompetitorsRef } from '../components';
 import { Icon } from '../components';
 import { useBrandsContext } from '../contexts';
 import { brandService } from '../services/database';
@@ -12,6 +12,7 @@ const BrandPage: React.FC = () => {
   const { isLoading, error, refreshBrands, getBrand } = useBrandsContext();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const brandGoalsRef = useRef<BrandGoalsRef>(null);
+  const competitorsRef = useRef<CompetitorsRef>(null);
 
   // Convert string brandId to BrandId type and find the brand from the loaded list
   const brandIdTyped = brandId ? createBrandId(parseInt(brandId)) : undefined;
@@ -34,8 +35,7 @@ const BrandPage: React.FC = () => {
   }, []);
 
   const handleAddCompetitor = useCallback(() => {
-    console.log('Add new competitor');
-    // TODO: Implement add functionality
+    competitorsRef.current?.openAddModal();
   }, []);
 
   const handleEditBrandDetails = useCallback(() => {
@@ -200,7 +200,7 @@ const BrandPage: React.FC = () => {
                 }
               ]}
             >
-              <Competitors brandId={brand.id} />
+              <Competitors ref={competitorsRef} brandId={brand.id} />
             </Card>
           </div>
         </div>

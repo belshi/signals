@@ -82,7 +82,7 @@ Add these in your Vercel project settings:
 
 ## Database Schema
 
-The application uses two main tables:
+The application uses four main tables:
 
 ### Brands Table
 - `id`: UUID primary key
@@ -112,6 +112,18 @@ The application uses two main tables:
 - `metadata`: Additional metadata as JSON
 - `created_at`: Creation timestamp
 - `updated_at`: Last update timestamp
+
+### Brand Goals Table
+- `id`: BIGINT primary key (auto-generated)
+- `name`: Goal name/description
+- `brand_id`: Foreign key to brands table (UUID)
+- `created_at`: Creation timestamp
+
+### Brand Competitors Table
+- `id`: BIGINT primary key (auto-generated)
+- `name`: Competitor name
+- `brand_id`: Foreign key to brands table (UUID)
+- `created_at`: Creation timestamp
 
 ## Security
 

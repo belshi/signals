@@ -24,6 +24,7 @@ export { default as BrandGoals } from './BrandGoals';
 export type { BrandGoalsRef } from './BrandGoals';
 export { default as Card } from './Card';
 export { default as Competitors } from './Competitors';
+export type { CompetitorsRef } from './Competitors';
 export { default as DetailRow } from './DetailRow';
 export { default as EmptyState } from './EmptyState';
 export { default as ErrorBoundary } from './ErrorBoundary';

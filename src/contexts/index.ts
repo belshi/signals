@@ -5,3 +5,4 @@ export { SignalsProvider, useSignalsContext } from './SignalsContext';
 export { BrandProvider, useBrandContext } from './BrandContext';
 export { BrandsProvider, useBrandsContext } from './BrandsContext';
 export { BrandGoalsProvider, useBrandGoalsContext } from './BrandGoalsContext';
+export { BrandCompetitorsProvider, useBrandCompetitorsContext } from './BrandCompetitorsContext';
