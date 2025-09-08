@@ -50,6 +50,10 @@ const BrandDetails: React.FC<BrandDetailsProps> = ({ className = '', brand }) =>
         label="Industry"
         value={brandDetails.industry}
       />
+      <DetailRow
+        label="Location"
+        value={brandDetails.location || 'Not provided'}
+      />
     </dl>
   );
 };

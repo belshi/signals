@@ -40,7 +40,7 @@ const BrandsPage: React.FC = () => {
     {
       key: 'description',
       label: 'Description',
-      className: 'w-full min-w-[400px]',
+      className: 'w-full min-w-[300px]',
       render: (brand) => (
         <div>
           <p className="text-sm text-gray-900 whitespace-normal">
@@ -57,6 +57,16 @@ const BrandsPage: React.FC = () => {
         <Badge variant="primary" size="md">
           {brand.industry}
         </Badge>
+      ),
+    },
+    {
+      key: 'location',
+      label: 'Location',
+      className: 'w-1/6 min-w-[120px]',
+      render: (brand) => (
+        <div className="text-sm text-gray-900">
+          {brand.location || 'N/A'}
+        </div>
       ),
     },
     {

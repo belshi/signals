@@ -37,6 +37,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
     description: '',
     website: '',
     industry: '',
+    location: '',
     employeeCount: undefined,
   });
 
@@ -58,18 +59,9 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
       newErrors.name = 'Brand name is required';
     }
 
-    if (!formData.description.trim()) {
-      newErrors.description = 'Description is required';
-    }
-
-    if (!formData.industry) {
-      newErrors.industry = 'Please select an industry';
-    }
-
     if (formData.website && !/^https?:\/\/.+/.test(formData.website)) {
       newErrors.website = 'Please enter a valid URL (starting with http:// or https://)';
     }
-
 
     if (formData.employeeCount && formData.employeeCount < 1) {
       newErrors.employeeCount = 'Employee count must be at least 1';
@@ -98,6 +90,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
         description: '',
         website: '',
         industry: '',
+        location: '',
         employeeCount: undefined,
       });
       
@@ -117,6 +110,7 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
         description: '',
         website: '',
         industry: '',
+        location: '',
         employeeCount: undefined,
       });
       setErrors({});
@@ -170,7 +164,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
           <div className="sm:col-span-2">
             <InputLabel
               htmlFor="description"
-              required
               error={!!errors.description}
             >
               Description
@@ -223,7 +216,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
           <div>
             <InputLabel
               htmlFor="industry"
-              required
               error={!!errors.industry}
             >
               Industry
@@ -237,7 +229,6 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
                   ? 'border-red-300 text-red-900 focus:ring-red-500 focus:border-red-500'
                   : 'border-gray-300 text-gray-900 focus:ring-indigo-500 focus:border-indigo-500'
               }`}
-              required
               disabled={isLoading}
               aria-invalid={!!errors.industry}
               aria-describedby={errors.industry ? 'industry-error' : undefined}
@@ -252,6 +243,30 @@ const AddBrandModal: React.FC<AddBrandModalProps> = ({
             {errors.industry && (
               <p id="industry-error" className="mt-1 text-sm text-red-600">
                 {errors.industry}
+              </p>
+            )}
+          </div>
+
+          {/* Location */}
+          <div>
+            <InputLabel
+              htmlFor="location"
+              error={!!errors.location}
+            >
+              Location
+            </InputLabel>
+            <TextInput
+              id="location"
+              value={formData.location || ''}
+              onChange={(e) => handleInputChange('location', e.target.value)}
+              placeholder="e.g., San Francisco, CA"
+              error={!!errors.location}
+              disabled={isLoading}
+              ariaDescribedBy={errors.location ? 'location-error' : undefined}
+            />
+            {errors.location && (
+              <p id="location-error" className="mt-1 text-sm text-red-600">
+                {errors.location}
               </p>
             )}
           </div>

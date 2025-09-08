@@ -119,6 +119,7 @@ export interface EnhancedBrandDetails {
   description: string;
   website?: string;
   industry: string;
+  location?: string;
   employeeCount?: number;
   revenue?: number;
   socialMedia?: {
@@ -221,6 +222,7 @@ export interface CreateBrandForm {
   description: string;
   website?: string;
   industry: string;
+  location?: string;
   employeeCount?: number;
 }
 
