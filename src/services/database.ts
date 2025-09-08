@@ -1,5 +1,7 @@
-import { typedSupabase, isSupabaseConfigured, type Database } from '../lib/supabase';
-import { talkwalkerService } from './talkwalker';
+import { brandService as newBrandService } from './BrandService';
+import { signalService as newSignalService } from './SignalService';
+import { brandGoalsService as newBrandGoalsService } from './BrandGoalsService';
+import { brandCompetitorsService as newBrandCompetitorsService } from './BrandCompetitorsService';
 import type { 
   EnhancedBrandDetails, 
   EnhancedSignal, 
@@ -15,226 +17,72 @@ import type {
   CreateBrandCompetitorForm,
   UpdateBrandCompetitorForm
 } from '../types/enhanced';
-import { createBrandId, createISODateString } from '../utils/typeUtils';
 
-// Type-safe database row types
-type BrandRow = Database['public']['Tables']['brands']['Row'];
-type SignalRow = Database['public']['Tables']['signals']['Row'];
-
-// Brand service functions
+// Brand service functions - now using the new BrandService architecture
 export const brandService = {
   // Get all brands
   async getAllBrands(): Promise<EnhancedBrandDetails[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, returning empty brands array');
-      return [];
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brands')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new Error(`Failed to fetch brands: ${error.message}`);
-    }
-
-    return data.map(transformBrandFromDB);
+    return newBrandService.getAll();
   },
 
   // Get brand by ID
   async getBrandById(id: BrandId): Promise<EnhancedBrandDetails | null> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, cannot fetch brand by ID:', id);
-      return null;
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brands')
-      .select('*')
-      .eq('id', Number(id as unknown as string))
-      .single();
-
-    if (error) {
-      if (error.code === 'PGRST116') {
-        return null; // Brand not found
-      }
-      throw new Error(`Failed to fetch brand: ${error.message}`);
-    }
-
-    return transformBrandFromDB(data);
+    return newBrandService.getById(id);
   },
 
   // Create new brand
   async createBrand(brandData: CreateBrandForm): Promise<EnhancedBrandDetails> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot create brand: Supabase not configured');
-    }
-
-    const brandToInsert: Database['public']['Tables']['brands']['Insert'] = {
-      name: brandData.name,
-      description: brandData.description || null,
-      website: brandData.website || null,
-      industry: brandData.industry || null,
-      location: null,
-      employees: brandData.employeeCount ? brandData.employeeCount.toString() : null,
-      created_at: new Date().toISOString(),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('brands')
-      .insert(brandToInsert)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create brand: ${error.message}`);
-    }
-
-    return transformBrandFromDB(data);
+    return newBrandService.create(brandData);
   },
 
   // Update brand
   async updateBrand(id: BrandId, updates: Partial<CreateBrandForm>): Promise<EnhancedBrandDetails> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot update brand: Supabase not configured');
-    }
-
-    const updateData: Database['public']['Tables']['brands']['Update'] = {
-      ...(updates.name !== undefined && { name: updates.name }),
-      ...(updates.description !== undefined && { description: updates.description }),
-      ...(updates.website !== undefined && { website: updates.website }),
-      ...(updates.industry !== undefined && { industry: updates.industry }),
-      ...(updates.employeeCount !== undefined && { employees: updates.employeeCount?.toString() ?? null }),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('brands')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update brand: ${error.message}`);
-    }
-
-    return transformBrandFromDB(data);
+    return newBrandService.update(id, updates);
   },
 
   // Delete brand
   async deleteBrand(id: BrandId): Promise<void> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot delete brand: Supabase not configured');
-    }
+    return newBrandService.delete(id);
+  },
 
-    const { error } = await typedSupabase
-      .from('brands')
-      .delete()
-      .eq('id', id);
+  // Additional brand service methods
+  async getBrandsByIndustry(industry: string): Promise<EnhancedBrandDetails[]> {
+    return newBrandService.getByIndustry(industry);
+  },
 
-    if (error) {
-      throw new Error(`Failed to delete brand: ${error.message}`);
-    }
+  async searchBrands(query: string): Promise<EnhancedBrandDetails[]> {
+    return newBrandService.search(query);
+  },
+
+  async getBrandStatistics(): Promise<{
+    total: number;
+    byIndustry: Record<string, number>;
+    averageEmployeeCount: number;
+  }> {
+    return newBrandService.getStatistics();
   },
 };
 
-// Signal service functions - now backed by Supabase `signals` table when configured
+// Signal service functions - now using the new SignalService architecture
 export const signalService = {
   // Get all signals
   async getAllSignals(): Promise<EnhancedSignal[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, returning empty signals array');
-      return [];
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new Error(`Failed to fetch signals: ${error.message}`);
-    }
-
-    return (data || []).map(transformSignalFromDB);
+    return newSignalService.getAll();
   },
 
   // Get signal by ID
   async getSignalById(id: SignalId): Promise<EnhancedSignal | null> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, cannot fetch signal by ID:', id);
-      return null;
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .eq('id', Number(id as unknown as string))
-      .single();
-
-    if (error) {
-      if ((error as any).code === 'PGRST116') return null;
-      throw new Error(`Failed to fetch signal: ${error.message}`);
-    }
-
-    return transformSignalFromDB(data);
+    return newSignalService.getById(id);
   },
 
   // Get signals by brand ID
   async getSignalsByBrandId(brandId: BrandId): Promise<EnhancedSignal[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, returning empty signals array for brand ID:', brandId);
-      return [];
-    }
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .select('*')
-      .eq('brand_id', Number(brandId as unknown as string))
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      throw new Error(`Failed to fetch brand signals: ${error.message}`);
-    }
-
-    return (data || []).map(transformSignalFromDB);
+    return newSignalService.getByBrandId(brandId);
   },
 
   // Create signal
   async createSignal(data: CreateSignalForm): Promise<EnhancedSignal> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot create signal: Supabase not configured');
-    }
-
-    const placeholderInsights = `This is a placeholder for AI insights about "${data.name}". Detailed analysis will appear here.`;
-    const placeholderRecommendations = [
-      'Placeholder recommendation 1 – generated text will go here.',
-      'Placeholder recommendation 2 – generated text will go here.',
-      'Placeholder recommendation 3 – generated text will go here.'
-    ];
-
-    const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
-      name: data.name,
-      prompt: data.prompt,
-      brand_id: Number(data.brandId as unknown as string),
-      copilot_id: data.copilotId || null,
-      insights: placeholderInsights,
-      recommendations: JSON.stringify(placeholderRecommendations),
-      updated_at: new Date().toISOString(),
-    };
-
-    const { data: inserted, error } = await typedSupabase
-      .from('signals')
-      .insert(insertPayload)
-      .select('*')
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create signal: ${error.message}`);
-    }
-
-    return transformSignalFromDB(inserted);
+    return newSignalService.create(data);
   },
 
   // Create signal with AI insights from Talkwalker
@@ -243,100 +91,7 @@ export const signalService = {
     brandDetails: { name: string; industry: string; description: string },
     onProgress?: (message: string) => void
   ): Promise<EnhancedSignal> {
-    onProgress?.('Initializing signal creation...');
-
-    // If no copilot is selected, fall back to regular signal creation
-    if (!data.copilotId) {
-      onProgress?.('No copilot selected, creating signal with placeholder insights...');
-      return this.createSignal(data);
-    }
-
-    try {
-      onProgress?.('Getting AI insights from Talkwalker...');
-      
-      // Call Talkwalker chat API to get insights
-      const chatResponse = await talkwalkerService.chatWithCopilot(
-        data.copilotId,
-        data.prompt,
-        brandDetails
-      );
-
-      onProgress?.('Processing AI response...');
-
-      // Extract insights from the chat response
-      const aiContent = chatResponse.yeti_answer?.reply?.content || '';
-      
-      // Use the raw AI response as insights
-      const insights = {
-        content: aiContent,
-        recommendations: this.extractRecommendations(aiContent),
-      };
-      
-      onProgress?.('Saving signal with AI insights...');
-
-      // Create the signal with real AI insights
-      if (!isSupabaseConfigured) {
-        throw new Error('Cannot create signal with AI: Supabase not configured');
-      }
-
-      const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
-        name: data.name,
-        prompt: data.prompt,
-        brand_id: Number(data.brandId as unknown as string),
-        copilot_id: data.copilotId || null,
-        insights: insights.content,
-        recommendations: JSON.stringify(insights.recommendations),
-        updated_at: new Date().toISOString(),
-      };
-
-      const { data: inserted, error } = await typedSupabase
-        .from('signals')
-        .insert(insertPayload)
-        .select('*')
-        .single();
-
-      if (error) {
-        throw new Error(`Failed to create signal: ${error.message}`);
-      }
-
-      onProgress?.('Signal created successfully!');
-      return transformSignalFromDB(inserted);
-
-    } catch (error) {
-      console.error('Failed to create signal with AI insights:', error);
-      onProgress?.('AI insights failed, creating signal with placeholder data...');
-      
-      // Fall back to regular signal creation if AI fails
-      return this.createSignal(data);
-    }
-  },
-
-  // Helper function to extract recommendations from AI response
-  extractRecommendations(aiContent: string): string[] {
-    const lines = aiContent.split('\n').filter(line => line.trim());
-    const recommendations: string[] = [];
-
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
-      
-      // Look for recommendation patterns
-      if (lowerLine.includes('recommend') || lowerLine.includes('suggest') || lowerLine.includes('action')) {
-        // Extract individual recommendations
-        if (line.includes('•') || line.includes('-') || line.includes('*')) {
-          const cleanRec = line.replace(/^[•\-*]\s*/, '').trim();
-          if (cleanRec) recommendations.push(cleanRec);
-        }
-      }
-    }
-
-    // If no specific recommendations found, provide generic ones
-    if (recommendations.length === 0) {
-      recommendations.push('Monitor social media sentiment regularly');
-      recommendations.push('Analyze competitor strategies');
-      recommendations.push('Track consumer behavior patterns');
-    }
-
-    return recommendations.slice(0, 5); // Limit to 5 recommendations
+    return newSignalService.createWithAI(data, brandDetails, onProgress);
   },
 
   // Refresh AI insights for an existing signal
@@ -345,334 +100,154 @@ export const signalService = {
     brandDetails: { name: string; industry: string; description: string },
     onProgress?: (message: string) => void
   ): Promise<EnhancedSignal> {
-    onProgress?.('Loading signal details...');
-
-    // Get the existing signal
-    const existingSignal = await this.getSignalById(signalId);
-    if (!existingSignal) {
-      throw new Error('Signal not found');
-    }
-
-    // Check if signal has a copilot ID
-    if (!existingSignal.metadata?.copilotId) {
-      throw new Error('Signal does not have a copilot assigned. Cannot refresh AI insights.');
-    }
-
-    try {
-      onProgress?.('Getting fresh AI insights from Talkwalker...');
-      
-      // Call Talkwalker chat API to get new insights
-      const chatResponse = await talkwalkerService.chatWithCopilot(
-        existingSignal.metadata.copilotId as string,
-        existingSignal.prompt,
-        brandDetails
-      );
-
-      onProgress?.('Processing new AI response...');
-
-      // Extract insights from the chat response
-      const aiContent = chatResponse.yeti_answer?.reply?.content || '';
-      
-      // Use the raw AI response as insights
-      const insights = {
-        content: aiContent,
-        recommendations: this.extractRecommendations(aiContent),
-      };
-      
-      onProgress?.('Updating signal with new insights...');
-
-      // Update the signal with new AI insights
-      if (!isSupabaseConfigured) {
-        throw new Error('Cannot refresh signal insights: Supabase not configured');
-      }
-
-      // Update in Supabase
-      const updatePayload: Database['public']['Tables']['signals']['Update'] = {
-        insights: insights.content,
-        recommendations: JSON.stringify(insights.recommendations),
-        updated_at: new Date().toISOString(),
-      };
-
-      const { data: updated, error } = await typedSupabase
-        .from('signals')
-        .update(updatePayload)
-        .eq('id', Number(signalId as unknown as string))
-        .select('*')
-        .single();
-
-      if (error) {
-        throw new Error(`Failed to update signal insights: ${error.message}`);
-      }
-
-      onProgress?.('AI insights refreshed successfully!');
-      return transformSignalFromDB(updated);
-
-    } catch (error) {
-      console.error('Failed to refresh signal insights:', error);
-      onProgress?.('Failed to refresh insights. Please try again.');
-      throw error;
-    }
+    return newSignalService.refreshInsights(signalId, brandDetails, onProgress);
   },
 
   // Update signal
-  async updateSignal(_id: SignalId, _updates: UpdateSignalForm): Promise<EnhancedSignal> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot update signal: Supabase not configured');
-    }
-
-    const id = Number(_id as unknown as string);
-    const updateData: Database['public']['Tables']['signals']['Update'] = {
-      name: _updates.name,
-      updated_at: new Date().toISOString(),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('signals')
-      .update(updateData)
-      .eq('id', id)
-      .select('*')
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update signal: ${error.message}`);
-    }
-
-    return transformSignalFromDB(data);
+  async updateSignal(id: SignalId, updates: UpdateSignalForm): Promise<EnhancedSignal> {
+    return newSignalService.update(id, updates);
   },
 
   // Delete signal
-  async deleteSignal(_id: SignalId): Promise<void> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot delete signal: Supabase not configured');
-    }
+  async deleteSignal(id: SignalId): Promise<void> {
+    return newSignalService.delete(id);
+  },
 
-    const id = Number(_id as unknown as string);
-    const { error } = await typedSupabase
-      .from('signals')
-      .delete()
-      .eq('id', id);
+  // Additional signal service methods
+  async searchSignals(query: string): Promise<EnhancedSignal[]> {
+    return newSignalService.search(query);
+  },
 
-    if (error) {
-      throw new Error(`Failed to delete signal: ${error.message}`);
-    }
+  async getSignalsByCopilotId(copilotId: string): Promise<EnhancedSignal[]> {
+    return newSignalService.getByCopilotId(copilotId);
+  },
+
+  async getSignalStatistics(): Promise<{
+    total: number;
+    byBrand: Record<string, number>;
+    byCopilot: Record<string, number>;
+    withAIInsights: number;
+  }> {
+    return newSignalService.getStatistics();
   },
 };
 
-// Brand Goals service functions
+// Brand Goals service functions - now using the new BrandGoalsService architecture
 export const brandGoalsService = {
   // Get all goals for a brand
   async getGoalsByBrandId(brandId: BrandId): Promise<BrandGoal[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, returning empty brand goals array for brand ID:', brandId);
-      return [];
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brand_goals')
-      .select('*')
-      .eq('brand_id', brandId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      // If the brand_goals table doesn't exist, return empty array
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.brand_goals" does not exist')) {
-        console.warn('Brand goals table not found, returning empty array.');
-        return [];
-      }
-      throw new Error(`Failed to fetch brand goals: ${error.message}`);
-    }
-
-    return data || [];
+    return newBrandGoalsService.getByBrandId(brandId);
   },
 
   // Create new goal
   async createGoal(goalData: CreateBrandGoalForm): Promise<BrandGoal> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot create brand goal: Supabase not configured');
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brand_goals')
-      .insert({
-        name: goalData.name,
-        brand_id: goalData.brand_id,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create brand goal: ${error.message}`);
-    }
-
-    return data as BrandGoal;
+    return newBrandGoalsService.create(goalData);
   },
 
   // Update goal
   async updateGoal(id: number, updates: UpdateBrandGoalForm): Promise<BrandGoal> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot update brand goal: Supabase not configured');
-    }
-
-    const updateData = {
-      ...(updates.name && { name: updates.name }),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('brand_goals')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update brand goal: ${error.message}`);
-    }
-
-    return data as BrandGoal;
+    return newBrandGoalsService.update(id, updates);
   },
 
   // Delete goal
   async deleteGoal(id: number): Promise<void> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot delete brand goal: Supabase not configured');
-    }
+    return newBrandGoalsService.delete(id);
+  },
 
-    const { error } = await typedSupabase
-      .from('brand_goals')
-      .delete()
-      .eq('id', id);
+  // Additional brand goals service methods
+  async getAllGoals(): Promise<BrandGoal[]> {
+    return newBrandGoalsService.getAll();
+  },
 
-    if (error) {
-      throw new Error(`Failed to delete brand goal: ${error.message}`);
-    }
+  async getGoalById(id: number): Promise<BrandGoal | null> {
+    return newBrandGoalsService.getById(id);
+  },
+
+  async getGoalsByName(name: string): Promise<BrandGoal[]> {
+    return newBrandGoalsService.getByName(name);
+  },
+
+  async hasGoals(brandId: BrandId): Promise<boolean> {
+    return newBrandGoalsService.hasGoals(brandId);
+  },
+
+  async getRecentGoals(brandId: BrandId, limit?: number): Promise<BrandGoal[]> {
+    return newBrandGoalsService.getRecentGoals(brandId, limit);
+  },
+
+  async getBrandGoalsStatistics(): Promise<{
+    total: number;
+    byBrand: Record<string, number>;
+    averageGoalsPerBrand: number;
+  }> {
+    return newBrandGoalsService.getStatistics();
   },
 };
 
-// Brand Competitors service functions
+// Brand Competitors service functions - now using the new BrandCompetitorsService architecture
 export const brandCompetitorsService = {
   // Get all competitors for a brand
   async getCompetitorsByBrandId(brandId: BrandId): Promise<BrandCompetitor[]> {
-    if (!isSupabaseConfigured) {
-      console.log('Supabase not configured, returning empty brand competitors array for brand ID:', brandId);
-      return [];
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brand_competitors')
-      .select('*')
-      .eq('brand_id', brandId)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      // If the brand_competitors table doesn't exist, return empty array
-      if (error.message.includes('Could not find the table') || error.message.includes('relation "public.brand_competitors" does not exist')) {
-        console.warn('Brand competitors table not found, returning empty array.');
-        return [];
-      }
-      throw new Error(`Failed to fetch brand competitors: ${error.message}`);
-    }
-
-    return data || [];
+    return newBrandCompetitorsService.getByBrandId(brandId);
   },
 
   // Create new competitor
   async createCompetitor(competitorData: CreateBrandCompetitorForm): Promise<BrandCompetitor> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot create brand competitor: Supabase not configured');
-    }
-
-    const { data, error } = await typedSupabase
-      .from('brand_competitors')
-      .insert({
-        name: competitorData.name,
-        brand_id: competitorData.brand_id,
-      })
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to create brand competitor: ${error.message}`);
-    }
-
-    return data as BrandCompetitor;
+    return newBrandCompetitorsService.create(competitorData);
   },
 
   // Update competitor
   async updateCompetitor(id: number, updates: UpdateBrandCompetitorForm): Promise<BrandCompetitor> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot update brand competitor: Supabase not configured');
-    }
-
-    const updateData = {
-      ...(updates.name && { name: updates.name }),
-    };
-
-    const { data, error } = await typedSupabase
-      .from('brand_competitors')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
-
-    if (error) {
-      throw new Error(`Failed to update brand competitor: ${error.message}`);
-    }
-
-    return data as BrandCompetitor;
+    return newBrandCompetitorsService.update(id, updates);
   },
 
   // Delete competitor
   async deleteCompetitor(id: number): Promise<void> {
-    if (!isSupabaseConfigured) {
-      throw new Error('Cannot delete brand competitor: Supabase not configured');
-    }
+    return newBrandCompetitorsService.delete(id);
+  },
 
-    const { error } = await typedSupabase
-      .from('brand_competitors')
-      .delete()
-      .eq('id', id);
+  // Additional brand competitors service methods
+  async getAllCompetitors(): Promise<BrandCompetitor[]> {
+    return newBrandCompetitorsService.getAll();
+  },
 
-    if (error) {
-      throw new Error(`Failed to delete brand competitor: ${error.message}`);
-    }
+  async getCompetitorById(id: number): Promise<BrandCompetitor | null> {
+    return newBrandCompetitorsService.getById(id);
+  },
+
+  async getCompetitorsByName(name: string): Promise<BrandCompetitor[]> {
+    return newBrandCompetitorsService.getByName(name);
+  },
+
+  async existsForBrand(brandId: BrandId, competitorName: string): Promise<boolean> {
+    return newBrandCompetitorsService.existsForBrand(brandId, competitorName);
+  },
+
+  async hasCompetitors(brandId: BrandId): Promise<boolean> {
+    return newBrandCompetitorsService.hasCompetitors(brandId);
+  },
+
+  async getRecentCompetitors(brandId: BrandId, limit?: number): Promise<BrandCompetitor[]> {
+    return newBrandCompetitorsService.getRecentCompetitors(brandId, limit);
+  },
+
+  async getUniqueCompetitorNames(): Promise<string[]> {
+    return newBrandCompetitorsService.getUniqueCompetitorNames();
+  },
+
+  async getBrandCompetitorsStatistics(): Promise<{
+    total: number;
+    byBrand: Record<string, number>;
+    averageCompetitorsPerBrand: number;
+    mostCommonCompetitors: Array<{ name: string; count: number }>;
+  }> {
+    return newBrandCompetitorsService.getStatistics();
   },
 };
 
 // Transform functions to convert database rows to our application types
-function transformBrandFromDB(dbBrand: BrandRow): EnhancedBrandDetails {
-  return {
-    id: createBrandId(dbBrand.id),
-    name: dbBrand.name || '',
-    description: dbBrand.description || '',
-    website: dbBrand.website || '',
-    industry: dbBrand.industry || '',
-    employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
-    createdAt: createISODateString(dbBrand.created_at),
-    updatedAt: createISODateString(dbBrand.created_at),
-  };
-}
-
-// Transform DB signal row to EnhancedSignal used in UI
-function transformSignalFromDB(db: SignalRow): EnhancedSignal {
-  return {
-    id: (`${db.id}`) as SignalId,
-    name: db.name || '',
-    prompt: db.prompt || '',
-    type: 'Analytics',
-    status: 'active',
-    createdAt: createISODateString(db.created_at),
-    updatedAt: createISODateString(db.updated_at || db.created_at),
-    brandId: db.brand_id != null ? (db.brand_id.toString() as unknown as BrandId) : undefined,
-    metadata: db.copilot_id ? {
-      copilotId: db.copilot_id,
-    } : undefined,
-    aiInsights: db.insights ? {
-      content: db.insights,
-    } : undefined,
-    aiRecommendations: (() => {
-      if (!db.recommendations) return undefined;
-      try { return JSON.parse(db.recommendations); } catch { return [db.recommendations]; }
-    })(),
-  };
-}
+// Note: All transform functions are now handled by the new service classes:
+// - transformBrandFromDB -> BrandService
+// - transformSignalFromDB -> SignalService
+// - Brand goals and competitors use direct database row mapping
 

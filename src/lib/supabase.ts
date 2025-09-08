@@ -1,12 +1,12 @@
 import { createClient } from '@supabase/supabase-js';
-import { config } from '../config/environment';
+import { configService } from '../config/ConfigurationService';
 
-// Get environment variables from config
-const supabaseUrl = config.supabase.url;
-const supabaseAnonKey = config.supabase.anonKey;
+// Get environment variables from config service
+const supabaseUrl = configService.supabase.url;
+const supabaseAnonKey = configService.supabase.anonKey;
 
 // Check if Supabase is configured
-export const isSupabaseConfigured = !!(supabaseUrl && supabaseAnonKey);
+export const isSupabaseConfigured = configService.isSupabaseConfigured;
 
 if (!isSupabaseConfigured) {
   console.warn('Supabase environment variables not configured. Application will use mock data.');
@@ -131,7 +131,7 @@ export interface Database {
 let supabaseClient: any = null;
 
 const createSupabaseClient = () => {
-  if (!supabaseClient && isSupabaseConfigured) {
+  if (!supabaseClient && isSupabaseConfigured && supabaseUrl && supabaseAnonKey) {
     supabaseClient = createClient<Database>(supabaseUrl, supabaseAnonKey);
   }
   return supabaseClient;
