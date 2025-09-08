@@ -25,7 +25,7 @@ export interface Database {
           website: string | null;
           industry: string | null;
           location: string | null;
-          employees: string | null;
+          employee_count: string | null;
         };
         Insert: {
           id?: number;
@@ -35,7 +35,7 @@ export interface Database {
           website?: string | null;
           industry?: string | null;
           location?: string | null;
-          employees?: string | null;
+          employee_count?: string | null;
         };
         Update: {
           id?: number;
@@ -45,7 +45,7 @@ export interface Database {
           website?: string | null;
           industry?: string | null;
           location?: string | null;
-          employees?: string | null;
+          employee_count?: string | null;
         };
       };
       brand_goals: {

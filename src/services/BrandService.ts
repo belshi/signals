@@ -33,7 +33,8 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
       name: dbBrand.name || '',
       website: dbBrand.website || '',
       industry: dbBrand.industry || '',
-      employeeCount: dbBrand.employees ? parseInt(dbBrand.employees) || 0 : 0,
+      location: dbBrand.location || '',
+      employeeCount: dbBrand.employee_count ? parseInt(dbBrand.employee_count) || 0 : 0,
       createdAt: createISODateString(dbBrand.created_at),
       updatedAt: createISODateString(dbBrand.created_at),
     };
@@ -48,7 +49,7 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
       website: brandData.website || null,
       industry: brandData.industry || null,
       location: brandData.location || null,
-      employees: brandData.employeeCount ? brandData.employeeCount.toString() : null,
+      employee_count: brandData.employeeCount ? brandData.employeeCount.toString() : null,
       created_at: new Date().toISOString(),
     };
   }
@@ -69,7 +70,7 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
       updateData.industry = updates.industry;
     }
     if (updates.employeeCount !== undefined) {
-      updateData.employees = updates.employeeCount?.toString() ?? null;
+      updateData.employee_count = updates.employeeCount?.toString() ?? null;
     }
 
     return updateData;
@@ -158,8 +159,8 @@ class BrandServiceClass extends BrandedBaseService<EnhancedBrandDetails, CreateB
     const { data, error } = await this.client
       .from(this.tableName)
       .select('*')
-      .gte('employees', min.toString())
-      .lte('employees', max.toString())
+      .gte('employee_count', min.toString())
+      .lte('employee_count', max.toString())
       .order('created_at', { ascending: false });
 
     if (error) {

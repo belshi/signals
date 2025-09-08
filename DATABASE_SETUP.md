@@ -85,26 +85,27 @@ Add these in your Vercel project settings:
 The application uses four main tables:
 
 ### Brands Table
-- `id`: UUID primary key
+- `id`: BIGINT primary key (auto-generated)
 - `name`: Brand name
 - `description`: Brand description
 - `website`: Brand website URL
 - `industry`: Industry category
+- `location`: Brand location
+- `employees`: Number of employees (stored as VARCHAR)
 - `logo`: Logo image URL
-- `employee_count`: Number of employees
 - `revenue`: Annual revenue
 - `social_media`: JSON object with social media handles
 - `created_at`: Creation timestamp
 - `updated_at`: Last update timestamp
 
 ### Signals Table
-- `id`: UUID primary key
+- `id`: BIGINT primary key (auto-generated)
 - `name`: Signal name
 - `prompt`: AI prompt for the signal
 - `type`: Signal type (Analytics, Social, Competitive, etc.)
 - `status`: Signal status (active, inactive, pending)
 - `tags`: Array of tags
-- `brand_id`: Foreign key to brands table
+- `brand_id`: Foreign key to brands table (BIGINT)
 - `triggered_at`: When the signal was triggered
 - `ai_insights`: JSON object with AI insights
 - `ai_recommendations`: Array of AI recommendations
@@ -116,13 +117,13 @@ The application uses four main tables:
 ### Brand Goals Table
 - `id`: BIGINT primary key (auto-generated)
 - `name`: Goal name/description
-- `brand_id`: Foreign key to brands table (UUID)
+- `brand_id`: Foreign key to brands table (BIGINT)
 - `created_at`: Creation timestamp
 
 ### Brand Competitors Table
 - `id`: BIGINT primary key (auto-generated)
 - `name`: Competitor name
-- `brand_id`: Foreign key to brands table (UUID)
+- `brand_id`: Foreign key to brands table (BIGINT)
 - `created_at`: Creation timestamp
 
 ## Security
