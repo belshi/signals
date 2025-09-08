@@ -99,18 +99,18 @@ export interface EnhancedBrandDetails {
 // Brand Goal types based on Supabase schema
 export interface BrandGoal {
   id: number;
-  goal: string;
+  name: string;
   brand_id: number;
   created_at: string;
 }
 
 export interface CreateBrandGoalForm {
-  goal: string;
+  name: string;
   brand_id: number;
 }
 
 export interface UpdateBrandGoalForm {
-  goal?: string;
+  name?: string;
 }
 
 // Enhanced Brand Goal type for UI (keeping the existing interface for backward compatibility)

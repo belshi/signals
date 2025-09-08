@@ -1,5 +1,4 @@
 import React, { forwardRef, useMemo, useCallback, useEffect, useState } from 'react';
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 export interface TextAreaProps extends Omit<React.TextareaHTMLAttributes<HTMLTextAreaElement>, 'size'> {
   size?: 'sm' | 'md' | 'lg';
@@ -32,12 +31,6 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
   ) => {
     const [textareaRef, setTextareaRef] = useState<HTMLTextAreaElement | null>(null);
     const [height, setHeight] = useState<number | undefined>(undefined);
-
-    const inputRef = useKeyboardNavigation({
-      onEnter: () => {},
-      onSpace: () => {},
-      disabled: disabled || false,
-    });
 
     const textareaClasses = useMemo(() => {
       const baseClasses = 'block border rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50 resize-none';
@@ -95,12 +88,7 @@ const TextArea = forwardRef<HTMLTextAreaElement, TextAreaProps>(
       } else if (ref) {
         ref.current = node;
       }
-      if (typeof inputRef === 'function') {
-        inputRef(node);
-      } else if (inputRef) {
-        inputRef.current = node;
-      }
-    }, [ref, inputRef]);
+    }, [ref]);
 
     const style = autoResize && height ? { height: `${height}px` } : undefined;
 

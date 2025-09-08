@@ -170,7 +170,7 @@ const BrandGoals = React.forwardRef<BrandGoalsRef, BrandGoalsProps>(({ brandId }
     
     setActionLoading(true);
     try {
-      await createGoal({ goal: goalText, brand_id: brandId });
+      await createGoal({ name: goalText, brand_id: brandId });
     } catch (err) {
       // Error is handled by the context
     } finally {
@@ -188,7 +188,7 @@ const BrandGoals = React.forwardRef<BrandGoalsRef, BrandGoalsProps>(({ brandId }
     
     setActionLoading(true);
     try {
-      await updateGoal(editingGoal.id, { goal: goalText });
+      await updateGoal(editingGoal.id, { name: goalText });
     } catch (err) {
       // Error is handled by the context
     } finally {
@@ -230,12 +230,12 @@ const BrandGoals = React.forwardRef<BrandGoalsRef, BrandGoalsProps>(({ brandId }
 
   const stackedListItems: StackedListItem[] = goals.map((goal) => ({
     id: goal.id.toString(),
-    text: goal.goal,
+    text: goal.name,
     actionItems: getActionItems(goal),
     actionTriggerIcon: 'more-vertical',
     actionTriggerVariant: 'secondary',
     actionTriggerSize: 'sm',
-    actionTriggerAriaLabel: `More options for ${goal.goal}`
+    actionTriggerAriaLabel: `More options for ${goal.name}`
   }));
 
   if (isLoading && goals.length === 0) {
@@ -284,7 +284,7 @@ const BrandGoals = React.forwardRef<BrandGoalsRef, BrandGoalsProps>(({ brandId }
         }}
         onSubmit={handleUpdateGoal}
         isLoading={actionLoading}
-        currentGoal={editingGoal?.goal || ''}
+        currentGoal={editingGoal?.name || ''}
       />
     </div>
   );

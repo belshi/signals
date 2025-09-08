@@ -284,7 +284,7 @@ export const brandGoalsService = {
     const { data, error } = await typedSupabase
       .from('brand_goals')
       .insert({
-        goal: goalData.goal,
+        name: goalData.name,
         brand_id: goalData.brand_id,
       })
       .select()
@@ -304,7 +304,7 @@ export const brandGoalsService = {
     }
 
     const updateData = {
-      ...(updates.goal && { goal: updates.goal }),
+      ...(updates.name && { name: updates.name }),
     };
 
     const { data, error } = await typedSupabase

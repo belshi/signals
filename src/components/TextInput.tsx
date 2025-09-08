@@ -1,5 +1,4 @@
 import React, { forwardRef, useMemo } from 'react';
-import { useKeyboardNavigation } from '../hooks/useKeyboardNavigation';
 
 export interface TextInputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
   size?: 'sm' | 'md' | 'lg';
@@ -31,11 +30,6 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
     },
     ref
   ) => {
-    const inputRef = useKeyboardNavigation({
-      onEnter: () => {},
-      onSpace: () => {},
-      disabled: disabled || false,
-    });
 
     const inputClasses = useMemo(() => {
       const baseClasses = 'block border rounded-md shadow-sm transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-0 disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-50';
@@ -83,7 +77,7 @@ const TextInput = forwardRef<HTMLInputElement, TextInputProps>(
         )}
         
         <input
-          ref={ref || (inputRef as React.Ref<HTMLInputElement>)}
+          ref={ref}
           type="text"
           className={inputClasses}
           disabled={disabled}
