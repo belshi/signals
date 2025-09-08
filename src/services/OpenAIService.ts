@@ -15,7 +15,6 @@ export interface OpenAIRecommendationRequest {
 
 export class OpenAIService {
   private readonly baseUrl = 'https://api.openai.com/v1';
-  private readonly model = 'gpt-3.5-turbo';
 
   /**
    * Generate recommendations based on insights, brand details, and goals
@@ -38,19 +37,50 @@ export class OpenAIService {
           'Authorization': `Bearer ${configService.openai.apiKey}`,
         },
         body: JSON.stringify({
-          model: this.model,
+          model: 'gpt-4o-mini',
+          temperature: 0.4,
+          max_tokens: 1500,
           messages: [
             {
               role: 'system',
-              content: 'You are a social listening and consumer insights expert. Generate one actionable recommendation for each insight provided. You may use basic markdown formatting (bold, italic, lists) for better readability. Use numbered lists (1., 2., 3., etc.) for the main structure.'
+              content: 'From the user prompt, generate recommendations directly for each insight provided. For every listed insight, produce 5–7 comprehensive, actionable recommendations that are aligned with the brand\'s strategic goals. Output must follow the schema.'
             },
             {
               role: 'user',
               content: prompt
             }
           ],
-          max_tokens: 1000,
-          temperature: 0.7,
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
+              name: 'insights_recommendations',
+              strict: true,
+              schema: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                  insights: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      additionalProperties: false,
+                      properties: {
+                        insight: { type: 'string' },
+                        recommendations: {
+                          type: 'array',
+                          minItems: 5,
+                          maxItems: 7,
+                          items: { type: 'string' }
+                        }
+                      },
+                      required: ['insight', 'recommendations']
+                    }
+                  }
+                },
+                required: ['insights']
+              }
+            }
+          }
         }),
       },
       'OpenAI Recommendations'
@@ -61,7 +91,7 @@ export class OpenAIService {
     }
 
     const content = response.choices[0].message.content;
-    return this.parseRecommendations(content);
+    return this.parseStructuredRecommendations(content);
   }
 
   /**
@@ -69,35 +99,23 @@ export class OpenAIService {
    */
   private createRecommendationPrompt(request: OpenAIRecommendationRequest): string {
     const goalsText = request.brandGoals.length > 0 
-      ? request.brandGoals.map(goal => `- ${goal.name}`).join('\n')
+      ? request.brandGoals.map((goal, index) => `${index + 1}. ${goal.name}`).join('\n')
       : 'No specific goals defined';
 
-    return `You are a social listening and consumer insights expert. Based on the brand details, brand goals, and Talkwalker insights provided, please provide a recommendation for each of these insights.
+    return `Locale hint: en
 
-BRAND DETAILS:
-- Name: ${request.brandDetails.name}
-- Industry: ${request.brandDetails.industry}
-- Description: ${request.brandDetails.description}
+User prompt:
+Brand: ${request.brandDetails.name}
+Industry: ${request.brandDetails.industry}
+Description: ${request.brandDetails.description}
 
-BRAND GOALS:
+Brand Goals:
 ${goalsText}
 
-TALKWALKER INSIGHTS:
+Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
 ${request.insights}
 
-INSTRUCTIONS:
-- Provide one specific recommendation for each insight mentioned above
-- Each recommendation should be 1-2 sentences maximum
-- You may use basic markdown formatting (bold, italic, lists) for better readability
-- Make each recommendation actionable and specific to the insight
-- Align recommendations with the brand's goals and industry context
-- Base your recommendations on social listening and consumer insights expertise
-
-Format your response as a simple numbered list with one recommendation per insight:
-1. Recommendation for first insight
-2. Recommendation for second insight
-3. Recommendation for third insight
-(Continue for each insight provided)`;
+Task: For each insight, generate 5–7 clear, actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals.`;
   }
 
   /**
@@ -144,6 +162,33 @@ Format your response as a simple numbered list with one recommendation per insig
     }
 
     return recommendations.slice(0, 5).filter(rec => rec && rec.length > 10);
+  }
+
+  /**
+   * Parse structured recommendations from JSON response
+   */
+  private parseStructuredRecommendations(content: string): string[] {
+    try {
+      const parsed = JSON.parse(content);
+      
+      if (!parsed.insights || !Array.isArray(parsed.insights)) {
+        throw new Error('Invalid response structure');
+      }
+
+      const allRecommendations: string[] = [];
+      
+      for (const insightData of parsed.insights) {
+        if (insightData.recommendations && Array.isArray(insightData.recommendations)) {
+          allRecommendations.push(...insightData.recommendations);
+        }
+      }
+
+      return allRecommendations.filter(rec => rec && rec.trim().length > 10);
+    } catch (error) {
+      console.error('Failed to parse structured recommendations:', error);
+      // Fallback to simple parsing
+      return this.parseRecommendations(content);
+    }
   }
 
   /**
