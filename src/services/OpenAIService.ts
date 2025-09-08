@@ -181,7 +181,10 @@ Format each recommendation as an object with "title" and "content" fields. Use b
    */
   private parseStructuredRecommendations(content: string): string[] {
     try {
+      console.log('Raw OpenAI response:', content);
+      
       const parsed = JSON.parse(content);
+      console.log('Parsed response:', parsed);
       
       if (!parsed.insights || !Array.isArray(parsed.insights)) {
         throw new Error('Invalid response structure');
@@ -204,9 +207,11 @@ Format each recommendation as an object with "title" and "content" fields. Use b
         }
       }
 
+      console.log('Formatted recommendations:', allRecommendations);
       return allRecommendations.filter(rec => rec && rec.trim().length > 10);
     } catch (error) {
       console.error('Failed to parse structured recommendations:', error);
+      console.log('Raw content that failed to parse:', content);
       // Fallback to simple parsing
       return this.parseRecommendations(content);
     }
