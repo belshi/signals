@@ -1,6 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
-import { DataTable, MoreMenu, EditSignalModal } from './index';
-import { Icon } from './index';
+import { DataTable, EditSignalModal } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
 import { useBrandsContext } from '../contexts/BrandsContext';
 import type { EnhancedSignal } from '../types/enhanced';
@@ -13,32 +12,10 @@ interface SignalsTableProps {
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
-  const { signals, deleteSignal } = useSignalsContext();
+  const { signals } = useSignalsContext();
   const { getBrand } = useBrandsContext();
   const [editingSignal, setEditingSignal] = useState<EnhancedSignal | null>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
-
-  const handleEditSignal = useCallback((signal: EnhancedSignal) => {
-    setEditingSignal(signal);
-    setIsEditModalOpen(true);
-  }, []);
-
-  const handleDeleteSignal = useCallback(async (signal: EnhancedSignal) => {
-    const confirmed = window.confirm(
-      `Are you sure you want to delete "${signal.name}"? This action cannot be undone.`
-    );
-    
-    if (confirmed) {
-      try {
-        await deleteSignal(signal.id);
-        // No need to refresh signals as the hook already updates the state optimistically
-      } catch (error) {
-        console.error('Failed to delete signal:', error);
-        // The error is already handled by the useSignals hook and will be displayed via the error context
-        // Consider showing a toast notification for better UX
-      }
-    }
-  }, [deleteSignal]);
 
   const columns: TableColumn<EnhancedSignal>[] = useMemo(() => [
     {
@@ -80,30 +57,7 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
         </div>
       ),
     },
-    {
-      key: 'actions',
-      label: 'Actions',
-      render: (signal) => (
-        <div className="flex items-center justify-end">
-          <MoreMenu
-            options={[
-              {
-                label: 'Edit',
-                onClick: () => handleEditSignal(signal),
-                icon: <Icon name="edit" size="sm" />,
-              },
-              {
-                label: 'Delete',
-                onClick: () => handleDeleteSignal(signal),
-                icon: <Icon name="trash" size="sm" />,
-                variant: 'danger',
-              },
-            ]}
-          />
-        </div>
-      ),
-    },
-  ], [getBrand, handleEditSignal, handleDeleteSignal]);
+  ], [getBrand]);
 
   const handleRowClick = (signal: EnhancedSignal, _index: number) => {
     onRowClick?.(signal);
