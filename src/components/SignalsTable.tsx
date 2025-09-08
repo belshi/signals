@@ -1,5 +1,6 @@
-import React from 'react';
-import { DataTable } from './index';
+import React, { useState, useCallback } from 'react';
+import { DataTable, MoreMenu, EditSignalModal } from './index';
+import { Icon } from './index';
 import { useSignalsContext } from '../contexts/SignalsContext';
 import { useBrandsContext } from '../contexts/BrandsContext';
 import type { EnhancedSignal } from '../types/enhanced';
@@ -12,8 +13,10 @@ interface SignalsTableProps {
 }
 
 const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, className = '' }) => {
-  const { signals } = useSignalsContext();
+  const { signals, deleteSignal, refreshSignals } = useSignalsContext();
   const { getBrand } = useBrandsContext();
+  const [editingSignal, setEditingSignal] = useState<EnhancedSignal | null>(null);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const columns: TableColumn<EnhancedSignal>[] = [
     {
@@ -55,6 +58,29 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
         </div>
       ),
     },
+    {
+      key: 'actions',
+      label: 'Actions',
+      render: (signal) => (
+        <div className="flex items-center justify-end">
+          <MoreMenu
+            options={[
+              {
+                label: 'Edit',
+                onClick: () => handleEditSignal(signal),
+                icon: <Icon name="edit" size="sm" />,
+              },
+              {
+                label: 'Delete',
+                onClick: () => handleDeleteSignal(signal),
+                icon: <Icon name="trash" size="sm" />,
+                variant: 'danger',
+              },
+            ]}
+          />
+        </div>
+      ),
+    },
   ];
 
   const handleRowClick = (signal: EnhancedSignal, _index: number) => {
@@ -65,19 +91,54 @@ const SignalsTable: React.FC<SignalsTableProps> = ({ onRowClick, onRowSelect, cl
     onRowSelect?.(signal);
   };
 
+  const handleEditSignal = useCallback((signal: EnhancedSignal) => {
+    setEditingSignal(signal);
+    setIsEditModalOpen(true);
+  }, []);
+
+  const handleDeleteSignal = useCallback(async (signal: EnhancedSignal) => {
+    if (window.confirm(`Are you sure you want to delete "${signal.name}"? This action cannot be undone.`)) {
+      try {
+        await deleteSignal(signal.id);
+        await refreshSignals();
+      } catch (error) {
+        console.error('Failed to delete signal:', error);
+        // You might want to show a toast notification here
+      }
+    }
+  }, [deleteSignal, refreshSignals]);
+
+  const handleEditModalClose = useCallback(() => {
+    setIsEditModalOpen(false);
+    setEditingSignal(null);
+  }, []);
+
+  const handleEditSuccess = useCallback(async () => {
+    await refreshSignals();
+  }, [refreshSignals]);
+
   return (
-    <DataTable
-      data={signals}
-      columns={columns}
-      keyField="id"
-      emptyMessage="No signals found. Create your first signal to get started."
-      onRowClick={handleRowClick}
-      onRowSelect={handleRowSelect}
-      selectable={!!onRowSelect}
-      sortable={true}
-      ariaLabel="Signals table"
-      className={className}
-    />
+    <>
+      <DataTable
+        data={signals}
+        columns={columns}
+        keyField="id"
+        emptyMessage="No signals found. Create your first signal to get started."
+        onRowClick={handleRowClick}
+        onRowSelect={handleRowSelect}
+        selectable={!!onRowSelect}
+        sortable={true}
+        ariaLabel="Signals table"
+        className={className}
+      />
+      
+      <EditSignalModal
+        isOpen={isEditModalOpen}
+        onClose={handleEditModalClose}
+        onSuccess={handleEditSuccess}
+        signal={editingSignal}
+      />
+    </>
   );
 };
 

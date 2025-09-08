@@ -17,6 +17,7 @@ export { default as AIInsights } from './AIInsights';
 export { default as AddBrandModal } from './AddBrandModal';
 export { default as AddSignalModal } from './AddSignalModal';
 export { default as EditBrandModal } from './EditBrandModal';
+export { default as EditSignalModal } from './EditSignalModal';
 export { default as AIRecommendations } from './AIRecommendations';
 export { default as CSVDataBlock } from './CSVDataBlock';
 export { default as DropdownMenu } from './DropdownMenu';

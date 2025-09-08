@@ -129,59 +129,170 @@ export const brandService = {
   },
 };
 
-// Signal service functions - Note: No signals table in actual schema
-// This service is kept for backward compatibility but will always return mock data
+// Signal service functions - now backed by Supabase `signals` table when configured
 export const signalService = {
   // Get all signals
   async getAllSignals(): Promise<EnhancedSignal[]> {
-    console.log('Using mock data for signals - no signals table in database schema');
-    return MOCK_SIGNALS;
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signals');
+      return MOCK_SIGNALS;
+    }
+
+    const { data, error } = await typedSupabase
+      .from('signals')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch signals: ${error.message}`);
+    }
+
+    return (data || []).map(transformSignalFromDB);
   },
 
   // Get signal by ID
   async getSignalById(id: SignalId): Promise<EnhancedSignal | null> {
-    console.log('Using mock data for signal by ID:', id);
-    const signalIdStr = id.toString();
-    return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signal by ID:', id);
+      const signalIdStr = id.toString();
+      return MOCK_SIGNALS.find(signal => signal.id.toString() === signalIdStr) || null;
+    }
+
+    const numericId = Number(id as unknown as string);
+    const { data, error } = await typedSupabase
+      .from('signals')
+      .select('*')
+      .eq('id', numericId)
+      .single();
+
+    if (error) {
+      if ((error as any).code === 'PGRST116') return null;
+      throw new Error(`Failed to fetch signal: ${error.message}`);
+    }
+
+    return transformSignalFromDB(data);
   },
 
   // Get signals by brand ID
   async getSignalsByBrandId(brandId: BrandId): Promise<EnhancedSignal[]> {
-    console.log('Using mock data for signals by brand ID:', brandId);
-    const brandIdStr = brandId.toString();
-    return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signals by brand ID:', brandId);
+      const brandIdStr = brandId.toString();
+      return MOCK_SIGNALS.filter(signal => signal.brandId?.toString() === brandIdStr);
+    }
+
+    const { data, error } = await typedSupabase
+      .from('signals')
+      .select('*')
+      .eq('brand_id', Number(brandId as unknown as string))
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      throw new Error(`Failed to fetch brand signals: ${error.message}`);
+    }
+
+    return (data || []).map(transformSignalFromDB);
   },
 
   // Create signal
   async createSignal(data: CreateSignalForm): Promise<EnhancedSignal> {
-    console.log('Using mock data for signal creation:', data);
-    const newSignal: EnhancedSignal = {
-      id: `signal-${Date.now()}` as SignalId,
+    const placeholderInsights = `This is a placeholder for AI insights about "${data.name}". Detailed analysis will appear here.`;
+    const placeholderRecommendations = [
+      'Placeholder recommendation 1 – generated text will go here.',
+      'Placeholder recommendation 2 – generated text will go here.',
+      'Placeholder recommendation 3 – generated text will go here.'
+    ];
+
+    if (!isSupabaseConfigured) {
+      console.log('Using mock data for signal creation:', data);
+      const newSignal: EnhancedSignal = {
+        id: `signal-${Date.now()}` as SignalId,
+        name: data.name,
+        prompt: data.prompt,
+        type: data.type || 'Analytics',
+        status: 'active',
+        createdAt: new Date().toISOString() as ISODateString,
+        updatedAt: new Date().toISOString() as ISODateString,
+        tags: data.tags || [],
+        brandId: data.brandId,
+        metadata: {
+          copilotType: data.copilotType,
+          copilotId: data.copilotId,
+        },
+        aiInsights: {
+          socialListening: placeholderInsights,
+          consumerInsights: placeholderInsights,
+        },
+        aiRecommendations: placeholderRecommendations,
+      };
+      MOCK_SIGNALS.push(newSignal);
+      return newSignal;
+    }
+
+    const insertPayload: Database['public']['Tables']['signals']['Insert'] = {
       name: data.name,
       prompt: data.prompt,
-      type: data.type || 'Analytics',
-      status: 'active',
-      createdAt: new Date().toISOString() as ISODateString,
-      updatedAt: new Date().toISOString() as ISODateString,
-      tags: data.tags || [],
-      brandId: data.brandId,
-      metadata: {
-        copilotType: data.copilotType,
-        copilotId: data.copilotId,
-      },
+      brand_id: Number(data.brandId as unknown as string),
+      copilot_id: data.copilotId ? Number(data.copilotId) : null,
+      insights: placeholderInsights,
+      recommendations: JSON.stringify(placeholderRecommendations),
+      updated_at: new Date().toISOString(),
     };
-    MOCK_SIGNALS.push(newSignal);
-    return newSignal;
+
+    const { data: inserted, error } = await typedSupabase
+      .from('signals')
+      .insert(insertPayload)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to create signal: ${error.message}`);
+    }
+
+    return transformSignalFromDB(inserted);
   },
 
   // Update signal
   async updateSignal(_id: SignalId, _updates: UpdateSignalForm): Promise<EnhancedSignal> {
-    throw new Error('Signal updates not supported - no signals table in database schema');
+    if (!isSupabaseConfigured) {
+      throw new Error('Signal updates not supported in mock mode');
+    }
+
+    const id = Number(_id as unknown as string);
+    const updateData: Database['public']['Tables']['signals']['Update'] = {
+      name: _updates.name,
+      updated_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await typedSupabase
+      .from('signals')
+      .update(updateData)
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to update signal: ${error.message}`);
+    }
+
+    return transformSignalFromDB(data);
   },
 
   // Delete signal
   async deleteSignal(_id: SignalId): Promise<void> {
-    throw new Error('Signal deletion not supported - no signals table in database schema');
+    if (!isSupabaseConfigured) {
+      throw new Error('Signal deletion not supported in mock mode');
+    }
+
+    const id = Number(_id as unknown as string);
+    const { error } = await typedSupabase
+      .from('signals')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new Error(`Failed to delete signal: ${error.message}`);
+    }
   },
 };
 
@@ -384,6 +495,31 @@ function transformBrandFromDB(dbBrand: BrandRow): EnhancedBrandDetails {
     }, // Not in actual schema
     createdAt: createISODateString(dbBrand.created_at),
     updatedAt: createISODateString(dbBrand.created_at), // No updated_at in actual schema
+  };
+}
+
+// Transform DB signal row to EnhancedSignal used in UI
+type SignalRow = Database['public']['Tables']['signals']['Row'];
+function transformSignalFromDB(db: SignalRow): EnhancedSignal {
+  const recommendations: string[] | null = (() => {
+    if (!db.recommendations) return null;
+    try { return JSON.parse(db.recommendations); } catch { return [db.recommendations]; }
+  })();
+
+  return {
+    id: (`${db.id}`) as SignalId,
+    name: db.name || '',
+    prompt: db.prompt || '',
+    type: 'Analytics',
+    status: 'active',
+    createdAt: createISODateString(db.created_at),
+    updatedAt: createISODateString(db.updated_at || db.created_at),
+    brandId: db.brand_id != null ? (db.brand_id.toString() as unknown as BrandId) : undefined,
+    aiInsights: db.insights ? {
+      socialListening: db.insights,
+      consumerInsights: db.insights,
+    } : undefined,
+    aiRecommendations: recommendations ?? undefined,
   };
 }
 

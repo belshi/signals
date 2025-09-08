@@ -11,14 +11,6 @@ interface AddSignalModalProps {
   onSuccess?: () => void;
 }
 
-// Copilot type options
-const COPILOT_TYPE_OPTIONS = [
-  { value: 'Market Research', label: 'Market Research' },
-  { value: 'Social Media', label: 'Social Media' },
-  { value: 'Competitive Analysis', label: 'Competitive Analysis' },
-  { value: 'Brand Monitoring', label: 'Brand Monitoring' },
-  { value: 'Consumer Insights', label: 'Consumer Insights' },
-];
 
 // Use cases for different copilot types
 const USE_CASES: Record<CopilotType, Array<{ name: string; prompt: string }>> = {
