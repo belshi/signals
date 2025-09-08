@@ -294,10 +294,16 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       // Extract insights from the chat response
       const aiContent = chatResponse.yeti_answer?.reply?.content || '';
       
-      // Use the raw AI response as insights
+      // Generate recommendations using OpenAI
+      const recommendations = await this.generateOpenAIRecommendations(
+        aiContent,
+        brandDetails,
+        existingSignal.brandId || 'unknown' as BrandId
+      );
+      
       const insights = {
         content: aiContent,
-        recommendations: this.extractRecommendations(aiContent),
+        recommendations,
       };
       
       onProgress?.('Updating signal with new insights...');
@@ -333,36 +339,6 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       onProgress?.('Failed to refresh insights. Please try again.');
       throw error;
     }
-  }
-
-  /**
-   * Helper function to extract recommendations from AI response
-   */
-  private extractRecommendations(aiContent: string): string[] {
-    const lines = aiContent.split('\n').filter(line => line.trim());
-    const recommendations: string[] = [];
-
-    for (const line of lines) {
-      const lowerLine = line.toLowerCase();
-      
-      // Look for recommendation patterns
-      if (lowerLine.includes('recommend') || lowerLine.includes('suggest') || lowerLine.includes('action')) {
-        // Extract individual recommendations
-        if (line.includes('•') || line.includes('-') || line.includes('*')) {
-          const cleanRec = line.replace(/^[•\-*]\s*/, '').trim();
-          if (cleanRec) recommendations.push(cleanRec);
-        }
-      }
-    }
-
-    // If no specific recommendations found, provide generic ones
-    if (recommendations.length === 0) {
-      recommendations.push('Monitor social media sentiment regularly');
-      recommendations.push('Analyze competitor strategies');
-      recommendations.push('Track consumer behavior patterns');
-    }
-
-    return recommendations.slice(0, 5); // Limit to 5 recommendations
   }
 
   /**
