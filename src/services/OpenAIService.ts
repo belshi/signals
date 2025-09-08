@@ -39,29 +39,20 @@ export class OpenAIService {
         body: JSON.stringify({
           model: 'gpt-4o-mini',
           temperature: 0.4,
-          max_output_tokens: 1500,
-          input: [
+          max_tokens: 1500,
+          messages: [
             {
               role: 'system',
               content: 'From the user prompt, generate recommendations directly for each insight provided. For every listed insight, produce 5–7 comprehensive, actionable recommendations that are aligned with the brand\'s strategic goals. Output must follow the schema.'
             },
             {
               role: 'user',
-              content: [
-                {
-                  type: 'input_text',
-                  text: 'Locale hint: en'
-                },
-                {
-                  type: 'input_text',
-                  text: prompt
-                }
-              ]
+              content: `Locale hint: en\n\n${prompt}`
             }
           ],
-          text: {
-            format: {
-              type: 'json_schema',
+          response_format: {
+            type: 'json_schema',
+            json_schema: {
               name: 'insights_recommendations',
               strict: true,
               schema: {
@@ -97,11 +88,11 @@ export class OpenAIService {
       'OpenAI Recommendations'
     );
 
-    if (!response.text) {
+    if (!response.choices || !response.choices[0]?.message?.content) {
       throw new Error('Invalid response from OpenAI');
     }
 
-    return this.parseStructuredRecommendations(response.text);
+    return this.parseStructuredRecommendations(response.choices[0].message.content);
   }
 
   /**
@@ -178,23 +169,32 @@ Task: For each insight, generate 5–7 clear, actionable recommendations that bo
    */
   private parseStructuredRecommendations(content: string): string[] {
     try {
+      console.log('Raw OpenAI response:', content);
       const parsed = JSON.parse(content);
+      console.log('Parsed JSON:', parsed);
       
       if (!parsed.insights || !Array.isArray(parsed.insights)) {
+        console.error('Invalid response structure - no insights array found');
         throw new Error('Invalid response structure');
       }
 
       const allRecommendations: string[] = [];
       
       for (const insightData of parsed.insights) {
+        console.log('Processing insight:', insightData);
         if (insightData.recommendations && Array.isArray(insightData.recommendations)) {
+          console.log('Found recommendations:', insightData.recommendations);
           allRecommendations.push(...insightData.recommendations);
+        } else {
+          console.warn('No recommendations found for insight:', insightData);
         }
       }
 
+      console.log('All recommendations extracted:', allRecommendations);
       return allRecommendations.filter(rec => rec && rec.trim().length > 10);
     } catch (error) {
       console.error('Failed to parse structured recommendations:', error);
+      console.error('Raw content that failed to parse:', content);
       // Fallback to simple parsing
       return this.parseRecommendations(content);
     }
