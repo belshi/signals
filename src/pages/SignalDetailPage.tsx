@@ -9,7 +9,7 @@ import type { EnhancedSignal, EnhancedBrandDetails, SignalId, BrandId } from '..
 const SignalDetailPage: React.FC = () => {
   const { signalId } = useParams<{ signalId: string }>();
   const navigate = useNavigate();
-  const { getSignal, refreshSignals, deleteSignal } = useSignalsContext();
+  const { getSignal, refreshSignalInsights, deleteSignal } = useSignalsContext();
   const { getBrand } = useBrandsContext();
   const [signal, setSignal] = useState<EnhancedSignal | null>(null);
   const [brand, setBrand] = useState<EnhancedBrandDetails | null>(null);
@@ -17,6 +17,7 @@ const SignalDetailPage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshProgress, setRefreshProgress] = useState<string>('');
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   useEffect(() => {
@@ -57,27 +58,33 @@ const SignalDetailPage: React.FC = () => {
   }, [signalId, getSignal, getBrand, navigate]);
 
   const refreshSignalDetails = useCallback(async () => {
-    if (!signalId) return;
+    if (!signalId || !signal || !brand) return;
     
     try {
       setIsRefreshing(true);
-      await refreshSignals();
-      const signalData = getSignal(signalId as SignalId);
-      if (signalData) {
-        setSignal(signalData);
-        
-        // Update brand data as well
-        if (signalData.brandId) {
-          const brandData = getBrand(signalData.brandId as BrandId);
-          setBrand(brandData || null);
-        }
-      }
+      setRefreshProgress('');
+      setError(null);
+      
+      const brandDetails = {
+        name: brand.name,
+        industry: brand.industry,
+        description: '', // Brand description not available in current schema
+      };
+      
+      const updatedSignal = await refreshSignalInsights(
+        signalId as SignalId,
+        brandDetails,
+        (message) => setRefreshProgress(message)
+      );
+      
+      setSignal(updatedSignal);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to refresh signal details');
+      setError(err instanceof Error ? err.message : 'Failed to refresh AI insights');
     } finally {
       setIsRefreshing(false);
+      setRefreshProgress('');
     }
-  }, [signalId, getSignal, getBrand, refreshSignals]);
+  }, [signalId, signal, brand, refreshSignalInsights]);
 
   const handleDeleteSignal = useCallback(async () => {
     if (!signal) return;
@@ -188,11 +195,12 @@ const SignalDetailPage: React.FC = () => {
             variant: 'secondary',
           },
           {
-            label: 'Refresh',
+            label: refreshProgress || (!signal?.metadata?.copilotId ? 'No AI copilot' : 'Refresh'),
             onClick: refreshSignalDetails,
             icon: <Icon name="building" size="sm" />,
             variant: 'secondary',
-            loading: isRefreshing
+            loading: isRefreshing,
+            disabled: !brand || !signal?.metadata?.copilotId
           },
           {
             label: 'Delete',

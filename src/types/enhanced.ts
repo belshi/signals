@@ -315,6 +315,11 @@ export interface UseSignalsReturn {
   updateSignal: (id: SignalId, data: UpdateSignalForm) => Promise<EnhancedSignal>;
   deleteSignal: (id: SignalId) => Promise<void>;
   refreshSignals: () => Promise<void>;
+  refreshSignalInsights: (
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ) => Promise<EnhancedSignal>;
   getSignal: (id: SignalId) => EnhancedSignal | undefined;
 }
 

@@ -145,6 +145,33 @@ export const useSignals = (): UseSignalsReturn => {
     await loadSignals();
   }, [loadSignals]);
 
+  const refreshSignalInsights = useCallback(async (
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> => {
+    setIsLoading(true);
+    setError(null);
+    
+    const refreshInsightsOperation = async (): Promise<EnhancedSignal> => {
+      const updatedSignal = await signalService.refreshSignalInsights(signalId, brandDetails, onProgress);
+      setSignals(prev => prev.map(signal => 
+        signal.id === signalId ? updatedSignal : signal
+      ));
+      return updatedSignal;
+    };
+
+    try {
+      return await retry(refreshInsightsOperation);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [retry, handleError]);
+
   const getSignal = useCallback((id: SignalId): EnhancedSignal | undefined => {
     return signals.find(signal => signal.id === id);
   }, [signals]);
@@ -159,8 +186,9 @@ export const useSignals = (): UseSignalsReturn => {
     updateSignal,
     deleteSignal,
     refreshSignals,
+    refreshSignalInsights,
     getSignal,
-  }), [signals, isLoading, error, createSignal, createSignalWithAI, updateSignal, deleteSignal, refreshSignals, getSignal]);
+  }), [signals, isLoading, error, createSignal, createSignalWithAI, updateSignal, deleteSignal, refreshSignals, refreshSignalInsights, getSignal]);
 
   return returnValue;
 };
