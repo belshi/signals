@@ -265,7 +265,7 @@ export class RequestInterceptor {
     
     // Default timeouts for different operations
     if (operation?.includes('OpenAI')) {
-      return 180000; // 3 minutes for OpenAI requests
+      return 300000; // 5 minutes for OpenAI requests
     }
     
     if (operation?.includes('Talkwalker')) {
