@@ -37,7 +37,7 @@ export class RequestInterceptor {
       enableRetry: true,
       maxRetries: 3,
       retryDelay: 1000,
-      timeout: 30000,
+      timeout: 120000, // 2 minutes default timeout
       ...options,
     };
   }
@@ -265,11 +265,11 @@ export class RequestInterceptor {
     
     // Default timeouts for different operations
     if (operation?.includes('OpenAI')) {
-      return 90000; // 90 seconds for OpenAI requests
+      return 180000; // 3 minutes for OpenAI requests
     }
     
     if (operation?.includes('Talkwalker')) {
-      return 60000; // 60 seconds for Talkwalker requests
+      return 120000; // 2 minutes for Talkwalker requests
     }
     
     // Default timeout
@@ -404,7 +404,7 @@ export const requestInterceptor = new RequestInterceptor({
   enableRetry: true,
   maxRetries: 3,
   retryDelay: 1000,
-  timeout: 30000,
+  timeout: 120000, // 2 minutes default timeout
 });
 
 /**
