@@ -400,11 +400,11 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       return await openAIService.generateRecommendations(request);
     } catch (error) {
       console.error('Failed to generate OpenAI recommendations:', error);
-      // Fallback to simple recommendations
+      // Fallback to goal-oriented recommendations
       return [
-        'Monitor social media sentiment regularly',
-        'Analyze competitor strategies',
-        'Track consumer behavior patterns',
+        '**Monitor Brand Sentiment**: Implement regular social media monitoring to track brand perception and identify opportunities to strengthen brand reputation and customer relationships.',
+        '**Competitive Intelligence**: Analyze competitor strategies and market positioning to identify gaps and opportunities that align with your brand goals.',
+        '**Customer Behavior Analysis**: Track and analyze consumer behavior patterns to better understand your audience and optimize marketing strategies for goal achievement.',
       ];
     }
   }

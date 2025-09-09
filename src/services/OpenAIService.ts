@@ -44,7 +44,7 @@ export class OpenAIService {
           messages: [
             {
               role: 'system',
-              content: 'From the user prompt, generate recommendations directly for each insight provided. For every listed insight, produce 2-3 comprehensive, detailed, and highly actionable recommendations that are aligned with the brand\'s strategic goals. Each recommendation should be thorough and specific, not brief. Output must follow the schema.'
+              content: 'You are a strategic marketing consultant specializing in brand goal alignment. Your task is to generate recommendations that directly support and advance the brand\'s strategic objectives. For every insight provided, produce 2-3 comprehensive, detailed, and highly actionable recommendations that explicitly connect to the brand\'s goals. Each recommendation must include clear rationale explaining how it advances specific brand goals and the expected measurable impact. Prioritize goal alignment above all else - recommendations without clear goal connections are not acceptable. Output must follow the schema.'
             },
             {
               role: 'user',
@@ -125,17 +125,28 @@ Brand: ${request.brandDetails.name}
 Industry: ${request.brandDetails.industry}
 Description: ${request.brandDetails.description}
 
-Brand Goals:
+Brand Goals (Strategic Objectives):
 ${goalsText}
 
 ${originalPromptSection}Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
 ${request.insights}
 
-Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals. ${request.originalPrompt ? 'Consider the original user prompt as directional context to help shape the focus and approach of your recommendations.' : ''} Each recommendation should include:
+CRITICAL REQUIREMENT: Each recommendation MUST directly support one or more of the brand goals listed above. You must explicitly explain how each recommendation advances specific brand goals.
+
+Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that:
+1. Mitigate the specific risk or issue identified in the insight
+2. DIRECTLY support and advance one or more of the brand's strategic goals
+3. Include clear rationale explaining the connection to brand goals
+
+Each recommendation must include:
 1. A clear, descriptive title (3-8 words)
 2. Detailed content with specific implementation guidance
+3. **Goal Alignment Section**: Explicitly state which brand goal(s) this recommendation supports and how it advances those goals
+4. **Expected Impact**: Describe the measurable impact this recommendation will have on the brand goals
 
-Format each recommendation as an object with "title" and "content" fields. Use basic markdown formatting (bold, italic, lists) in the content for better readability.`;
+Format each recommendation as an object with "title" and "content" fields. Use basic markdown formatting (bold, italic, lists) in the content for better readability. ${request.originalPrompt ? 'Consider the original user prompt as directional context to help shape the focus and approach of your recommendations.' : ''}
+
+IMPORTANT: If no brand goals are defined, focus on general brand growth, reputation management, and customer engagement as default strategic objectives.`;
   }
 
   /**

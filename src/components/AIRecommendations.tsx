@@ -14,7 +14,7 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({ signal, className
     return (
       <Card
         title="AI Recommendations"
-        description="AI-generated recommendations based on brand and brand goals"
+        description="AI-generated recommendations aligned with your brand's strategic goals"
         icon={<Icon name="target" className="text-nocturn" size="md" />}
         className={className}
       >
@@ -28,7 +28,7 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({ signal, className
   return (
     <Card
       title="AI Recommendations"
-      description="AI-generated recommendations based on brand and brand goals"
+      description="AI-generated recommendations aligned with your brand's strategic goals"
       icon={<Icon name="target" className="text-nocturn" size="md" />}
       className={className}
     >
