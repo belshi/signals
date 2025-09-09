@@ -172,6 +172,33 @@ export const useSignals = (): UseSignalsReturn => {
     }
   }, [retry, handleError]);
 
+  const refreshRecommendations = useCallback(async (
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> => {
+    setIsLoading(true);
+    setError(null);
+    
+    const refreshRecommendationsOperation = async (): Promise<EnhancedSignal> => {
+      const updatedSignal = await signalService.refreshRecommendations(signalId, brandDetails, onProgress);
+      setSignals(prev => prev.map(signal => 
+        signal.id === signalId ? updatedSignal : signal
+      ));
+      return updatedSignal;
+    };
+
+    try {
+      return await retry(refreshRecommendationsOperation);
+    } catch (err) {
+      const error = err as Error;
+      handleError(error);
+      throw error;
+    } finally {
+      setIsLoading(false);
+    }
+  }, [retry, handleError]);
+
   const getSignal = useCallback((id: SignalId): EnhancedSignal | undefined => {
     return signals.find(signal => signal.id === id);
   }, [signals]);
@@ -187,8 +214,9 @@ export const useSignals = (): UseSignalsReturn => {
     deleteSignal,
     refreshSignals,
     refreshSignalInsights,
+    refreshRecommendations,
     getSignal,
-  }), [signals, isLoading, error, createSignal, createSignalWithAI, updateSignal, deleteSignal, refreshSignals, refreshSignalInsights, getSignal]);
+  }), [signals, isLoading, error, createSignal, createSignalWithAI, updateSignal, deleteSignal, refreshSignals, refreshSignalInsights, refreshRecommendations, getSignal]);
 
   return returnValue;
 };

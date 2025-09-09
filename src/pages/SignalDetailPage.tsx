@@ -234,7 +234,9 @@ const SignalDetailPage: React.FC = () => {
           </Card>
           
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <AIInsights signal={signal} />
+            <AIInsights 
+              signal={signal} 
+            />
             <AIRecommendations signal={signal} />
           </div>
                   </div>

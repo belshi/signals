@@ -10,6 +10,7 @@ import {
   ArrowTopRightOnSquareIcon,
   XMarkIcon,
   MinusIcon,
+  ArrowPathIcon,
 } from '@heroicons/react/24/outline';
 
 // Define the available icon names as a union type for type safety
@@ -23,7 +24,8 @@ export type IconName =
   | 'trash'
   | 'external-link'
   | 'x'
-  | 'minus';
+  | 'minus'
+  | 'refresh';
 
 // Map icon names to Heroicons components
 const iconMap = {
@@ -37,6 +39,7 @@ const iconMap = {
   'external-link': ArrowTopRightOnSquareIcon,
   'x': XMarkIcon,
   'minus': MinusIcon,
+  'refresh': ArrowPathIcon,
 } as const;
 
 export interface IconProps {

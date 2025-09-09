@@ -320,6 +320,11 @@ export interface UseSignalsReturn {
     brandDetails: { name: string; industry: string; description: string },
     onProgress?: (message: string) => void
   ) => Promise<EnhancedSignal>;
+  refreshRecommendations: (
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ) => Promise<EnhancedSignal>;
   getSignal: (id: SignalId) => EnhancedSignal | undefined;
 }
 

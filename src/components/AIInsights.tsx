@@ -9,7 +9,10 @@ interface AIInsightsProps {
   className?: string;
 }
 
-const AIInsights: React.FC<AIInsightsProps> = ({ signal, className = '' }) => {
+const AIInsights: React.FC<AIInsightsProps> = ({ 
+  signal, 
+  className = '' 
+}) => {
   if (!signal || !signal.aiInsights) {
     return (
       <Card

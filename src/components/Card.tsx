@@ -1,5 +1,7 @@
 import React from 'react';
 import Button from './Button';
+import IconButton, { type IconButtonVariant, type IconButtonSize } from './IconButton';
+import { type IconName } from './Icon';
 
 export interface CardButton {
   label: string;
@@ -8,11 +10,21 @@ export interface CardButton {
   icon?: React.ReactNode;
 }
 
+export interface CardIconButton {
+  icon: IconName;
+  onClick: () => void;
+  variant?: IconButtonVariant;
+  size?: IconButtonSize;
+  loading?: boolean;
+  ariaLabel: string;
+}
+
 export interface CardProps {
   title?: string;
   description?: string;
   icon?: React.ReactNode;
   buttons?: CardButton[];
+  iconButtons?: CardIconButton[];
   children: React.ReactNode;
   className?: string;
   noPadding?: boolean;
@@ -23,6 +35,7 @@ const Card: React.FC<CardProps> = ({
   description,
   icon,
   buttons = [],
+  iconButtons = [],
   children,
   className = '',
   noPadding = false,
@@ -40,7 +53,7 @@ const Card: React.FC<CardProps> = ({
     }
   };
 
-  const hasHeader = title || description || icon || (buttons && buttons.length > 0);
+  const hasHeader = title || description || icon || (buttons && buttons.length > 0) || (iconButtons && iconButtons.length > 0);
 
   return (
     <div className={`bg-white rounded-xl ${className}`}>
@@ -65,11 +78,11 @@ const Card: React.FC<CardProps> = ({
               </div>
             </div>
             
-            {buttons && buttons.length > 0 && (
+            {((buttons && buttons.length > 0) || (iconButtons && iconButtons.length > 0)) && (
               <div className="flex items-center space-x-2">
                 {buttons.map((button, index) => (
                   <Button
-                    key={index}
+                    key={`button-${index}`}
                     onClick={button.onClick}
                     variant={getButtonVariant(button.variant)}
                     size="sm"
@@ -78,6 +91,17 @@ const Card: React.FC<CardProps> = ({
                   >
                     {button.label}
                   </Button>
+                ))}
+                {iconButtons.map((iconButton, index) => (
+                  <IconButton
+                    key={`icon-button-${index}`}
+                    icon={iconButton.icon}
+                    onClick={iconButton.onClick}
+                    variant={iconButton.variant}
+                    size={iconButton.size}
+                    loading={iconButton.loading}
+                    ariaLabel={iconButton.ariaLabel}
+                  />
                 ))}
               </div>
             )}

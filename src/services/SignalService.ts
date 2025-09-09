@@ -260,6 +260,72 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
   }
 
   /**
+   * Refresh AI recommendations for an existing signal (OpenAI only)
+   */
+  async refreshRecommendations(
+    signalId: SignalId,
+    brandDetails: { name: string; industry: string; description: string },
+    onProgress?: (message: string) => void
+  ): Promise<EnhancedSignal> {
+    onProgress?.('Loading signal details...');
+
+    // Get the existing signal
+    const existingSignal = await this.getById(signalId);
+    if (!existingSignal) {
+      throw new Error('Signal not found');
+    }
+
+    // Check if signal has AI insights to base recommendations on
+    if (!existingSignal.aiInsights?.content) {
+      throw new Error('Signal does not have AI insights. Cannot generate recommendations without insights.');
+    }
+
+    try {
+      onProgress?.('Generating new AI recommendations...');
+      
+      // Generate new recommendations using OpenAI based on existing insights
+      const recommendations = await this.generateOpenAIRecommendations(
+        existingSignal.aiInsights.content,
+        brandDetails,
+        existingSignal.brandId || 'unknown' as BrandId,
+        existingSignal.prompt
+      );
+      
+      onProgress?.('Updating signal with new recommendations...');
+
+      // Update the signal with new recommendations
+      if (!configService.isSupabaseConfigured) {
+        throw new Error('Cannot refresh recommendations: Supabase not configured');
+      }
+
+      // Update in Supabase
+      const updatePayload: SignalUpdate = {
+        recommendations: JSON.stringify(recommendations),
+        updated_at: new Date().toISOString(),
+      };
+
+      const { data: updated, error } = await this.client
+        .from(this.tableName)
+        .update(updatePayload)
+        .eq('id', Number(signalId as unknown as string))
+        .select('*')
+        .single();
+
+      if (error) {
+        throw new Error(`Failed to update signal recommendations: ${error.message}`);
+      }
+
+      onProgress?.('AI recommendations refreshed successfully!');
+      return this.transformFromDB(updated);
+
+    } catch (error) {
+      console.error('Failed to refresh signal recommendations:', error);
+      onProgress?.('Failed to refresh recommendations. Please try again.');
+      throw error;
+    }
+  }
+
+  /**
    * Refresh AI insights for an existing signal
    */
   async refreshInsights(
