@@ -148,13 +148,14 @@ export const useSignals = (): UseSignalsReturn => {
   const refreshSignalInsights = useCallback(async (
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> => {
     setIsLoading(true);
     setError(null);
     
     const refreshInsightsOperation = async (): Promise<EnhancedSignal> => {
-      const updatedSignal = await signalService.refreshSignalInsights(signalId, brandDetails, onProgress);
+      const updatedSignal = await signalService.refreshSignalInsights(signalId, brandDetails, onProgress, signal);
       setSignals(prev => prev.map(signal => 
         signal.id === signalId ? updatedSignal : signal
       ));
@@ -175,13 +176,14 @@ export const useSignals = (): UseSignalsReturn => {
   const refreshRecommendations = useCallback(async (
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> => {
     setIsLoading(true);
     setError(null);
     
     const refreshRecommendationsOperation = async (): Promise<EnhancedSignal> => {
-      const updatedSignal = await signalService.refreshRecommendations(signalId, brandDetails, onProgress);
+      const updatedSignal = await signalService.refreshRecommendations(signalId, brandDetails, onProgress, signal);
       setSignals(prev => prev.map(signal => 
         signal.id === signalId ? updatedSignal : signal
       ));

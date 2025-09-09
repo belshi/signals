@@ -12,6 +12,7 @@ export interface OpenAIRecommendationRequest {
     name: string;
   }>;
   originalPrompt?: string;
+  signal?: AbortSignal;
 }
 
 export class OpenAIService {
@@ -29,6 +30,73 @@ export class OpenAIService {
 
     const prompt = this.createRecommendationPrompt(request);
     
+    // Validate prompt length and content
+    if (prompt.length > 4000) {
+      console.warn('Prompt is very long:', prompt.length, 'characters');
+    }
+    
+    console.log('Generated prompt:', prompt);
+    
+    const requestPayload = {
+      model: 'gpt-4o-mini',
+      temperature: 0.3, // Reduced for more consistent output
+      max_tokens: 1800, // Increased for longer, more detailed recommendations
+      messages: [
+        {
+          role: 'system',
+          content: 'You are a strategic marketing consultant. Generate highly specific, detailed recommendations based on the brand context, goals, and insights provided. Each recommendation should be comprehensive (4-6 sentences), very specific about tactics and implementation, and avoid generic advice. Include specific details about target audiences, content types, platforms, and expected outcomes. Output structured JSON format.'
+        },
+        {
+          role: 'user',
+          content: prompt
+        }
+      ],
+      response_format: {
+        type: 'json_schema',
+        json_schema: {
+          name: 'insights_recommendations',
+          strict: true,
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              insights: {
+                type: 'array',
+                minItems: 1,
+                maxItems: 10,
+                items: {
+                  type: 'object',
+                  additionalProperties: false,
+                  properties: {
+                    insight: { type: 'string' },
+                    recommendations: {
+                      type: 'array',
+                      minItems: 1,
+                      maxItems: 5,
+                      items: {
+                        type: 'object',
+                        additionalProperties: false,
+                        properties: {
+                          title: { type: 'string' },
+                          detailedRecommendation: { type: 'string' },
+                          relationWithGoals: { type: 'string' }
+                        },
+                        required: ['title', 'detailedRecommendation', 'relationWithGoals']
+                      }
+                    }
+                  },
+                  required: ['insight', 'recommendations']
+                }
+              }
+            },
+            required: ['insights']
+          }
+        }
+      }
+    };
+
+    console.log('OpenAI Request Payload:', JSON.stringify(requestPayload, null, 2));
+    
     const response = await enhancedFetch<any>(
       `${this.baseUrl}/chat/completions`,
       {
@@ -37,62 +105,8 @@ export class OpenAIService {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${configService.openai.apiKey}`,
         },
-        body: JSON.stringify({
-          model: 'gpt-4o-mini',
-          temperature: 0.4,
-          max_tokens: 2000,
-          messages: [
-            {
-              role: 'system',
-              content: 'You are a strategic marketing consultant specializing in brand goal alignment. Your task is to generate recommendations that directly support and advance the brand\'s strategic objectives. For every insight provided, produce 2-3 comprehensive, detailed, and highly actionable recommendations that explicitly connect to the brand\'s goals. Each recommendation must include clear rationale explaining how it advances specific brand goals and the expected measurable impact. Prioritize goal alignment above all else - recommendations without clear goal connections are not acceptable. Output must follow the schema.'
-            },
-            {
-              role: 'user',
-              content: `Locale hint: en\n\n${prompt}`
-            }
-          ],
-          response_format: {
-            type: 'json_schema',
-            json_schema: {
-              name: 'insights_recommendations',
-              strict: true,
-              schema: {
-                type: 'object',
-                additionalProperties: false,
-                properties: {
-                  insights: {
-                    type: 'array',
-                    minItems: 5,
-                    maxItems: 5,
-                    items: {
-                      type: 'object',
-                      additionalProperties: false,
-                      properties: {
-                        insight: { type: 'string' },
-                        recommendations: {
-                          type: 'array',
-                          minItems: 2,
-                          maxItems: 3,
-                          items: {
-                            type: 'object',
-                            additionalProperties: false,
-                            properties: {
-                              title: { type: 'string' },
-                              content: { type: 'string' }
-                            },
-                            required: ['title', 'content']
-                          }
-                        }
-                      },
-                      required: ['insight', 'recommendations']
-                    }
-                  }
-                },
-                required: ['insights']
-              }
-            }
-          }
-        }),
+        signal: request.signal,
+        body: JSON.stringify(requestPayload),
       },
       'OpenAI Recommendations'
     );
@@ -111,42 +125,38 @@ export class OpenAIService {
   private createRecommendationPrompt(request: OpenAIRecommendationRequest): string {
     const goalsText = request.brandGoals.length > 0 
       ? request.brandGoals.map((goal, index) => `${index + 1}. ${goal.name}`).join('\n')
-      : 'No specific goals defined';
+      : '1. General brand growth\n2. Reputation management\n3. Customer engagement';
 
     const originalPromptSection = request.originalPrompt 
-      ? `Original User Prompt (for directional context):
-"${request.originalPrompt}"
-
-`
+      ? `\n\nUSER'S ORIGINAL REQUEST: "${request.originalPrompt}"\nThis is the user's specific question or concern that should guide the focus and direction of your recommendations.`
       : '';
 
-    return `User prompt:
-Brand: ${request.brandDetails.name}
-Industry: ${request.brandDetails.industry}
-Description: ${request.brandDetails.description}
+    return `You are a strategic marketing consultant. Your task is to generate recommendations that directly address the user's specific request while advancing the brand's strategic goals.
 
-Brand Goals (Strategic Objectives):
-${goalsText}
+BRAND CONTEXT:
+- Company: ${request.brandDetails.name}
+- Industry: ${request.brandDetails.industry}
+- Description: ${request.brandDetails.description}
 
-${originalPromptSection}Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
+STRATEGIC BRAND GOALS:
+${goalsText}${originalPromptSection}
+
+SOCIAL MEDIA INSIGHTS (from Talkwalker analysis):
 ${request.insights}
 
-CRITICAL REQUIREMENT: Each recommendation MUST directly support one or more of the brand goals listed above. You must explicitly explain how each recommendation advances specific brand goals.
+CRITICAL REQUIREMENTS:
+1. Each recommendation MUST directly support one or more of the brand goals listed above
+2. Each recommendation MUST address the user's original request/question
+3. Base recommendations on the specific insights and brand context provided
 
-Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that:
-1. Mitigate the specific risk or issue identified in the insight
-2. DIRECTLY support and advance one or more of the brand's strategic goals
-3. Include clear rationale explaining the connection to brand goals
+For each insight, generate 2-3 recommendations with the following structure:
 
-Each recommendation must include:
-1. A clear, descriptive title (3-8 words)
-2. Detailed content with specific implementation guidance
-3. **Goal Alignment Section**: Explicitly state which brand goal(s) this recommendation supports and how it advances those goals
-4. **Expected Impact**: Describe the measurable impact this recommendation will have on the brand goals
+**RECOMMENDATION STRUCTURE:**
+- **title**: A clear, action-oriented title
+- **detailedRecommendation**: A comprehensive explanation (4-6 sentences) of what should be done, including specific tactics, approaches, and implementation details. Be very specific about the actions to take, target audiences, content types, platforms, and expected outcomes. Avoid generic advice.
+- **relationWithGoals**: Explain how these recommendations will help with the brand goals
 
-Format each recommendation as an object with "title" and "content" fields. Use basic markdown formatting (bold, italic, lists) in the content for better readability. ${request.originalPrompt ? 'Consider the original user prompt as directional context to help shape the focus and approach of your recommendations.' : ''}
-
-IMPORTANT: If no brand goals are defined, focus on general brand growth, reputation management, and customer engagement as default strategic objectives.`;
+Each recommendation should be highly specific, detailed, and directly connected to the brand's goals and the insights provided. Avoid generic statements and provide concrete, actionable guidance.`;
   }
 
   /**
@@ -214,9 +224,11 @@ IMPORTANT: If no brand goals are defined, focus on general brand growth, reputat
       for (const insightData of parsed.insights) {
         if (insightData.recommendations && Array.isArray(insightData.recommendations)) {
           for (const rec of insightData.recommendations) {
-            if (rec && typeof rec === 'object' && rec.title && rec.content) {
-              // Format as "**Title**\n\nContent" for markdown rendering
-              const formattedRec = `**${rec.title}**\n\n${rec.content}`;
+            if (rec && typeof rec === 'object' && rec.title && rec.detailedRecommendation) {
+              // Format with simplified structure
+              const relationWithGoals = rec.relationWithGoals ? `\n\n**How This Supports Your Goals:** ${rec.relationWithGoals}` : '';
+              
+              const formattedRec = `**${rec.title}**\n\n${rec.detailedRecommendation}${relationWithGoals}`;
               allRecommendations.push(formattedRec);
             } else if (typeof rec === 'string' && rec.trim().length > 10) {
               // Fallback for old format

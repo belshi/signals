@@ -318,12 +318,14 @@ export interface UseSignalsReturn {
   refreshSignalInsights: (
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ) => Promise<EnhancedSignal>;
   refreshRecommendations: (
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ) => Promise<EnhancedSignal>;
   getSignal: (id: SignalId) => EnhancedSignal | undefined;
 }

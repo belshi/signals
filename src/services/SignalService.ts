@@ -4,6 +4,7 @@ import { configService } from '../config/ConfigurationService';
 import { talkwalkerService } from './talkwalker';
 import { openAIService } from './OpenAIService';
 import { brandGoalsService } from './database';
+import { enhancedFetch } from './RequestInterceptor';
 import type { 
   EnhancedSignal, 
   SignalId, 
@@ -182,7 +183,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
   async createWithAI(
     data: CreateSignalForm,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> {
     onProgress?.('Initializing signal creation...');
 
@@ -212,7 +214,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
         aiContent,
         brandDetails,
         data.brandId,
-        data.prompt
+        data.prompt,
+        signal
       );
       
       const insights = {
@@ -265,7 +268,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
   async refreshRecommendations(
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> {
     onProgress?.('Loading signal details...');
 
@@ -288,7 +292,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
         existingSignal.aiInsights.content,
         brandDetails,
         existingSignal.brandId || 'unknown' as BrandId,
-        existingSignal.prompt
+        existingSignal.prompt,
+        signal
       );
       
       onProgress?.('Updating signal with new recommendations...');
@@ -331,7 +336,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
   async refreshInsights(
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> {
     onProgress?.('Loading signal details...');
 
@@ -366,7 +372,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
         aiContent,
         brandDetails,
         existingSignal.brandId || 'unknown' as BrandId,
-        existingSignal.prompt
+        existingSignal.prompt,
+        signal
       );
       
       const insights = {
@@ -450,7 +457,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
     insights: string,
     brandDetails: { name: string; industry: string; description: string },
     brandId: BrandId,
-    originalPrompt?: string
+    originalPrompt?: string,
+    signal?: AbortSignal
   ): Promise<string[]> {
     try {
       // Get brand goals
@@ -461,18 +469,129 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
         brandDetails,
         brandGoals: brandGoals.map(goal => ({ name: goal.name })),
         originalPrompt,
+        signal,
       };
 
       return await openAIService.generateRecommendations(request);
     } catch (error) {
       console.error('Failed to generate OpenAI recommendations:', error);
-      // Fallback to goal-oriented recommendations
+      
+      // If it's a 400 error, try with a simpler request format
+      if (error instanceof Error && error.message.includes('HTTP 400')) {
+        console.log('Retrying with simplified request format...');
+        try {
+          return await this.generateRecommendationsFallback({
+            insights,
+            brandDetails,
+            brandGoals: await brandGoalsService.getGoalsByBrandId(brandId).then(goals => goals.map(goal => ({ name: goal.name }))),
+            originalPrompt,
+            signal,
+          });
+        } catch (fallbackError) {
+          console.error('Fallback also failed:', fallbackError);
+        }
+      }
+      
+      // Final fallback to goal-oriented recommendations
       return [
         '**Monitor Brand Sentiment**: Implement regular social media monitoring to track brand perception and identify opportunities to strengthen brand reputation and customer relationships.',
         '**Competitive Intelligence**: Analyze competitor strategies and market positioning to identify gaps and opportunities that align with your brand goals.',
         '**Customer Behavior Analysis**: Track and analyze consumer behavior patterns to better understand your audience and optimize marketing strategies for goal achievement.',
       ];
     }
+  }
+
+  /**
+   * Fallback method for generating recommendations with simpler format
+   */
+  private async generateRecommendationsFallback(request: any): Promise<string[]> {
+    const prompt = this.createSimpleRecommendationPrompt(request);
+    
+    const response = await enhancedFetch<any>(
+      'https://api.openai.com/v1/chat/completions',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${configService.openai.apiKey}`,
+        },
+        signal: request.signal,
+        body: JSON.stringify({
+          model: 'gpt-4o-mini',
+          temperature: 0.3,
+          max_tokens: 1400,
+          messages: [
+            {
+              role: 'system',
+              content: 'You are a strategic marketing consultant. Generate highly specific, detailed recommendations based on the brand context, goals, and insights provided. Each recommendation should be comprehensive (4-6 sentences), very specific about tactics and implementation, and avoid generic advice. Include specific details about target audiences, content types, platforms, and expected outcomes. Return as a numbered list.'
+            },
+            {
+              role: 'user',
+              content: prompt
+            }
+          ]
+        }),
+      },
+      'OpenAI Recommendations Fallback'
+    );
+
+    if (!response.choices || !response.choices[0]?.message?.content) {
+      throw new Error('Invalid response from OpenAI fallback');
+    }
+
+    return this.parseSimpleRecommendations(response.choices[0].message.content);
+  }
+
+  /**
+   * Create a simple prompt for fallback recommendations
+   */
+  private createSimpleRecommendationPrompt(request: any): string {
+    const goalsText = request.brandGoals.length > 0 
+      ? request.brandGoals.map((goal: any, index: number) => `${index + 1}. ${goal.name}`).join('\n')
+      : '1. General brand growth\n2. Reputation management\n3. Customer engagement';
+
+    const originalPromptSection = request.originalPrompt 
+      ? `\n\nUSER'S REQUEST: "${request.originalPrompt}"\nThis should guide your recommendations.`
+      : '';
+
+    return `You are a strategic marketing consultant. Generate recommendations that directly support brand goals and address the user's request.
+
+BRAND: ${request.brandDetails.name} (${request.brandDetails.industry})
+BRAND GOALS:
+${goalsText}${originalPromptSection}
+
+INSIGHTS: ${request.insights}
+
+Generate 3-5 focused recommendations that include:
+
+**RECOMMENDATION STRUCTURE:**
+1. **Title**: A clear, action-oriented title
+2. **Detailed Recommendation**: A comprehensive explanation (4-6 sentences) of what should be done, including specific tactics, approaches, and implementation details. Be very specific about the actions to take, target audiences, content types, platforms, and expected outcomes. Avoid generic advice.
+3. **How This Supports Your Goals**: Explain how these recommendations will help with the brand goals
+
+Format as numbered list with clear titles and detailed explanations. Each recommendation should be highly specific, detailed, and directly connected to the brand's goals and the insights provided. Avoid generic statements and provide concrete, actionable guidance.`;
+  }
+
+  /**
+   * Parse simple recommendations from text response
+   */
+  private parseSimpleRecommendations(content: string): string[] {
+    const lines = content.split('\n').filter(line => line.trim());
+    const recommendations: string[] = [];
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      
+      // Look for numbered recommendations (1., 2., etc.)
+      if (trimmed.match(/^\d+\./)) {
+        const cleanRec = trimmed.replace(/^\d+\.\s*/, '').trim();
+        if (cleanRec && cleanRec.length > 10) {
+          recommendations.push(`**${cleanRec}**`);
+        }
+      }
+    }
+
+    return recommendations.slice(0, 5);
   }
 
   /**

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { Card } from './index';
 import { Icon } from './index';
@@ -19,12 +19,21 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({
   const { getBrand } = useBrandsContext();
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [refreshMessage, setRefreshMessage] = useState<string | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // Get brand details from the signal's brandId
   const brandDetails = signal?.brandId ? getBrand(signal.brandId as BrandId) : null;
 
   const handleRefreshRecommendations = async () => {
     if (!signal?.id || !brandDetails) return;
+
+    // Cancel any existing request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller
+    abortControllerRef.current = new AbortController();
 
     setIsRefreshing(true);
     setRefreshMessage('Generating new recommendations...');
@@ -37,16 +46,22 @@ const AIRecommendations: React.FC<AIRecommendationsProps> = ({
           industry: brandDetails.industry,
           description: `${brandDetails.name} is a company in the ${brandDetails.industry} industry${brandDetails.website ? ` with website ${brandDetails.website}` : ''}${brandDetails.location ? ` located in ${brandDetails.location}` : ''}.`,
         },
-        (message) => setRefreshMessage(message)
+        (message) => setRefreshMessage(message),
+        abortControllerRef.current.signal
       );
       setRefreshMessage('Recommendations refreshed successfully!');
       setTimeout(() => setRefreshMessage(null), 3000);
     } catch (error) {
       console.error('Failed to refresh recommendations:', error);
-      setRefreshMessage('Failed to refresh recommendations. Please try again.');
+      if (error instanceof Error && error.name === 'AbortError') {
+        setRefreshMessage('Request was cancelled');
+      } else {
+        setRefreshMessage('Failed to refresh recommendations. Please try again.');
+      }
       setTimeout(() => setRefreshMessage(null), 5000);
     } finally {
       setIsRefreshing(false);
+      abortControllerRef.current = null;
     }
   };
 

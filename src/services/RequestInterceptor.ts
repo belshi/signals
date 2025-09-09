@@ -13,6 +13,7 @@ export interface RequestMetrics {
   error?: string;
   cacheHit?: boolean;
   retryCount?: number;
+  errorType?: 'network' | 'timeout' | 'abort' | 'http' | 'unknown';
 }
 
 export interface InterceptorOptions {
@@ -22,6 +23,7 @@ export interface InterceptorOptions {
   maxRetries?: number;
   retryDelay?: number;
   timeout?: number;
+  operationTimeout?: number; // Specific timeout for different operations
 }
 
 export class RequestInterceptor {
@@ -59,27 +61,14 @@ export class RequestInterceptor {
     };
 
     if (this.options.enableLogging) {
-      console.log(`[${operation}] ${method} ${url}`, options);
+      console.log(`[${operation}] ${method} ${url}`, { ...options, signal: options.signal ? 'AbortSignal present' : 'undefined' });
     }
 
     try {
-      // Add timeout if specified
-      const controller = new AbortController();
-      const timeoutId = this.options.timeout 
-        ? setTimeout(() => controller.abort(), this.options.timeout)
-        : null;
-
-      // Merge abort signals
-      const signal = this.mergeAbortSignals(options.signal || undefined, controller.signal);
-
       const response = await this.executeWithRetry(
-        () => fetch(url, { ...options, signal }),
+        () => this.executeSingleRequest(url, options, operation),
         operation
       );
-
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
 
       metrics.endTime = Date.now();
       metrics.duration = metrics.endTime - metrics.startTime;
@@ -91,7 +80,15 @@ export class RequestInterceptor {
       }
 
       if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        // Try to get error details from response body
+        let errorDetails = '';
+        try {
+          const errorBody = await response.clone().text();
+          errorDetails = errorBody ? ` - ${errorBody}` : '';
+        } catch (e) {
+          // Ignore error reading response body
+        }
+        throw new Error(`HTTP ${response.status}: ${response.statusText}${errorDetails}`);
       }
 
       const data = await response.json() as T;
@@ -105,16 +102,60 @@ export class RequestInterceptor {
     } catch (error) {
       metrics.endTime = Date.now();
       metrics.duration = metrics.endTime - metrics.startTime;
-      metrics.error = error instanceof Error ? error.message : 'Unknown error';
+      
+      const errorObj = error instanceof Error ? error : new Error('Unknown error');
+      const errorType = this.classifyError(errorObj);
+      const userFriendlyMessage = this.getUserFriendlyErrorMessage(errorObj, errorType);
+      
+      metrics.error = userFriendlyMessage;
+      metrics.errorType = errorType;
 
       if (this.options.enableLogging) {
-        console.error(`[${operation}] ${method} ${url} - Error: ${metrics.error}`);
+        console.error(`[${operation}] ${method} ${url} - Error (${errorType}): ${userFriendlyMessage}`);
       }
 
       if (this.options.enableMetrics) {
         this.metrics.push(metrics);
       }
 
+      // Create a new error with the user-friendly message
+      const enhancedError = new Error(userFriendlyMessage);
+      enhancedError.name = errorObj.name;
+      enhancedError.cause = errorObj;
+      (enhancedError as any).errorType = errorType;
+      
+      throw enhancedError;
+    }
+  }
+
+  /**
+   * Execute a single request with timeout and abort signal handling
+   */
+  private async executeSingleRequest(url: string, options: RequestInit, operation?: string): Promise<Response> {
+    // Determine timeout based on operation type
+    const timeout = this.getTimeoutForOperation(operation);
+    
+    // Add timeout if specified
+    const controller = new AbortController();
+    const timeoutId = timeout 
+      ? setTimeout(() => controller.abort(), timeout)
+      : null;
+
+    try {
+      // Merge abort signals
+      const signal = this.mergeAbortSignals(options.signal || undefined, controller.signal);
+
+      const response = await fetch(url, { ...options, signal });
+
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
+
+      return response;
+    } catch (error) {
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+      }
       throw error;
     }
   }
@@ -130,12 +171,32 @@ export class RequestInterceptor {
     try {
       return await requestFn();
     } catch (error) {
+      const errorObj = error instanceof Error ? error : new Error('Unknown error');
+      const errorType = this.classifyError(errorObj);
+      
+      // Don't retry if the request was aborted (user cancellation)
+      if (errorType === 'abort') {
+        throw error;
+      }
+
+      // Don't retry for certain HTTP status codes that are unlikely to succeed on retry
+      if (errorType === 'http') {
+        const statusMatch = errorObj.message.match(/HTTP (\d+):/);
+        if (statusMatch) {
+          const statusCode = parseInt(statusMatch[1], 10);
+          // Don't retry client errors (4xx) except for 408 (timeout), 429 (rate limit)
+          if (statusCode >= 400 && statusCode < 500 && ![408, 429].includes(statusCode)) {
+            throw error;
+          }
+        }
+      }
+
       if (this.options.enableRetry && attempt < this.options.maxRetries!) {
         const delay = this.options.retryDelay! * Math.pow(2, attempt - 1); // Exponential backoff
         
-        if (this.options.enableLogging) {
-          console.log(`[${operation}] Retry attempt ${attempt}/${this.options.maxRetries} after ${delay}ms`);
-        }
+      if (this.options.enableLogging) {
+        console.log(`[${operation}] Retry attempt ${attempt}/${this.options.maxRetries} after ${delay}ms. Error (${errorType}): ${errorObj.message}`);
+      }
 
         await this.delay(delay);
         return this.executeWithRetry(requestFn, operation, attempt + 1);
@@ -168,6 +229,81 @@ export class RequestInterceptor {
    */
   private delay(ms: number): Promise<void> {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  /**
+   * Classify error type for better handling
+   */
+  private classifyError(error: Error): 'network' | 'timeout' | 'abort' | 'http' | 'unknown' {
+    if (error.name === 'AbortError' || error.message.includes('aborted')) {
+      return 'abort';
+    }
+    
+    if (error.message.includes('timeout') || error.message.includes('TIMEOUT')) {
+      return 'timeout';
+    }
+    
+    if (error.message.includes('HTTP')) {
+      return 'http';
+    }
+    
+    if (error.message.includes('fetch') || error.message.includes('network') || error.message.includes('Failed to fetch')) {
+      return 'network';
+    }
+    
+    return 'unknown';
+  }
+
+  /**
+   * Get timeout for specific operation
+   */
+  private getTimeoutForOperation(operation?: string): number | undefined {
+    // Use operation-specific timeout if available
+    if (this.options.operationTimeout) {
+      return this.options.operationTimeout;
+    }
+    
+    // Default timeouts for different operations
+    if (operation?.includes('OpenAI')) {
+      return 90000; // 90 seconds for OpenAI requests
+    }
+    
+    if (operation?.includes('Talkwalker')) {
+      return 60000; // 60 seconds for Talkwalker requests
+    }
+    
+    // Default timeout
+    return this.options.timeout;
+  }
+
+  /**
+   * Get user-friendly error message
+   */
+  private getUserFriendlyErrorMessage(error: Error, errorType: string): string {
+    switch (errorType) {
+      case 'abort':
+        return 'Request was cancelled';
+      case 'timeout':
+        return 'Request timed out. Please try again.';
+      case 'network':
+        return 'Network error. Please check your connection and try again.';
+      case 'http':
+        if (error.message.includes('401')) {
+          return 'Authentication failed. Please check your API key.';
+        }
+        if (error.message.includes('403')) {
+          return 'Access denied. Please check your permissions.';
+        }
+        if (error.message.includes('429')) {
+          return 'Rate limit exceeded. Please wait a moment and try again.';
+        }
+        if (error.message.includes('500')) {
+          return 'Server error. Please try again later.';
+        }
+        return `Request failed: ${error.message}`;
+      default:
+        return error.message || 'An unexpected error occurred';
+    }
   }
 
   /**

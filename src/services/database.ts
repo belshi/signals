@@ -98,18 +98,20 @@ export const signalService = {
   async refreshSignalInsights(
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> {
-    return newSignalService.refreshInsights(signalId, brandDetails, onProgress);
+    return newSignalService.refreshInsights(signalId, brandDetails, onProgress, signal);
   },
 
   // Refresh AI recommendations for an existing signal (OpenAI only)
   async refreshRecommendations(
     signalId: SignalId,
     brandDetails: { name: string; industry: string; description: string },
-    onProgress?: (message: string) => void
+    onProgress?: (message: string) => void,
+    signal?: AbortSignal
   ): Promise<EnhancedSignal> {
-    return newSignalService.refreshRecommendations(signalId, brandDetails, onProgress);
+    return newSignalService.refreshRecommendations(signalId, brandDetails, onProgress, signal);
   },
 
   // Update signal
