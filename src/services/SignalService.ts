@@ -211,7 +211,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       const recommendations = await this.generateOpenAIRecommendations(
         aiContent,
         brandDetails,
-        data.brandId
+        data.brandId,
+        data.prompt
       );
       
       const insights = {
@@ -298,7 +299,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
       const recommendations = await this.generateOpenAIRecommendations(
         aiContent,
         brandDetails,
-        existingSignal.brandId || 'unknown' as BrandId
+        existingSignal.brandId || 'unknown' as BrandId,
+        existingSignal.prompt
       );
       
       const insights = {
@@ -381,7 +383,8 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
   private async generateOpenAIRecommendations(
     insights: string,
     brandDetails: { name: string; industry: string; description: string },
-    brandId: BrandId
+    brandId: BrandId,
+    originalPrompt?: string
   ): Promise<string[]> {
     try {
       // Get brand goals
@@ -391,6 +394,7 @@ class SignalServiceClass extends BrandedBaseService<EnhancedSignal, CreateSignal
         insights,
         brandDetails,
         brandGoals: brandGoals.map(goal => ({ name: goal.name })),
+        originalPrompt,
       };
 
       return await openAIService.generateRecommendations(request);

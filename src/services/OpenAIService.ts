@@ -11,6 +11,7 @@ export interface OpenAIRecommendationRequest {
   brandGoals: Array<{
     name: string;
   }>;
+  originalPrompt?: string;
 }
 
 export class OpenAIService {
@@ -105,12 +106,19 @@ export class OpenAIService {
 
   /**
    * Create a prompt for generating recommendations
-   * NOTE: This does NOT include the original user prompt - only brand details, goals, and Talkwalker insights
+   * Includes brand details, goals, Talkwalker insights, and original user prompt for directional context
    */
   private createRecommendationPrompt(request: OpenAIRecommendationRequest): string {
     const goalsText = request.brandGoals.length > 0 
       ? request.brandGoals.map((goal, index) => `${index + 1}. ${goal.name}`).join('\n')
       : 'No specific goals defined';
+
+    const originalPromptSection = request.originalPrompt 
+      ? `Original User Prompt (for directional context):
+"${request.originalPrompt}"
+
+`
+      : '';
 
     return `User prompt:
 Brand: ${request.brandDetails.name}
@@ -120,10 +128,10 @@ Description: ${request.brandDetails.description}
 Brand Goals:
 ${goalsText}
 
-Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
+${originalPromptSection}Talkwalker Insights (Key Issues Identified from Social Media & Sentiment Analysis):
 ${request.insights}
 
-Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals. Each recommendation should include:
+Task: For each insight, generate 2-3 comprehensive, detailed, and highly actionable recommendations that both mitigate the specific risk and support the brand's performance marketing goals. ${request.originalPrompt ? 'Consider the original user prompt as directional context to help shape the focus and approach of your recommendations.' : ''} Each recommendation should include:
 1. A clear, descriptive title (3-8 words)
 2. Detailed content with specific implementation guidance
 
